@@ -1,4 +1,4 @@
-event,before_folder,after_folder,mean_ndvi_before,mean_ndvi_after,ndvi_drop,mean_nbr_before,mean_nbr_after,mean_dnbr,vegetation_loss_pct,burned_area_pct,valid_pixels,burned_pixels,vegetated_pixels_before
-Greece,Wildfires_data\Greece\before_wildfire,Wildfires_data\Greece\after_wildfire,0.45163261890411377,0.3256886601448059,0.12594395875930786,0.2957555651664734,0.2504931390285492,0.045262452214956284,21.062963140794803,13.851496423493638,3264918,452240,2499240
-SerraDaEstrela,Wildfires_data\SerraDaEstrela\before_wildfire,Wildfires_data\SerraDaEstrela\after_wildfire,0.4751015901565552,0.39435482025146484,0.08074676990509033,0.19624997675418854,0.05435418337583542,0.14189596474170685,16.36257794029193,17.48226466996608,3565482,623327,3358340
-Turkey,Wildfires_data\Turkey\before_wildfire,Wildfires_data\Turkey\after_wildfire,0.35594138503074646,0.2871072590351105,0.06883412599563599,0.17684851586818695,0.25322669744491577,-0.07633582502603531,14.151771545564118,3.68018369094383,3330812,122580,2180356
+event,event_type,mean_ndvi_before,mean_ndvi_after,ndvi_drop,mean_dnbr,vegetation_loss_pct,burned_area_pct
+greece,wildfire,0.4516,0.3257,0.1259,0.0453,21.06,13.85
+serradaestrela,wildfire,0.4751,0.3944,0.0807,0.1419,16.36,17.48
+turkey,wildfire,0.3559,0.2871,0.0688,-0.0763,14.15,3.68
