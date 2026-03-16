@@ -12,6 +12,13 @@
 \usepackage{hyperref}
 \usepackage{titlesec}
 \usepackage{subcaption}
+\usepackage{listings}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single
+}
 
 \setcounter{secnumdepth}{3}
 
@@ -19,7 +26,7 @@
 \titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.5em}{}
 \titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection.}{0.5em}{}
 
-\title{Interpreting Earth Observation Events using Symbolic Multi-Agent Systems and Natural Language Generation}
+\title{\textbf{Interpreting Earth Observation Events using Symbolic Multi-Agent Systems and Natural Language Generation}}
 \author{Stefano Infusini \\ \href{mailto:s5211120@studenti.unige.it}{s5211120@studenti.unige.it}}
 \date{15 April 2026}
 
@@ -277,5 +284,94 @@ The wildfire events show different levels of vegetation loss and burn severity. 
     \caption{Wildfire detection results for Turkey. The figure shows NDVI before and after the event, dNBR, NBR before and after the event, and the derived burn mask.}
     \label{fig:turkey_wildfire}
 \end{figure}
+
+\section{Symbolic Representation of EO Events}
+
+After extracting EO indicators from Sentinel-2 imagery, the results are converted into symbolic knowledge that can be used by the multi-agent system implemented in Jason. The symbolic layer is designed to make the EO evidence explicit and interpretable by reasoning agents.
+
+The knowledge base is divided into two components:
+
+\begin{itemize}
+\item an \textbf{event metadata layer}, describing environmental events and their geographic context
+\item an \textbf{indicator layer}, containing the EO-derived measurements used for reasoning
+\end{itemize}
+
+\subsection{Event Metadata Representation}
+
+Each environmental event is represented as a set of logical facts describing its location, country, event type, and observation dates. This information provides contextual knowledge for the reasoning agents.
+
+\begin{lstlisting}
+event(ahr_valley).
+country(ahr_valley, germany).
+region(ahr_valley, rhineland_palatinate).
+event_type(ahr_valley, flood).
+before_date(ahr_valley, "2021-03-30").
+after_date(ahr_valley, "2021-07-21").
+
+event(evros).
+country(evros, greece).
+region(evros, eastern_macedonia_and_thrace).
+event_type(evros, wildfire).
+before_date(evros, "2023-07-14").
+after_date(evros, "2023-08-23").
+\end{lstlisting}
+
+In addition to the geographic context, each event is associated with a spatial bounding box defining the area used for EO analysis.
+
+\begin{lstlisting}
+bbox(ahr_valley, 6.950227, 50.471351, 7.18725, 50.566012).
+bbox(evros, 25.144957, 40.781609, 26.258694, 41.221014).
+\end{lstlisting}
+
+This spatial information allows the EO indicators to be linked to a specific geographic region.
+
+\subsection{EO Indicator Representation}
+
+The EO indicators computed during the preprocessing stage are also represented as logical facts. These values provide the numerical evidence used by the reasoning agents.
+
+Flood events are described using NDWI-based indicators that capture changes in water extent.
+
+\begin{lstlisting}
+mean_ndwi_before(emilia, -0.5065).
+mean_ndwi_after(emilia, -0.3007).
+ndwi_change(emilia, 0.2057).
+water_increase_pct(emilia, 22.73).
+newly_flooded_area_pct(emilia, 22.90).
+\end{lstlisting}
+
+Wildfire events are represented using vegetation and burn-related indicators derived from NDVI and NBR.
+
+\begin{lstlisting}
+mean_ndvi_before(evros, 0.4516).
+mean_ndvi_after(evros, 0.3257).
+ndvi_drop(evros, 0.1259).
+mean_dnbr(evros, 0.0453).
+vegetation_loss_pct(evros, 21.06).
+burned_area_pct(evros, 13.85).
+\end{lstlisting}
+
+These symbolic facts constitute the belief base of the multi-agent system. Each agent can access the indicators and apply logical rules to determine whether an environmental event corresponds to flooding or wildfire damage.
+
+\subsection{Role in the Multi-Agent System}
+
+The symbolic knowledge base enables reasoning agents to interpret EO indicators through logical rules. For example, a water-related agent may detect flooding when a large increase in water coverage is observed.
+
+\begin{lstlisting}
+flood_detected(E) :-
+    water_increase_pct(E, W),
+    W > 15.
+\end{lstlisting}
+
+Similarly, wildfire detection can be based on vegetation loss and burned area indicators.
+
+\begin{lstlisting}
+wildfire_detected(E) :-
+    vegetation_loss_pct(E, V),
+    burned_area_pct(E, B),
+    V > 15,
+    B > 10.
+\end{lstlisting}
+
+By representing EO measurements as logical beliefs, the system can combine satellite evidence with symbolic reasoning and produce structured interpretations that are transparent and explainable.
 
 \end{document}
