@@ -1,4 +1,4 @@
-event,event_type,mean_ndwi_before,mean_ndwi_after,ndwi_change,water_increase_pct,newly_flooded_area_pct
-ahr_valley,flood,-0.5759,-0.7076,-0.1316,0.16,0.16
-emilia,flood,-0.5065,-0.3007,0.2057,22.73,22.90
-pakistan,flood,-0.2072,0.0037,0.2109,40.52,42.70
+event,event_type,mean_ndvi_before,mean_ndvi_after,ndvi_drop,mean_dnbr,vegetation_loss_pct,burned_area_pct
+evros,wildfire,0.4516,0.3257,0.1259,0.0453,21.06,13.85
+serra_de_estrela,wildfire,0.4751,0.3944,0.0807,0.1419,16.36,17.48
+antalya,wildfire,0.3559,0.2871,0.0688,-0.0763,14.15,3.68
