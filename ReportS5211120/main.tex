@@ -78,8 +78,6 @@ The second layer is a \textbf{symbolic multi-agent system} implemented in Jason.
 
 The third layer is the \textbf{Natural Language Processing layer}. This module transforms the symbolic conclusions produced by the agents into human-readable explanations using template-based Natural Language Generation supported by a small ontology.
 
-The current implementation focuses on the first layer, which extracts EO indicators from satellite imagery.
-
 \section{EO Data Processing}
 
 The EO layer is based on a small dataset of representative environmental events derived from Sentinel-2 imagery. In the current implementation, six events were selected: three wildfire events and three flood events. For each event, one image acquired before the event and one image acquired after the event were used in order to compute change-based indicators.
@@ -373,5 +371,11 @@ wildfire_detected(E) :-
 \end{lstlisting}
 
 By representing EO measurements as logical beliefs, the system can combine satellite evidence with symbolic reasoning and produce structured interpretations that are transparent and explainable.
+
+\subsection{Data}
+
+For population exposure context, this project uses the following WorldPop dataset citation:
+
+Bondarenko M., Priyatikanto R., Tejedor-Garavito N., Zhang W., McKeen T., Cunningham A., Woods T., Hilton J., Cihan D., Nosatiuk B., Brinkhoff T., Tatem A., Sorichetta A. (2025). \emph{Constrained estimates of 2015--2030 total number of people per grid square at a resolution of 3 arc (approximately 100m at the equator), R2025A version v1}. Global Demographic Data Project - Funded by The Bill and Melinda Gates Foundation (INV-045237). WorldPop - School of Geography and Environmental Science, University of Southampton. DOI: \href{https://doi.org/10.5258/SOTON/WP00839}{10.5258/SOTON/WP00839}.
 
 \end{document}

@@ -1,0 +1,8 @@
+MAS eo2explain {
+    infrastructure: Centralised
+
+    agents:
+        coordinator_agent ./agents/coordinatorAgent.asl;
+        water_agent ./agents/waterAgent.asl;
+        forest_agent ./agents/forestAgent.asl;
+}
