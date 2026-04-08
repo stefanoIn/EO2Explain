@@ -30,7 +30,6 @@ country(ahr_valley, germany).
 region(ahr_valley, rhineland_palatinate).
 event_type(ahr_valley, flood).
 hazard_domain(ahr_valley, hydrological).
-agent_responsible(ahr_valley, water_agent).
 pair_type(ahr_valley, before_after_comparison).
 before_date(ahr_valley, "2021-03-30").
 after_date(ahr_valley, "2021-07-21").
@@ -52,7 +51,6 @@ country(sindh, pakistan).
 region(sindh, sindh_province).
 event_type(sindh, flood).
 hazard_domain(sindh, hydrological).
-agent_responsible(sindh, water_agent).
 pair_type(sindh, before_after_comparison).
 before_date(sindh, "2022-07-12").
 after_date(sindh, "2022-09-10").
@@ -75,7 +73,6 @@ country(emilia, italy).
 region(emilia, emilia_romagna).
 event_type(emilia, flood).
 hazard_domain(emilia, hydrological).
-agent_responsible(emilia, water_agent).
 pair_type(emilia, before_after_comparison).
 before_date(emilia, "2023-04-03").
 after_date(emilia, "2023-05-23").
@@ -102,7 +99,6 @@ country(evros, greece).
 region(evros, eastern_macedonia_and_thrace).
 event_type(evros, wildfire).
 hazard_domain(evros, ecological).
-agent_responsible(evros, forest_agent).
 pair_type(evros, before_after_comparison).
 before_date(evros, "2023-07-14").
 after_date(evros, "2023-08-23").
@@ -122,7 +118,6 @@ country(antalya, turkey).
 region(antalya, mediterranean_region).
 event_type(antalya, wildfire).
 hazard_domain(antalya, ecological).
-agent_responsible(antalya, forest_agent).
 pair_type(antalya, before_after_comparison).
 before_date(antalya, "2021-06-30").
 after_date(antalya, "2021-07-30").
@@ -144,7 +139,6 @@ country(serra_de_estrela, portugal).
 region(serra_de_estrela, centro_region).
 event_type(serra_de_estrela, wildfire).
 hazard_domain(serra_de_estrela, ecological).
-agent_responsible(serra_de_estrela, forest_agent).
 pair_type(serra_de_estrela, before_after_comparison).
 before_date(serra_de_estrela, "2022-08-02").
 after_date(serra_de_estrela, "2022-08-22").
@@ -159,3 +153,11 @@ timeline_confidence(serra_de_estrela, approximate).
 days_peak_to_after(serra_de_estrela, 33).
 late_observation_flag(serra_de_estrela, true).
 possible_underestimation(serra_de_estrela, true).
+
+
+hazard_family(flood, water_agent).
+hazard_family(wildfire, forest_agent).
+
+agent_responsible(E, Agent) :-
+    event_type(E, HazardType) &
+    hazard_family(HazardType, Agent).

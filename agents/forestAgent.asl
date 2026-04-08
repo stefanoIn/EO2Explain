@@ -4,8 +4,8 @@
 // The forest agent reasons in layers: raw indicators become evidence signals,
 // then those signals are combined into severity, confidence, and caveat outputs.
 +!assess_event(E, Requester) : fire_severity_path(E, Severity, ClaimLabel, EvidenceList, RuleLabel) <-
-    fire_confidence(E, ConfidenceLevel);
-    fire_caveat_profile(E, ClaimLabel, PrimaryCaveat, CaveatList);
+    ?fire_confidence(E, ConfidenceLevel);
+    ?fire_caveat_profile(E, ClaimLabel, PrimaryCaveat, CaveatList);
     .send(Requester, tell, hazard_assessment(E, wildfire, Severity, ConfidenceLevel, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)).
 
 vegetation_damage_signal(E) :-

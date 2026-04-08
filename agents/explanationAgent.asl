@@ -3,20 +3,20 @@
 // The explanation agent stays grounded in symbolic outputs from the other agents;
 // it does not reason from raw EO indicators directly.
 +!build_explanation(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent) <-
-    name(E, EventName);
-    country(E, CountryId);
-    country_name(CountryId, CountryName);
-    region(E, RegionId);
-    region_name(RegionId, RegionName);
-    hazard_phrase(Hazard, HazardPhrase);
-    severity_phrase(Severity, SeverityPhrase);
-    confidence_phrase(FusionConfidence, ConfidencePhrase);
-    concern_phrase(ConcernLevel, ConcernPhrase);
-    interpretation_phrase(InterpretationMode, InterpretationPhrase);
-    exposure_phrase(ExposureClass, ExposurePhrase);
-    claim_phrase(ClaimLabel, ClaimSentence);
-    caveat_phrase(PrimaryCaveat, CaveatPhrase);
-    profile_phrase(Profile, ProfilePhrase);
+    ?name(E, EventName);
+    ?country(E, CountryId);
+    ?country_name(CountryId, CountryName);
+    ?region(E, RegionId);
+    ?region_name(RegionId, RegionName);
+    ?hazard_phrase(Hazard, HazardPhrase);
+    ?severity_phrase(Severity, SeverityPhrase);
+    ?confidence_phrase(FusionConfidence, ConfidencePhrase);
+    ?concern_phrase(ConcernLevel, ConcernPhrase);
+    ?interpretation_phrase(InterpretationMode, InterpretationPhrase);
+    ?exposure_phrase(ExposureClass, ExposurePhrase);
+    ?claim_phrase(ClaimLabel, ClaimSentence);
+    ?caveat_phrase(PrimaryCaveat, CaveatPhrase);
+    ?profile_phrase(Profile, ProfilePhrase);
     .concat(EventName, " in ", HeadlinePart1);
     .concat(HeadlinePart1, RegionName, HeadlinePart2);
     .concat(HeadlinePart2, ", ", HeadlinePart3);

@@ -4,8 +4,8 @@
 // The water agent treats flood reasoning as a progression from indicator signals
 // to coherent flood evidence, then to severity, confidence, and caveats.
 +!assess_event(E, Requester) : flood_severity_path(E, Severity, ClaimLabel, EvidenceList, RuleLabel) <-
-    flood_confidence(E, ConfidenceLevel);
-    flood_caveat_profile(E, ClaimLabel, PrimaryCaveat, CaveatList);
+    ?flood_confidence(E, ConfidenceLevel);
+    ?flood_caveat_profile(E, ClaimLabel, PrimaryCaveat, CaveatList);
     .send(Requester, tell, hazard_assessment(E, flood, Severity, ConfidenceLevel, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)).
 
 water_expansion_signal(E) :-
