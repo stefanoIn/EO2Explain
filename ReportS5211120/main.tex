@@ -283,51 +283,46 @@ The wildfire events show different levels of vegetation loss and burn severity. 
     \label{fig:turkey_wildfire}
 \end{figure}
 
-\section{Symbolic Representation of EO Events}
+\section{Reasoning Layer}
 
-After extracting EO indicators from Sentinel-2 imagery, the results are converted into symbolic knowledge that can be used by the multi-agent system implemented in Jason. The symbolic layer is designed to make the EO evidence explicit and interpretable by reasoning agents.
+After the EO preprocessing stage, the system enters the reasoning layer implemented in Jason. In this layer, numerical EO outputs are no longer treated as isolated measurements. They are transformed into symbolic beliefs, combined with contextual metadata, and interpreted through explicit reasoning rules. This is the core layer that makes the overall system explainable: every classification is linked to a visible belief structure, a reasoning path, and a traceable final explanation.
 
-The knowledge base is divided into two components:
+\subsection{Belief Base}
+
+The reasoning layer is grounded in a belief base that contains four main groups of facts:
 
 \begin{itemize}
-\item an \textbf{event metadata layer}, describing environmental events and their geographic context
-\item an \textbf{indicator layer}, containing the EO-derived measurements used for reasoning
+\item \textbf{event metadata}, describing the event identity, location, temporal window, and responsible hazard agent
+\item \textbf{EO indicator beliefs}, containing the satellite-derived measurements computed in the previous layer
+\item \textbf{context beliefs}, such as population exposure classes and observation-quality metadata
+\item \textbf{reference labels}, used to compare the symbolic output with expected hazard, severity, and confidence labels
 \end{itemize}
 
-\subsection{Event Metadata Representation}
+\subsubsection{Event Metadata Beliefs}
 
-Each environmental event is represented as a set of logical facts describing its location, country, event type, and observation dates. This information provides contextual knowledge for the reasoning agents.
+Each event is represented through a set of symbolic facts that specify geographic context, dates, hazard type, and temporal reliability. These beliefs are not only descriptive: they also support later caveat reasoning. For instance, the beliefs \texttt{timeline\_confidence/2}, \texttt{late\_observation\_flag/2}, and \texttt{possible\_underestimation/2} are used to qualify conclusions when the post-event image may not capture the peak hazard signal.
 
 \begin{lstlisting}
 event(ahr_valley).
+name(ahr_valley, "Ahr Valley").
 country(ahr_valley, germany).
 region(ahr_valley, rhineland_palatinate).
 event_type(ahr_valley, flood).
+agent_responsible(ahr_valley, water_agent).
 before_date(ahr_valley, "2021-03-30").
 after_date(ahr_valley, "2021-07-21").
-
-event(evros).
-country(evros, greece).
-region(evros, eastern_macedonia_and_thrace).
-event_type(evros, wildfire).
-before_date(evros, "2023-07-14").
-after_date(evros, "2023-08-23").
+timeline_confidence(ahr_valley, confirmed).
+late_observation_flag(ahr_valley, true).
+possible_underestimation(ahr_valley, true).
 \end{lstlisting}
 
-In addition to the geographic context, each event is associated with a spatial bounding box defining the area used for EO analysis.
+The same representation is used for wildfire events, with the only difference being the hazard type and the assigned hazard-specialized agent.
 
-\begin{lstlisting}
-bbox(ahr_valley, 6.950227, 50.471351, 7.18725, 50.566012).
-bbox(evros, 25.144957, 40.781609, 26.258694, 41.221014).
-\end{lstlisting}
+\subsubsection{EO Indicator Beliefs}
 
-This spatial information allows the EO indicators to be linked to a specific geographic region.
+The EO indicators extracted from Sentinel-2 imagery are encoded as logical beliefs. This makes the numerical evidence directly accessible to Jason rules.
 
-\subsection{EO Indicator Representation}
-
-The EO indicators computed during the preprocessing stage are also represented as logical facts. These values provide the numerical evidence used by the reasoning agents.
-
-Flood events are described using NDWI-based indicators that capture changes in water extent.
+Flood events are represented through NDWI-based change indicators:
 
 \begin{lstlisting}
 mean_ndwi_before(emilia, -0.5065).
@@ -337,7 +332,7 @@ water_increase_pct(emilia, 22.73).
 newly_flooded_area_pct(emilia, 22.90).
 \end{lstlisting}
 
-Wildfire events are represented using vegetation and burn-related indicators derived from NDVI and NBR.
+Wildfire events are represented through vegetation-loss and burn-related indicators:
 
 \begin{lstlisting}
 mean_ndvi_before(evros, 0.4516).
@@ -348,31 +343,166 @@ vegetation_loss_pct(evros, 21.06).
 burned_area_pct(evros, 13.85).
 \end{lstlisting}
 
-These symbolic facts constitute the belief base of the multi-agent system. Each agent can access the indicators and apply logical rules to determine whether an environmental event corresponds to flooding or wildfire damage.
+\subsubsection{Context and Evaluation Beliefs}
 
-\subsection{Role in the Multi-Agent System}
-
-The symbolic knowledge base enables reasoning agents to interpret EO indicators through logical rules. For example, a water-related agent may detect flooding when a large increase in water coverage is observed.
+The belief base also contains contextual information used during fusion. In particular, each event is associated with a population exposure class derived from WorldPop data, and with reference labels used for evaluation.
 
 \begin{lstlisting}
-flood_detected(E) :-
-    water_increase_pct(E, W),
-    W > 15.
+population_exposure_class(sindh, high).
+population_exposure_class(emilia, medium).
+population_exposure_class(evros, low).
+
+reference_hazard(evros, wildfire).
+reference_severity(evros, moderate).
+reference_confidence(evros, medium).
 \end{lstlisting}
 
-Similarly, wildfire detection can be based on vegetation loss and burned area indicators.
+This additional symbolic context is important because the system does not stop at hazard detection. It also reasons about how strong the case is, how much confidence should be attached to it, and how severe the situation becomes once hazard evidence is combined with exposure.
+
+\subsection{Hazard-Specific Symbolic Reasoning}
+
+Two specialized agents perform hazard interpretation: \texttt{forest\_agent} for wildfire cases and \texttt{water\_agent} for flood cases. Both agents follow the same general pattern. They start from raw EO indicator beliefs, derive intermediate evidence predicates, select a severity path, assign a confidence label, and finally generate caveats.
+
+\subsubsection{Wildfire Reasoning in \texttt{forest\_agent}}
+
+The wildfire agent reasons in layers rather than applying a single threshold. First, raw indicators activate evidence predicates such as vegetation damage, burn extent, and spectral burn support. Then these predicates are combined into more abstract patterns such as coherent evidence, mixed evidence, or strong multisignal evidence.
 
 \begin{lstlisting}
-wildfire_detected(E) :-
-    vegetation_loss_pct(E, V),
-    burned_area_pct(E, B),
-    V > 15,
-    B > 10.
+vegetation_damage_signal(E) :-
+    vegetation_loss_pct(E, VegetationLoss) &
+    VegetationLoss >= 12.
+
+burn_extent_signal(E) :-
+    burned_area_pct(E, BurnedArea) &
+    BurnedArea >= 3.
+
+spectral_burn_signal(E) :-
+    mean_dnbr(E, MeanDNBR) &
+    MeanDNBR >= 0.04.
+
+strong_multisignal_fire_evidence(E) :-
+    strong_vegetation_damage(E) &
+    strong_burn_extent(E) &
+    strong_spectral_burn_signal(E).
 \end{lstlisting}
 
-By representing EO measurements as logical beliefs, the system can combine satellite evidence with symbolic reasoning and produce structured interpretations that are transparent and explainable.
+Once the evidence pattern is known, the agent selects a specific severity rule. The rule stores not only the final label, but also the symbolic claim label, the evidence list that supported the conclusion, and the name of the rule that was activated.
 
-\subsection{Data}
+\begin{lstlisting}
+fire_severity_path(E, severe, strong_multisignal_fire_damage,
+    [vegetation_loss_pct, burned_area_pct, mean_dnbr],
+    rule_severe_fire_multisignal) :-
+    strong_multisignal_fire_evidence(E).
+\end{lstlisting}
+
+This design makes the reasoning path explicit. For example, the system can distinguish between a wildfire case supported by vegetation loss and burned area, a case supported mainly by burn extent and dNBR, and a weaker case supported only by NDVI variation. Confidence is then derived from the overall quality of support, while caveats are attached when the evidence is mixed or temporally uncertain.
+
+\subsubsection{Flood Reasoning in \texttt{water\_agent}}
+
+The flood agent uses an analogous reasoning structure. It starts from \texttt{water\_increase\_pct/2}, \texttt{newly\_flooded\_area\_pct/2}, and \texttt{ndwi\_change/2}, and converts them into symbolic flood evidence.
+
+\begin{lstlisting}
+water_expansion_signal(E) :-
+    water_increase_pct(E, WaterIncrease) &
+    WaterIncrease >= 8.
+
+flood_extent_signal(E) :-
+    newly_flooded_area_pct(E, NewlyFlooded) &
+    NewlyFlooded >= 8.
+
+ndwi_shift_signal(E) :-
+    ndwi_change(E, NdwiChange) &
+    NdwiChange >= 0.08.
+
+coherent_flood_evidence(E) :-
+    water_expansion_signal(E) &
+    flood_extent_signal(E) &
+    ndwi_shift_signal(E).
+\end{lstlisting}
+
+The flood agent is also able to represent residual or weak flood signals. This is especially relevant for cases such as Ahr Valley, where the post-event image was acquired several days after the flood peak. In these situations, the system does not force a strong hazard conclusion. Instead, it derives a mild residual signal and attaches caveats such as \texttt{late\_observation} and \texttt{possible\_underestimation}.
+
+\begin{lstlisting}
+flood_severity_path(E, mild, residual_flood_signal,
+    [water_increase_pct, newly_flooded_area_pct],
+    rule_residual_flood_late_observation) :-
+    residual_flood_evidence(E).
+\end{lstlisting}
+
+As in the wildfire case, the output of the hazard agent is not a single label but a structured symbolic assessment:
+
+\begin{lstlisting}
+hazard_assessment(E, Hazard, Severity, ConfidenceLevel,
+    ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)
+\end{lstlisting}
+
+\subsection{Coordinator Fusion}
+
+The \texttt{coordinator\_agent} is responsible for orchestrating the reasoning process and for fusing hazard results with contextual information. It first scans all \texttt{event/1} beliefs, checks \texttt{agent\_responsible/2}, and sends the goal \texttt{assess\_event(E, coordinator\_agent)} to the relevant hazard agent.
+
+When a \texttt{hazard\_assessment(...)} message is received, the coordinator stores several derived beliefs. In particular, it records the hazard result, a hazard trace, and a set of \texttt{claim\_support/4} facts that make the provenance of each symbolic conclusion explicit.
+
+\begin{lstlisting}
++hazard_result(E, Hazard, Severity, HazardConfidence,
+    ClaimLabel, PrimaryCaveat, SourceAgent);
++hazard_trace(E, SourceAgent, RuleLabel, EvidenceList, CaveatList);
++claim_support(E, hazard_classification, SourceAgent, EvidenceList);
+\end{lstlisting}
+
+The coordinator then combines hazard output with population exposure and caveat-aware confidence rules to derive an integrated symbolic case. Four derived predicates are central in this step:
+
+\begin{itemize}
+\item \texttt{concern\_level/3}, combining hazard severity and exposure
+\item \texttt{fusion\_confidence/4}, adjusting hazard confidence using the primary caveat
+\item \texttt{interpretation\_mode/3}, determining whether the reading is robust, qualified, cautious, or tentative
+\item \texttt{case\_profile/4}, producing a compact integrated label such as \texttt{high\_priority\_event}
+\end{itemize}
+
+\begin{lstlisting}
+population_exposure_class(E, ExposureClass);
+concern_level(Severity, ExposureClass, ConcernLevel);
+fusion_confidence(Severity, HazardConfidence, PrimaryCaveat, FusionConfidence);
+interpretation_mode(FusionConfidence, PrimaryCaveat, InterpretationMode);
+case_profile(ConcernLevel, FusionConfidence, InterpretationMode, Profile);
+\end{lstlisting}
+
+This means that the final interpretation is not based only on EO measurements. It also depends on contextual exposure and on the reliability of the hazard reading. A severe flood in a high-exposure area and a mild wildfire in a low-exposure area are therefore represented differently even if both originate from the same general reasoning architecture.
+
+\subsection{Explanation Generation and Traceability}
+
+The final stage of the reasoning layer is handled by the \texttt{explanation\_agent}. This agent does not inspect raw EO indicators directly. Instead, it receives the integrated symbolic case generated by the coordinator together with the rule label, evidence list, and caveat list coming from the hazard agent.
+
+Using template-based sentence construction, the explanation agent produces:
+
+\begin{itemize}
+\item a headline
+\item an assessment sentence
+\item a fusion sentence
+\item a caveat sentence
+\item an explicit \texttt{explanation\_trace(...)}
+\end{itemize}
+
+\begin{lstlisting}
+explanation_artifact(E, Headline, AssessmentSentence,
+    FusionSentence, CaveatSentence,
+    explanation_trace(SourceAgent, RuleLabel, ClaimLabel,
+        EvidenceList, CaveatList))
+\end{lstlisting}
+
+This trace is important because it preserves the provenance of the final explanation. The generated text is therefore not a detached summary: it is grounded in the exact symbolic rule that fired, the evidence predicates that supported the claim, and the caveats that qualified the interpretation.
+
+\subsection{Role of the Reasoning Layer}
+
+The reasoning layer is the component that turns EO indicators into explainable environmental interpretations. Its contribution is not limited to classifying wildfire and flood events. It explicitly represents:
+
+\begin{itemize}
+\item which beliefs are stored for each event
+\item which indicator thresholds activate symbolic evidence
+\item which severity path is selected by each hazard agent
+\item which caveats reduce or qualify confidence
+\item how the coordinator fuses hazard output with population exposure
+\item how the final explanation is linked to a symbolic trace
+\end{itemize}
 
 For population exposure context, this project uses the following WorldPop dataset citation:
 
