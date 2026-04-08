@@ -295,7 +295,7 @@ The reasoning layer is grounded in a belief base that contains four main groups 
 \item \textbf{event metadata}, describing the event identity, location, temporal window, and responsible hazard agent
 \item \textbf{EO indicator beliefs}, containing the satellite-derived measurements computed in the previous layer
 \item \textbf{context beliefs}, such as population exposure classes and observation-quality metadata
-\item \textbf{reference labels}, used to compare the symbolic output with expected hazard, severity, and confidence labels
+\item \textbf{reference labels}, used only for post-hoc evaluation of hazard, severity, and confidence labels
 \end{itemize}
 
 \subsubsection{Event Metadata Beliefs}
@@ -345,7 +345,7 @@ burned_area_pct(evros, 13.85).
 
 \subsubsection{Context and Evaluation Beliefs}
 
-The belief base also contains contextual information used during fusion. In particular, each event is associated with a population exposure class derived from WorldPop data \cite{worldpop2025}, and with reference labels used for evaluation.
+The belief base also contains contextual information used during fusion. In particular, each event is associated with a population exposure class derived from WorldPop data \cite{worldpop2025}, and with reference labels used for evaluation. These reference labels are not part of the live decision loop. They are used only to compare the final symbolic output against a small expected label set after reasoning has already been completed.
 
 \begin{lstlisting}
 population_exposure_class(sindh, high).
@@ -361,7 +361,7 @@ This additional symbolic context is important because the system does not stop a
 
 \subsection{Hazard-Specific Symbolic Reasoning}
 
-Two specialized agents perform hazard interpretation: \texttt{forest\_agent} for wildfire cases and \texttt{water\_agent} for flood cases. Both agents follow the same general pattern. They start from raw EO indicator beliefs, derive intermediate evidence predicates, select a severity path, assign a confidence label, and finally generate caveats.
+Two specialized agents perform hazard interpretation: \texttt{forest\_agent} for wildfire cases and \texttt{water\_agent} for flood cases. Both agents follow the same general pattern. They start from raw EO indicator beliefs, derive intermediate evidence predicates, select a severity path, assign a confidence label, and finally generate caveats. In the current version, they also support a second-pass clarification stage that can be triggered by the coordinator for uncertain or caveat-heavy cases.
 
 \subsubsection{Wildfire Reasoning in \texttt{forest\_agent}}
 
@@ -436,6 +436,32 @@ hazard_assessment(E, Hazard, Severity, ConfidenceLevel,
     ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)
 \end{lstlisting}
 
+\subsubsection{Specialist Clarification Stage}
+
+The hazard agents now have a second role in addition to first-pass classification. When the coordinator judges that a case is uncertain, the same specialist agent is asked to clarify its own assessment rather than delegating the case to a different domain agent. This preserves specialization while introducing a genuine cooperative loop.
+
+The clarification step is implemented through a second achievement goal:
+
+\begin{lstlisting}
+clarify_assessment(E, ClaimLabel, PrimaryCaveat, Requester)
+\end{lstlisting}
+
+The specialist then returns a structured symbolic clarification object containing:
+
+\begin{itemize}
+\item the main limitation affecting the first-pass interpretation
+\item the strongest retained evidence
+\item an optional alternative claim
+\item the clarification status
+\end{itemize}
+
+\begin{lstlisting}
+clarification_result(E, ClaimLabel, PrimaryLimitation,
+    StrongestEvidence, AlternativeClaim, ClarificationStatus)
+\end{lstlisting}
+
+This change is important because the architecture is no longer only a linear pipeline. In straightforward cases, the specialist produces a first-pass judgment and the system proceeds directly to fusion. In uncertain cases, the coordinator requests a second symbolic refinement from the same specialist before finalizing the case.
+
 \subsection{Coordinator Fusion}
 
 The \texttt{coordinator\_agent} is responsible for orchestrating the reasoning process and for fusing hazard results with contextual information. It first scans all \texttt{event/1} beliefs, checks \texttt{agent\_responsible/2}, and sends the goal \texttt{assess\_event(E, coordinator\_agent)} to the relevant hazard agent.
@@ -448,6 +474,17 @@ When a \texttt{hazard\_assessment(...)} message is received, the coordinator sto
 +hazard_trace(E, SourceAgent, RuleLabel, EvidenceList, CaveatList);
 +claim_support(E, hazard_classification, SourceAgent, EvidenceList);
 \end{lstlisting}
+
+Before fusion, the coordinator now checks whether the first-pass output should be accepted directly or whether it requires a clarification round. This decision is based on the confidence level and on specific caveat labels rather than on evaluation labels. In the current implementation, clarification is requested for low-confidence cases and for selected medium-confidence cases associated with caveats such as \texttt{burn\_signal\_weak}, \texttt{weak\_water\_signal}, \texttt{residual\_observation\_window}, or \texttt{limited\_multisignal\_support}.
+
+\begin{lstlisting}
+clarification_required(low, _).
+clarification_required(medium, burn_signal_weak).
+clarification_required(medium, weak_water_signal).
+clarification_required(medium, residual_observation_window).
+\end{lstlisting}
+
+If clarification is required, the coordinator stores a temporary \texttt{clarification\_context(...)} belief, sends a clarification request back to the same specialist, and waits for a \texttt{clarification\_result(...)} reply. Only after that does it proceed to the fusion step.
 
 The coordinator then combines hazard output with population exposure and caveat-aware confidence rules to derive an integrated symbolic case. Four derived predicates are central in this step:
 
@@ -466,11 +503,11 @@ interpretation_mode(FusionConfidence, PrimaryCaveat, InterpretationMode);
 case_profile(ConcernLevel, FusionConfidence, InterpretationMode, Profile);
 \end{lstlisting}
 
-This means that the final interpretation is not based only on EO measurements. It also depends on contextual exposure and on the reliability of the hazard reading. A severe flood in a high-exposure area and a mild wildfire in a low-exposure area are therefore represented differently even if both originate from the same general reasoning architecture.
+The integrated case now also records whether clarification occurred and, if so, which limitation and strongest evidence were returned by the specialist. This means that the final interpretation is not based only on EO measurements. It also depends on contextual exposure, on the reliability of the hazard reading, and on whether the case required a second-pass refinement. A severe flood in a high-exposure area and a mild wildfire in a low-exposure area are therefore represented differently even if both originate from the same general reasoning architecture.
 
 \subsection{Explanation Generation and Traceability}
 
-The final stage of the reasoning layer is handled by the \texttt{explanation\_agent}. This agent does not inspect raw EO indicators directly. Instead, it receives the integrated symbolic case generated by the coordinator together with the rule label, evidence list, and caveat list coming from the hazard agent.
+The final stage of the reasoning layer is handled by the \texttt{explanation\_agent}. This agent does not inspect raw EO indicators directly. Instead, it receives the integrated symbolic case generated by the coordinator together with the rule label, evidence list, caveat list, and clarification metadata coming from the previous stages.
 
 Using template-based sentence construction, the explanation agent produces:
 
@@ -479,17 +516,29 @@ Using template-based sentence construction, the explanation agent produces:
 \item an assessment sentence
 \item a fusion sentence
 \item a caveat sentence
+\item a clarification sentence indicating whether second-pass specialist clarification was required
 \item an explicit \texttt{explanation\_trace(...)}
 \end{itemize}
 
 \begin{lstlisting}
 explanation_artifact(E, Headline, AssessmentSentence,
-    FusionSentence, CaveatSentence,
+    FusionSentence, CaveatSentence, ClarificationSentence,
     explanation_trace(SourceAgent, RuleLabel, ClaimLabel,
-        EvidenceList, CaveatList))
+        EvidenceList, CaveatList, clarification_trace(...)))
 \end{lstlisting}
 
-This trace is important because it preserves the provenance of the final explanation. The generated text is therefore not a detached summary: it is grounded in the exact symbolic rule that fired, the evidence predicates that supported the claim, and the caveats that qualified the interpretation.
+This trace is important because it preserves the provenance of the final explanation. The generated text is therefore not a detached summary: it is grounded in the exact symbolic rule that fired, the evidence predicates that supported the claim, the caveats that qualified the interpretation, and the clarification status associated with the case.
+
+\subsection{Conditional Cooperation}
+
+The current architecture can therefore be described as a \textbf{rapid specialist MAS with conditional clarification}. It is not a negotiation-heavy MAS in which every agent comments on every event. Instead, it uses two stages:
+
+\begin{enumerate}
+\item a fast first-pass specialist assessment
+\item a second-pass clarification loop activated only for uncertain or caveat-heavy cases
+\end{enumerate}
+
+This design choice is important for hazard assessment. Most cases should be processed quickly and transparently, while only ambiguous cases should trigger additional interaction. The result is a system that remains specialized and efficient, but is also more cooperative than a simple one-way pipeline.
 
 \subsection{Role of the Reasoning Layer}
 
@@ -500,7 +549,9 @@ The reasoning layer is the component that turns EO indicators into explainable e
 \item which indicator thresholds activate symbolic evidence
 \item which severity path is selected by each hazard agent
 \item which caveats reduce or qualify confidence
+\item when the coordinator triggers a second-pass clarification request
 \item how the coordinator fuses hazard output with population exposure
+\item how the final explanation exposes whether clarification was required
 \item how the final explanation is linked to a symbolic trace
 \end{itemize}
 

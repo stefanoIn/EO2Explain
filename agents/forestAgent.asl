@@ -154,7 +154,8 @@ fire_confidence(E, medium) :-
 
 fire_confidence(E, medium) :-
     coherent_fire_evidence(E) &
-    fire_confidence_reduced(E).
+    fire_confidence_reduced(E) &
+    not fire_interpretation_limited(E).
 
 fire_confidence(E, low) :-
     fire_interpretation_limited(E).
