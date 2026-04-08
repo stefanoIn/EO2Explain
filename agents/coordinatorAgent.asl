@@ -65,10 +65,10 @@
     +claim_support(E, case_profile, coordinator_agent, [concern_classification, fusion_confidence]);
     .send(explanation_agent, achieve, build_explanation(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim)).
 
-+explanation_artifact(E, Headline, AssessmentSentence, FusionSentence, CaveatSentence, ClarificationSentence, ExplanationTrace)[source(explanation_agent)] :
++semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace)[source(explanation_agent)] :
     integrated_case(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim) <-
-    +final_explanation(E, Headline, AssessmentSentence, FusionSentence, CaveatSentence, ClarificationSentence);
-    +claim_support(E, explanation_generation, explanation_agent, [ClaimLabel, FusionConfidence, ExplanationTrace]);
+    +final_explanation_payload(E, semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace));
+    +claim_support(E, explanation_packaging, explanation_agent, [ClaimLabel, FusionConfidence, ExplanationTrace]);
     ?reference_hazard(E, ReferenceHazard);
     ?reference_severity(E, ReferenceSeverity);
     ?reference_confidence(E, ReferenceConfidence);
@@ -76,42 +76,19 @@
     !match_label(Severity, ReferenceSeverity, SeverityMatch);
     !match_label(FusionConfidence, ReferenceConfidence, ConfidenceMatch);
     .concat("-----\nEvent: ", E, Block1);
-    .concat(Block1, "\nIntegrated symbolic case: hazard=", Block2);
-    .concat(Block2, Hazard, Block3);
-    .concat(Block3, ", severity=", Block4);
-    .concat(Block4, Severity, Block5);
-    .concat(Block5, ", claim=", Block6);
-    .concat(Block6, ClaimLabel, Block7);
-    .concat(Block7, ", exposure=", Block8);
-    .concat(Block8, ExposureClass, Block9);
-    .concat(Block9, ", concern=", Block10);
-    .concat(Block10, ConcernLevel, Block11);
-    .concat(Block11, ", fusion_confidence=", Block12);
-    .concat(Block12, FusionConfidence, Block13);
-    .concat(Block13, ", interpretation=", Block14);
-    .concat(Block14, InterpretationMode, Block15);
-    .concat(Block15, ", profile=", Block16);
-    .concat(Block16, Profile, Block17);
-    .concat(Block17, ", source_agent=", Block18);
-    .concat(Block18, SourceAgent, Block19);
-    .concat(Block19, "\nExplanation trace: ", Block20);
-    .concat(Block20, ExplanationTrace, Block21);
-    .concat(Block21, "\n", Block22);
-    .concat(Block22, Headline, Block23);
-    .concat(Block23, "\n", Block24);
-    .concat(Block24, AssessmentSentence, Block25);
-    .concat(Block25, "\n", Block26);
-    .concat(Block26, FusionSentence, Block27);
-    .concat(Block27, "\n", Block28);
-    .concat(Block28, CaveatSentence, Block29);
-    .concat(Block29, "\n", Block30);
-    .concat(Block30, ClarificationSentence, Block31);
-    .concat(Block31, "\nReference alignment: hazard=", Block32);
-    .concat(Block32, HazardMatch, Block33);
-    .concat(Block33, ", severity=", Block34);
-    .concat(Block34, SeverityMatch, Block35);
-    .concat(Block35, ", confidence=", Block36);
-    .concat(Block36, ConfidenceMatch, FullBlock);
+    .concat(Block1, "\nSemantic explanation payload ready.", Block2);
+    .concat(Block2, "\nDebug headline: ", Block3);
+    .concat(Block3, DebugHeadline, Block4);
+    .concat(Block4, "\nDebug summary: ", Block5);
+    .concat(Block5, DebugSummary, Block6);
+    .concat(Block6, "\nPayload: ", Block7);
+    .concat(Block7, semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace), Block8);
+    .concat(Block8, "\nReference alignment: hazard=", Block9);
+    .concat(Block9, HazardMatch, Block10);
+    .concat(Block10, ", severity=", Block11);
+    .concat(Block11, SeverityMatch, Block12);
+    .concat(Block12, ", confidence=", Block13);
+    .concat(Block13, ConfidenceMatch, FullBlock);
     .print(FullBlock).
 
 +!match_label(Value, Value, match) <- true.
