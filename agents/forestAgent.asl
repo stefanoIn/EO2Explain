@@ -1,11 +1,17 @@
 { include("beliefs/events.asl") }
 { include("beliefs/indicators.asl") }
 
+!start.
+
++!start <-
+    .print("[forest_agent] started").
+
 // The forest agent reasons in layers: raw indicators become evidence signals,
 // then those signals are combined into severity, confidence, and caveat outputs.
 +!assess_event(E, Requester) : fire_severity_path(E, Severity, ClaimLabel, EvidenceList, RuleLabel) <-
     ?fire_confidence(E, ConfidenceLevel);
     ?fire_caveat_profile(E, ClaimLabel, PrimaryCaveat, CaveatList);
+    .print("[forest_agent] first-pass assessment for ", E, ": severity=", Severity, ", confidence=", ConfidenceLevel, ", claim=", ClaimLabel, ", caveat=", PrimaryCaveat);
     .send(Requester, tell, hazard_assessment(E, wildfire, Severity, ConfidenceLevel, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)).
 
 // Second-pass clarification keeps the specialist in the loop only for caveat-heavy
@@ -14,6 +20,7 @@
     ?fire_primary_limitation(E, ClaimLabel, PrimaryCaveat, PrimaryLimitation);
     ?fire_strongest_evidence(E, ClaimLabel, StrongestEvidence);
     ?fire_alternative_claim(E, ClaimLabel, PrimaryCaveat, AlternativeClaim);
+    .print("[forest_agent] clarification for ", E, ": limitation=", PrimaryLimitation, ", strongest_evidence=", StrongestEvidence, ", alternative_claim=", AlternativeClaim);
     .send(Requester, tell, clarification_result(E, ClaimLabel, PrimaryLimitation, StrongestEvidence, AlternativeClaim, clarification_provided)).
 
 vegetation_damage_signal(E) :-

@@ -1,11 +1,17 @@
 { include("beliefs/events.asl") }
 { include("beliefs/indicators.asl") }
 
+!start.
+
++!start <-
+    .print("[water_agent] started").
+
 // The water agent treats flood reasoning as a progression from indicator signals
 // to coherent flood evidence, then to severity, confidence, and caveats.
 +!assess_event(E, Requester) : flood_severity_path(E, Severity, ClaimLabel, EvidenceList, RuleLabel) <-
     ?flood_confidence(E, ConfidenceLevel);
     ?flood_caveat_profile(E, ClaimLabel, PrimaryCaveat, CaveatList);
+    .print("[water_agent] first-pass assessment for ", E, ": severity=", Severity, ", confidence=", ConfidenceLevel, ", claim=", ClaimLabel, ", caveat=", PrimaryCaveat);
     .send(Requester, tell, hazard_assessment(E, flood, Severity, ConfidenceLevel, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)).
 
 // Second-pass clarification is only triggered by the coordinator for uncertain
@@ -14,6 +20,7 @@
     ?flood_primary_limitation(E, ClaimLabel, PrimaryCaveat, PrimaryLimitation);
     ?flood_strongest_evidence(E, ClaimLabel, StrongestEvidence);
     ?flood_alternative_claim(E, ClaimLabel, PrimaryCaveat, AlternativeClaim);
+    .print("[water_agent] clarification for ", E, ": limitation=", PrimaryLimitation, ", strongest_evidence=", StrongestEvidence, ", alternative_claim=", AlternativeClaim);
     .send(Requester, tell, clarification_result(E, ClaimLabel, PrimaryLimitation, StrongestEvidence, AlternativeClaim, clarification_provided)).
 
 water_expansion_signal(E) :-

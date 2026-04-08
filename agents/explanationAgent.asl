@@ -1,5 +1,10 @@
 { include("beliefs/events.asl") }
 
+!start.
+
++!start <-
+    .print("[explanation_agent] started").
+
 // The explanation agent  acts as a semantic packaging layer between the
 // Jason reasoning system and a future external Python/OWL reporting pipeline.
 // It exports a structured explanation payload plus a compact debug summary.
@@ -11,6 +16,7 @@
     ?region_name(RegionId, RegionName);
     !compose_debug_headline(EventName, Severity, Hazard, FusionConfidence, DebugHeadline);
     !compose_debug_summary(ClaimLabel, ConcernLevel, Profile, PrimaryCaveat, ClarificationStatus, StrongestEvidence, AlternativeClaim, DebugSummary);
+    .print("[explanation_agent] packaged semantic explanation for ", E, ": headline=", DebugHeadline);
     .send(coordinator_agent, tell,
         semantic_explanation(
             E,
