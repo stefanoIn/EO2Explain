@@ -8,6 +8,14 @@
     ?flood_caveat_profile(E, ClaimLabel, PrimaryCaveat, CaveatList);
     .send(Requester, tell, hazard_assessment(E, flood, Severity, ConfidenceLevel, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)).
 
+// Second-pass clarification is only triggered by the coordinator for uncertain
+// or caveat-heavy cases.
++!clarify_assessment(E, ClaimLabel, PrimaryCaveat, Requester) <-
+    ?flood_primary_limitation(E, ClaimLabel, PrimaryCaveat, PrimaryLimitation);
+    ?flood_strongest_evidence(E, ClaimLabel, StrongestEvidence);
+    ?flood_alternative_claim(E, ClaimLabel, PrimaryCaveat, AlternativeClaim);
+    .send(Requester, tell, clarification_result(E, ClaimLabel, PrimaryLimitation, StrongestEvidence, AlternativeClaim, clarification_provided)).
+
 water_expansion_signal(E) :-
     water_increase_pct(E, WaterIncrease) &
     WaterIncrease >= 8.
@@ -152,3 +160,21 @@ flood_caveat_profile(E, limited_water_shift_signal, weak_water_signal, [weak_wat
     weak_flood_evidence(E).
 
 flood_caveat_profile(_, _, no_major_caveat, []).
+
+// Clarification metadata keeps the second pass symbolic and reusable.
+flood_primary_limitation(_, _, residual_observation_window, residual_observation_window).
+flood_primary_limitation(_, _, late_observation, late_observation).
+flood_primary_limitation(_, _, timeline_uncertain, timeline_uncertain).
+flood_primary_limitation(_, _, weak_water_signal, weak_water_signal).
+flood_primary_limitation(_, _, no_major_caveat, no_additional_limitation).
+
+flood_strongest_evidence(_, strong_multisignal_flooding, newly_flooded_area_pct).
+flood_strongest_evidence(_, coherent_flooding, newly_flooded_area_pct).
+flood_strongest_evidence(_, extent_supported_flooding, newly_flooded_area_pct).
+flood_strongest_evidence(_, residual_flood_signal, newly_flooded_area_pct).
+flood_strongest_evidence(_, limited_water_shift_signal, ndwi_change).
+flood_strongest_evidence(_, inconclusive_water_signal, no_dominant_evidence).
+
+flood_alternative_claim(_, residual_flood_signal, residual_observation_window, inconclusive_water_signal).
+flood_alternative_claim(_, limited_water_shift_signal, weak_water_signal, inconclusive_water_signal).
+flood_alternative_claim(_, _, _, no_alternative_claim).

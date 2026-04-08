@@ -2,7 +2,7 @@
 
 // The explanation agent stays grounded in symbolic outputs from the other agents;
 // it does not reason from raw EO indicators directly.
-+!build_explanation(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent) <-
++!build_explanation(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim) <-
     ?name(E, EventName);
     ?country(E, CountryId);
     ?country_name(CountryId, CountryName);
@@ -17,6 +17,7 @@
     ?claim_phrase(ClaimLabel, ClaimSentence);
     ?caveat_phrase(PrimaryCaveat, CaveatPhrase);
     ?profile_phrase(Profile, ProfilePhrase);
+    !compose_clarification_sentence(ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim, ClarificationSentence);
     .concat(EventName, " in ", HeadlinePart1);
     .concat(HeadlinePart1, RegionName, HeadlinePart2);
     .concat(HeadlinePart2, ", ", HeadlinePart3);
@@ -41,7 +42,7 @@
     .concat(CaveatPart4, CaveatList, CaveatSentence);
     // The trace object is kept separate so the coordinator can print or reuse it
     // without having to recover support information from the final prose.
-    .send(coordinator_agent, tell, explanation_artifact(E, Headline, AssessmentSentence, FusionSentence, CaveatSentence, explanation_trace(SourceAgent, RuleLabel, ClaimLabel, EvidenceList, CaveatList))).
+    .send(coordinator_agent, tell, explanation_artifact(E, Headline, AssessmentSentence, FusionSentence, CaveatSentence, ClarificationSentence, explanation_trace(SourceAgent, RuleLabel, ClaimLabel, EvidenceList, CaveatList, clarification_trace(ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim)))).
 
 hazard_phrase(flood, "flood").
 hazard_phrase(wildfire, "wildfire").
@@ -103,3 +104,22 @@ caveat_phrase(burn_signal_weak, "the wildfire interpretation is limited by a wea
 caveat_phrase(weak_water_signal, "the flood interpretation is limited by a weak water signal.").
 caveat_phrase(limited_multisignal_support, "the interpretation is supported by only a limited set of hazard indicators.").
 caveat_phrase(residual_observation_window, "the observed flood footprint is likely residual because the image was acquired late and may underestimate peak conditions.").
+
+// Clarification text is composed as a goal so the explanation remains grounded in
+// symbolic clarification outputs from the hazard specialist.
++!compose_clarification_sentence(no_clarification, _, _, _, Sentence) <-
+    .concat("No second-pass clarification was required because the first-pass specialist assessment was treated as sufficient.", "", Sentence).
+
++!compose_clarification_sentence(clarification_provided, PrimaryLimitation, StrongestEvidence, no_alternative_claim, Sentence) <-
+    .concat("A second-pass clarification was requested. The specialist identified ", PrimaryLimitation, Part1);
+    .concat(Part1, " as the main limitation and ", Part2);
+    .concat(Part2, StrongestEvidence, Part3);
+    .concat(Part3, " as the strongest retained evidence.", Sentence).
+
++!compose_clarification_sentence(clarification_provided, PrimaryLimitation, StrongestEvidence, AlternativeClaim, Sentence) : AlternativeClaim \== no_alternative_claim <-
+    .concat("A second-pass clarification was requested. The specialist identified ", PrimaryLimitation, Part1);
+    .concat(Part1, " as the main limitation and ", Part2);
+    .concat(Part2, StrongestEvidence, Part3);
+    .concat(Part3, " as the strongest retained evidence. The closest alternative claim was ", Part4);
+    .concat(Part4, AlternativeClaim, Part5);
+    .concat(Part5, ".", Sentence).

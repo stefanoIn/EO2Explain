@@ -1,5 +1,7 @@
 { include("beliefs/events.asl") }
 { include("beliefs/indicators.asl") }
+// Reference labels are included only for post-hoc evaluation logging, not for
+// live coordination or runtime decision making.
 { include("beliefs/reference_labels.asl") }
 
 !start.
@@ -28,25 +30,44 @@
     +claim_support(E, hazard_classification, SourceAgent, EvidenceList);
     +claim_support(E, severity_classification, SourceAgent, EvidenceList);
     +claim_support(E, confidence_assessment, SourceAgent, CaveatList);
-    !fuse_case(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent).
+    !handle_post_assessment(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent).
+
+// The coordinator only escalates cases that remain uncertain after the first pass.
++!handle_post_assessment(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent) :
+    clarification_required(HazardConfidence, PrimaryCaveat) <-
+    +pending_clarification(E);
+    +clarification_context(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent);
+    .send(SourceAgent, achieve, clarify_assessment(E, ClaimLabel, PrimaryCaveat, coordinator_agent)).
+
++!handle_post_assessment(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent) <-
+    !fuse_case(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, no_clarification, no_additional_limitation, none, no_alternative_claim).
+
++clarification_result(E, ClaimLabel, PrimaryLimitation, StrongestEvidence, AlternativeClaim, ClarificationStatus)[source(SourceAgent)] :
+    pending_clarification(E) &
+    clarification_context(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent) <-
+    -pending_clarification(E);
+    -clarification_context(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent);
+    +clarification_detail(E, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim, SourceAgent);
+    +claim_support(E, clarification_assessment, SourceAgent, [PrimaryLimitation, StrongestEvidence, AlternativeClaim]);
+    !fuse_case(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim).
 
 // Fusion happens here: hazard output is combined with exposure and caveat-aware
 // confidence handling to produce the integrated case used by the explanation agent.
-+!fuse_case(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent) <-
++!fuse_case(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim) <-
     ?population_exposure_class(E, ExposureClass);
     ?concern_level(Severity, ExposureClass, ConcernLevel);
     ?fusion_confidence(Severity, HazardConfidence, PrimaryCaveat, FusionConfidence);
     ?interpretation_mode(FusionConfidence, PrimaryCaveat, InterpretationMode);
     ?case_profile(ConcernLevel, FusionConfidence, InterpretationMode, Profile);
-    +integrated_case(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, SourceAgent);
+    +integrated_case(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim);
     +claim_support(E, concern_classification, coordinator_agent, [population_exposure_class, severity_classification]);
     +claim_support(E, fusion_confidence, coordinator_agent, [confidence_assessment, PrimaryCaveat]);
     +claim_support(E, case_profile, coordinator_agent, [concern_classification, fusion_confidence]);
-    .send(explanation_agent, achieve, build_explanation(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent)).
+    .send(explanation_agent, achieve, build_explanation(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim)).
 
-+explanation_artifact(E, Headline, AssessmentSentence, FusionSentence, CaveatSentence, ExplanationTrace)[source(explanation_agent)] :
-    integrated_case(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, SourceAgent) <-
-    +final_explanation(E, Headline, AssessmentSentence, FusionSentence, CaveatSentence);
++explanation_artifact(E, Headline, AssessmentSentence, FusionSentence, CaveatSentence, ClarificationSentence, ExplanationTrace)[source(explanation_agent)] :
+    integrated_case(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim) <-
+    +final_explanation(E, Headline, AssessmentSentence, FusionSentence, CaveatSentence, ClarificationSentence);
     +claim_support(E, explanation_generation, explanation_agent, [ClaimLabel, FusionConfidence, ExplanationTrace]);
     ?reference_hazard(E, ReferenceHazard);
     ?reference_severity(E, ReferenceSeverity);
@@ -83,16 +104,24 @@
     .concat(Block26, FusionSentence, Block27);
     .concat(Block27, "\n", Block28);
     .concat(Block28, CaveatSentence, Block29);
-    .concat(Block29, "\nReference alignment: hazard=", Block30);
-    .concat(Block30, HazardMatch, Block31);
-    .concat(Block31, ", severity=", Block32);
-    .concat(Block32, SeverityMatch, Block33);
-    .concat(Block33, ", confidence=", Block34);
-    .concat(Block34, ConfidenceMatch, FullBlock);
+    .concat(Block29, "\n", Block30);
+    .concat(Block30, ClarificationSentence, Block31);
+    .concat(Block31, "\nReference alignment: hazard=", Block32);
+    .concat(Block32, HazardMatch, Block33);
+    .concat(Block33, ", severity=", Block34);
+    .concat(Block34, SeverityMatch, Block35);
+    .concat(Block35, ", confidence=", Block36);
+    .concat(Block36, ConfidenceMatch, FullBlock);
     .print(FullBlock).
 
 +!match_label(Value, Value, match) <- true.
 +!match_label(Value, Reference, differs) : Value \== Reference <- true.
+
+clarification_required(low, _).
+clarification_required(medium, burn_signal_weak).
+clarification_required(medium, weak_water_signal).
+clarification_required(medium, residual_observation_window).
+clarification_required(medium, limited_multisignal_support).
 
 // These tables keep the fusion logic readable and easy to tune against the reference set.
 critical_concern(severe, high).

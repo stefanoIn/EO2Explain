@@ -8,6 +8,14 @@
     ?fire_caveat_profile(E, ClaimLabel, PrimaryCaveat, CaveatList);
     .send(Requester, tell, hazard_assessment(E, wildfire, Severity, ConfidenceLevel, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)).
 
+// Second-pass clarification keeps the specialist in the loop only for caveat-heavy
+// cases that the coordinator decides are not straightforward.
++!clarify_assessment(E, ClaimLabel, PrimaryCaveat, Requester) <-
+    ?fire_primary_limitation(E, ClaimLabel, PrimaryCaveat, PrimaryLimitation);
+    ?fire_strongest_evidence(E, ClaimLabel, StrongestEvidence);
+    ?fire_alternative_claim(E, ClaimLabel, PrimaryCaveat, AlternativeClaim);
+    .send(Requester, tell, clarification_result(E, ClaimLabel, PrimaryLimitation, StrongestEvidence, AlternativeClaim, clarification_provided)).
+
 vegetation_damage_signal(E) :-
     vegetation_loss_pct(E, VegetationLoss) &
     VegetationLoss >= 12.
@@ -196,3 +204,25 @@ fire_caveat_profile(E, vegetation_loss_only_fire_signal, limited_multisignal_sup
     not spectral_burn_signal(E).
 
 fire_caveat_profile(_, _, no_major_caveat, []).
+
+// Clarification metadata remains symbolic so the explanation layer can stay grounded
+// in agent-derived labels rather than in ad-hoc free text.
+fire_primary_limitation(_, _, burn_signal_weak, burn_signal_weak).
+fire_primary_limitation(_, _, late_observation, late_observation).
+fire_primary_limitation(_, _, timeline_uncertain, timeline_uncertain).
+fire_primary_limitation(_, _, coarse_timeline, coarse_timeline).
+fire_primary_limitation(_, _, limited_multisignal_support, limited_multisignal_support).
+fire_primary_limitation(_, _, no_major_caveat, no_additional_limitation).
+
+fire_strongest_evidence(_, strong_multisignal_fire_damage, vegetation_loss_pct).
+fire_strongest_evidence(_, coherent_fire_damage, burned_area_pct).
+fire_strongest_evidence(_, spectral_extent_fire_damage, mean_dnbr).
+fire_strongest_evidence(_, mixed_fire_damage, vegetation_loss_pct).
+fire_strongest_evidence(_, ndvi_only_fire_signal, ndvi_drop).
+fire_strongest_evidence(_, vegetation_loss_only_fire_signal, vegetation_loss_pct).
+fire_strongest_evidence(_, inconclusive_fire_signal, no_dominant_evidence).
+
+fire_alternative_claim(_, mixed_fire_damage, burn_signal_weak, inconclusive_fire_signal).
+fire_alternative_claim(_, ndvi_only_fire_signal, limited_multisignal_support, inconclusive_fire_signal).
+fire_alternative_claim(_, vegetation_loss_only_fire_signal, limited_multisignal_support, inconclusive_fire_signal).
+fire_alternative_claim(_, _, _, no_alternative_claim).
