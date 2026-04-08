@@ -76,19 +76,31 @@
     !match_label(Severity, ReferenceSeverity, SeverityMatch);
     !match_label(FusionConfidence, ReferenceConfidence, ConfidenceMatch);
     .concat("-----\nEvent: ", E, Block1);
-    .concat(Block1, "\nSemantic explanation payload ready.", Block2);
-    .concat(Block2, "\nDebug headline: ", Block3);
+    .concat(Block1, "\nSemantic explanation payload ready", Block2);
+    .concat(Block2, "\n\n[Debug headline] ", Block3);
     .concat(Block3, DebugHeadline, Block4);
-    .concat(Block4, "\nDebug summary: ", Block5);
+    .concat(Block4, "\n[Debug summary] ", Block5);
     .concat(Block5, DebugSummary, Block6);
-    .concat(Block6, "\nPayload: ", Block7);
-    .concat(Block7, semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace), Block8);
-    .concat(Block8, "\nReference alignment: hazard=", Block9);
-    .concat(Block9, HazardMatch, Block10);
-    .concat(Block10, ", severity=", Block11);
-    .concat(Block11, SeverityMatch, Block12);
-    .concat(Block12, ", confidence=", Block13);
-    .concat(Block13, ConfidenceMatch, FullBlock);
+    .concat(Block6, "\n\n[Event frame]\n  ", Block7);
+    .concat(Block7, EventFrame, Block8);
+    .concat(Block8, "\n[Assessment frame]\n  ", Block9);
+    .concat(Block9, AssessmentFrame, Block10);
+    .concat(Block10, "\n[Evidence frame]\n  ", Block11);
+    .concat(Block11, EvidenceFrame, Block12);
+    .concat(Block12, "\n[Clarification frame]\n  ", Block13);
+    .concat(Block13, ClarificationFrame, Block14);
+    .concat(Block14, "\n[Provenance frame]\n  ", Block15);
+    .concat(Block15, ProvenanceFrame, Block16);
+    .concat(Block16, "\n[Headline frame]\n  ", Block17);
+    .concat(Block17, HeadlineFrame, Block18);
+    .concat(Block18, "\n[Trace]\n  ", Block19);
+    .concat(Block19, ExplanationTrace, Block20);
+    .concat(Block20, "\n\n[Reference alignment] hazard=", Block21);
+    .concat(Block21, HazardMatch, Block22);
+    .concat(Block22, ", severity=", Block23);
+    .concat(Block23, SeverityMatch, Block24);
+    .concat(Block24, ", confidence=", Block25);
+    .concat(Block25, ConfidenceMatch, FullBlock);
     .print(FullBlock).
 
 +!match_label(Value, Value, match) <- true.
