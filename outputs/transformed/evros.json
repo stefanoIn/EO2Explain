@@ -1,0 +1,80 @@
+{
+  "event_id": "evros",
+  "event": {
+    "event_id": "evros",
+    "event_name": "Evros",
+    "hazard_type": "wildfire",
+    "country": {
+      "id": "greece",
+      "name": "Greece"
+    },
+    "region": {
+      "id": "eastern_macedonia_and_thrace",
+      "name": "Eastern Macedonia and Thrace"
+    }
+  },
+  "assessment": {
+    "severity": "moderate",
+    "claim_label": "coherent_fire_damage",
+    "fusion_confidence": "medium",
+    "concern_level": "moderate",
+    "interpretation_mode": "cautious",
+    "case_profile": "monitoring_case",
+    "exposure_class": "low"
+  },
+  "evidence": {
+    "primary_caveat": "coarse_timeline",
+    "evidence_items": [
+      "vegetation_loss_pct",
+      "burned_area_pct"
+    ],
+    "caveat_items": [
+      "coarse_timeline"
+    ],
+    "strongest_evidence": "none"
+  },
+  "clarification": {
+    "clarification_status": "no_clarification",
+    "primary_limitation": "no_additional_limitation",
+    "alternative_claim": "no_alternative_claim"
+  },
+  "provenance": {
+    "source_agent": "forest_agent",
+    "rule_label": "rule_moderate_fire_vegetation_extent"
+  },
+  "headline": {
+    "event_name": "Evros",
+    "region_name": "Eastern Macedonia and Thrace",
+    "country_name": "Greece",
+    "severity": "moderate",
+    "hazard_type": "wildfire",
+    "fusion_confidence": "medium"
+  },
+  "debug": {
+    "short_headline": "Evros | moderate wildfire | medium",
+    "short_summary": "claim=coherent_fire_damage; concern=moderate; profile=monitoring_case; caveat=coarse_timeline; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim"
+  },
+  "trace": {
+    "source_agent": "forest_agent",
+    "rule_label": "rule_moderate_fire_vegetation_extent",
+    "claim_label": "coherent_fire_damage",
+    "evidence_items": [
+      "vegetation_loss_pct",
+      "burned_area_pct"
+    ],
+    "caveat_items": [
+      "coarse_timeline"
+    ],
+    "clarification_trace": {
+      "clarification_status": "no_clarification",
+      "primary_limitation": "no_additional_limitation",
+      "strongest_evidence": "none",
+      "alternative_claim": "no_alternative_claim"
+    }
+  },
+  "metadata": {
+    "source_raw_file": "evros.json",
+    "source_functor": "semantic_explanation",
+    "source_predicate": "semantic_explanation(evros,event_frame(event_id(evros),event_name(\"Evros\"),hazard_type(wildfire),country(greece,\"Greece\"),region(eastern_macedonia_and_thrace,\"Eastern Macedonia and Thrace\")),assessment_frame(severity(moderate),claim_label(coherent_fire_damage),fusion_confidence(medium),concern_level(moderate),interpretation_mode(cautious),case_profile(monitoring_case),exposure_class(low)),evidence_frame(primary_caveat(coarse_timeline),evidence_items([vegetation_loss_pct,burned_area_pct]),caveat_items([coarse_timeline]),strongest_evidence(none)),clarification_frame(clarification_status(no_clarification),primary_limitation(no_additional_limitation),alternative_claim(no_alternative_claim)),provenance_frame(source_agent(forest_agent),rule_label(rule_moderate_fire_vegetation_extent)),headline_frame(event_name(\"Evros\"),region_name(\"Eastern Macedonia and Thrace\"),country_name(\"Greece\"),severity(moderate),hazard_type(wildfire),fusion_confidence(medium)),debug_text(short_headline(\"Evros | moderate wildfire | medium\"),short_summary(\"claim=coherent_fire_damage; concern=moderate; profile=monitoring_case; caveat=coarse_timeline; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\")),explanation_trace(forest_agent,rule_moderate_fire_vegetation_extent,coherent_fire_damage,[vegetation_loss_pct,burned_area_pct],[coarse_timeline],clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim)))"
+  }
+}

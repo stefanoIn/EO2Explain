@@ -32,8 +32,8 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDir 'src/java'
-            srcDir 'src/env'
+            srcDir 'mas/java'
+            srcDir 'mas/env'
             srcDir '.' // some old jason apps store .java files in project root
         }
         resources {
@@ -46,10 +46,10 @@ task run (type: JavaExec, dependsOn: 'classes') {
     group = 'Jason'
     description 'runs the application'
     mainClass = 'jason.infra.local.RunLocalMAS'
-    args = ['eo.mas2j']
+    args = ['mas/config/eo.mas2j']
 	// options:
-	//     args = ['eo.mas2j', '--debug', '--no-net', '--empty-mas']
-	//     args = ['eo.mas2j', '--log-conf', 'l.p'] // to use file l.p to configure logging
+	//     args = ['mas/config/eo.mas2j', '--debug', '--no-net', '--empty-mas']
+	//     args = ['mas/config/eo.mas2j', '--log-conf', 'l.p'] // to use file l.p to configure logging
     classpath sourceSets.main.runtimeClasspath
 }
 
@@ -57,9 +57,9 @@ task runJade (type: JavaExec, dependsOn: 'classes') {
     group = 'Jason'
     description 'runs the application with Jade infrastructure'
     mainClass = 'jason.infra.jade.RunJadeMAS'
-    args = [ 'eo.mas2j', '-gui' ]
+    args = [ 'mas/config/eo.mas2j', '-gui' ]
     // options:
-    //     args = ['eo.mas2j', '-gui', '-sniffer' ]
+    //     args = ['mas/config/eo.mas2j', '-gui', '-sniffer' ]
     // and all usual JADE options for jade.Boot
     classpath sourceSets.main.runtimeClasspath
 }
@@ -67,13 +67,13 @@ task runJade (type: JavaExec, dependsOn: 'classes') {
 shadowJar {
     doFirst {
         copy {
-            from 'eo.mas2j'
+            from 'mas/config/eo.mas2j'
             rename 'eo.mas2j','default.mas2j'
             into project.projectDir.absolutePath + '/'
         }
     }
     archiveFileName = "jason-${project.name}-all.jar" // the name must start with jacamo so that jacamo...jar is found in the classpath
-    from (project.projectDir.absolutePath + '/src') {
+    from (project.projectDir.absolutePath + '/mas') {
         include '**/*.asl'
         include '**/*.xml'
         include '**/*.sai'
@@ -101,4 +101,3 @@ shadowJar {
         println("You can run your application with: java -jar build/libs/jason-${project.name}-all.jar")
     }
 }
-

@@ -1,5 +1,6 @@
-MAS_ARCHITECTURE.md
-REASONING_FLOW.md
 .gradle/
 build/
 _.md
+docs/architecture.md
+docs/reasoning_layer.md
+docs/nlp_layer.md

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:eo="http://example.org/eo2explain#">
+
+    <owl:Ontology rdf:about="http://example.org/eo2explain"/>
+
+    <owl:Class rdf:about="http://example.org/eo2explain#Event"/>
+    <owl:Class rdf:about="http://example.org/eo2explain#HazardAssessment"/>
+    <owl:Class rdf:about="http://example.org/eo2explain#ExplanationArtifact"/>
+    <owl:Class rdf:about="http://example.org/eo2explain#EvidenceItem"/>
+    <owl:Class rdf:about="http://example.org/eo2explain#Caveat"/>
+    <owl:Class rdf:about="http://example.org/eo2explain#ClarificationOutcome"/>
+
+</rdf:RDF>

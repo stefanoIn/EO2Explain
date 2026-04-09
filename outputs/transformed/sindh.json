@@ -1,0 +1,82 @@
+{
+  "event_id": "sindh",
+  "event": {
+    "event_id": "sindh",
+    "event_name": "Sindh",
+    "hazard_type": "flood",
+    "country": {
+      "id": "pakistan",
+      "name": "Pakistan"
+    },
+    "region": {
+      "id": "sindh_province",
+      "name": "Sindh Province"
+    }
+  },
+  "assessment": {
+    "severity": "severe",
+    "claim_label": "strong_multisignal_flooding",
+    "fusion_confidence": "high",
+    "concern_level": "critical",
+    "interpretation_mode": "qualified",
+    "case_profile": "critical_concern_case",
+    "exposure_class": "high"
+  },
+  "evidence": {
+    "primary_caveat": "timeline_uncertain",
+    "evidence_items": [
+      "water_increase_pct",
+      "newly_flooded_area_pct",
+      "ndwi_change"
+    ],
+    "caveat_items": [
+      "timeline_uncertain"
+    ],
+    "strongest_evidence": "none"
+  },
+  "clarification": {
+    "clarification_status": "no_clarification",
+    "primary_limitation": "no_additional_limitation",
+    "alternative_claim": "no_alternative_claim"
+  },
+  "provenance": {
+    "source_agent": "water_agent",
+    "rule_label": "rule_severe_flood_multisignal"
+  },
+  "headline": {
+    "event_name": "Sindh",
+    "region_name": "Sindh Province",
+    "country_name": "Pakistan",
+    "severity": "severe",
+    "hazard_type": "flood",
+    "fusion_confidence": "high"
+  },
+  "debug": {
+    "short_headline": "Sindh | severe flood | high",
+    "short_summary": "claim=strong_multisignal_flooding; concern=critical; profile=critical_concern_case; caveat=timeline_uncertain; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim"
+  },
+  "trace": {
+    "source_agent": "water_agent",
+    "rule_label": "rule_severe_flood_multisignal",
+    "claim_label": "strong_multisignal_flooding",
+    "evidence_items": [
+      "water_increase_pct",
+      "newly_flooded_area_pct",
+      "ndwi_change"
+    ],
+    "caveat_items": [
+      "timeline_uncertain"
+    ],
+    "clarification_trace": {
+      "clarification_status": "no_clarification",
+      "primary_limitation": "no_additional_limitation",
+      "strongest_evidence": "none",
+      "alternative_claim": "no_alternative_claim"
+    }
+  },
+  "metadata": {
+    "source_raw_file": "sindh.json",
+    "source_functor": "semantic_explanation",
+    "source_predicate": "semantic_explanation(sindh,event_frame(event_id(sindh),event_name(\"Sindh\"),hazard_type(flood),country(pakistan,\"Pakistan\"),region(sindh_province,\"Sindh Province\")),assessment_frame(severity(severe),claim_label(strong_multisignal_flooding),fusion_confidence(high),concern_level(critical),interpretation_mode(qualified),case_profile(critical_concern_case),exposure_class(high)),evidence_frame(primary_caveat(timeline_uncertain),evidence_items([water_increase_pct,newly_flooded_area_pct,ndwi_change]),caveat_items([timeline_uncertain]),strongest_evidence(none)),clarification_frame(clarification_status(no_clarification),primary_limitation(no_additional_limitation),alternative_claim(no_alternative_claim)),provenance_frame(source_agent(water_agent),rule_label(rule_severe_flood_multisignal)),headline_frame(event_name(\"Sindh\"),region_name(\"Sindh Province\"),country_name(\"Pakistan\"),severity(severe),hazard_type(flood),fusion_confidence(high)),debug_text(short_headline(\"Sindh | severe flood | high\"),short_summary(\"claim=strong_multisignal_flooding; concern=critical; profile=critical_concern_case; caveat=timeline_uncertain; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\")),explanation_trace(water_agent,rule_severe_flood_multisignal,strong_multisignal_flooding,[water_increase_pct,newly_flooded_area_pct,ndwi_change],[timeline_uncertain],clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim)))"
+  }
+}

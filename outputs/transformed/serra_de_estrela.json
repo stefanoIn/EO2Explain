@@ -1,0 +1,82 @@
+{
+  "event_id": "serra_de_estrela",
+  "event": {
+    "event_id": "serra_de_estrela",
+    "event_name": "Serra da Estrela",
+    "hazard_type": "wildfire",
+    "country": {
+      "id": "portugal",
+      "name": "Portugal"
+    },
+    "region": {
+      "id": "centro_region",
+      "name": "Centro Region"
+    }
+  },
+  "assessment": {
+    "severity": "moderate",
+    "claim_label": "spectral_extent_fire_damage",
+    "fusion_confidence": "high",
+    "concern_level": "moderate",
+    "interpretation_mode": "qualified",
+    "case_profile": "monitoring_case",
+    "exposure_class": "low"
+  },
+  "evidence": {
+    "primary_caveat": "late_observation",
+    "evidence_items": [
+      "burned_area_pct",
+      "mean_dnbr"
+    ],
+    "caveat_items": [
+      "late_observation",
+      "possible_underestimation"
+    ],
+    "strongest_evidence": "none"
+  },
+  "clarification": {
+    "clarification_status": "no_clarification",
+    "primary_limitation": "no_additional_limitation",
+    "alternative_claim": "no_alternative_claim"
+  },
+  "provenance": {
+    "source_agent": "forest_agent",
+    "rule_label": "rule_moderate_fire_spectral_extent"
+  },
+  "headline": {
+    "event_name": "Serra da Estrela",
+    "region_name": "Centro Region",
+    "country_name": "Portugal",
+    "severity": "moderate",
+    "hazard_type": "wildfire",
+    "fusion_confidence": "high"
+  },
+  "debug": {
+    "short_headline": "Serra da Estrela | moderate wildfire | high",
+    "short_summary": "claim=spectral_extent_fire_damage; concern=moderate; profile=monitoring_case; caveat=late_observation; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim"
+  },
+  "trace": {
+    "source_agent": "forest_agent",
+    "rule_label": "rule_moderate_fire_spectral_extent",
+    "claim_label": "spectral_extent_fire_damage",
+    "evidence_items": [
+      "burned_area_pct",
+      "mean_dnbr"
+    ],
+    "caveat_items": [
+      "late_observation",
+      "possible_underestimation"
+    ],
+    "clarification_trace": {
+      "clarification_status": "no_clarification",
+      "primary_limitation": "no_additional_limitation",
+      "strongest_evidence": "none",
+      "alternative_claim": "no_alternative_claim"
+    }
+  },
+  "metadata": {
+    "source_raw_file": "serra_de_estrela.json",
+    "source_functor": "semantic_explanation",
+    "source_predicate": "semantic_explanation(serra_de_estrela,event_frame(event_id(serra_de_estrela),event_name(\"Serra da Estrela\"),hazard_type(wildfire),country(portugal,\"Portugal\"),region(centro_region,\"Centro Region\")),assessment_frame(severity(moderate),claim_label(spectral_extent_fire_damage),fusion_confidence(high),concern_level(moderate),interpretation_mode(qualified),case_profile(monitoring_case),exposure_class(low)),evidence_frame(primary_caveat(late_observation),evidence_items([burned_area_pct,mean_dnbr]),caveat_items([late_observation,possible_underestimation]),strongest_evidence(none)),clarification_frame(clarification_status(no_clarification),primary_limitation(no_additional_limitation),alternative_claim(no_alternative_claim)),provenance_frame(source_agent(forest_agent),rule_label(rule_moderate_fire_spectral_extent)),headline_frame(event_name(\"Serra da Estrela\"),region_name(\"Centro Region\"),country_name(\"Portugal\"),severity(moderate),hazard_type(wildfire),fusion_confidence(high)),debug_text(short_headline(\"Serra da Estrela | moderate wildfire | high\"),short_summary(\"claim=spectral_extent_fire_damage; concern=moderate; profile=monitoring_case; caveat=late_observation; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\")),explanation_trace(forest_agent,rule_moderate_fire_spectral_extent,spectral_extent_fire_damage,[burned_area_pct,mean_dnbr],[late_observation,possible_underestimation],clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim)))"
+  }
+}

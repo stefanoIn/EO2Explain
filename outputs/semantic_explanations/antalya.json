@@ -1,0 +1,399 @@
+
+{
+    "functor": "semantic_explanation",
+    "predicate": "semantic_explanation(antalya,event_frame(event_id(antalya),event_name(\"Antalya\"),hazard_type(wildfire),country(turkey,\"Turkey\"),region(mediterranean_region,\"Mediterranean Region\")),assessment_frame(severity(mild),claim_label(mixed_fire_damage),fusion_confidence(low),concern_level(watch),interpretation_mode(tentative),case_profile(watch_case),exposure_class(low)),evidence_frame(primary_caveat(burn_signal_weak),evidence_items([vegetation_loss_pct,burned_area_pct]),caveat_items([burn_signal_weak,timeline_uncertain]),strongest_evidence(vegetation_loss_pct)),clarification_frame(clarification_status(clarification_provided),primary_limitation(burn_signal_weak),alternative_claim(inconclusive_fire_signal)),provenance_frame(source_agent(forest_agent),rule_label(rule_mild_fire_mixed_signal)),headline_frame(event_name(\"Antalya\"),region_name(\"Mediterranean Region\"),country_name(\"Turkey\"),severity(mild),hazard_type(wildfire),fusion_confidence(low)),debug_text(short_headline(\"Antalya | mild wildfire | low\"),short_summary(\"claim=mixed_fire_damage; concern=watch; profile=watch_case; caveat=burn_signal_weak; clarification=clarification_provided; strongest_evidence=vegetation_loss_pct; alternative_claim=inconclusive_fire_signal\")),explanation_trace(forest_agent,rule_mild_fire_mixed_signal,mixed_fire_damage,[vegetation_loss_pct,burned_area_pct],[burn_signal_weak,timeline_uncertain],clarification_trace(clarification_provided,burn_signal_weak,vegetation_loss_pct,inconclusive_fire_signal)))",
+    "terms": [
+        {
+            "functor": "antalya",
+            "predicate": "antalya"
+        },
+        {
+            "functor": "event_frame",
+            "predicate": "event_frame(event_id(antalya),event_name(\"Antalya\"),hazard_type(wildfire),country(turkey,\"Turkey\"),region(mediterranean_region,\"Mediterranean Region\"))",
+            "terms": [
+                {
+                    "functor": "event_id",
+                    "predicate": "event_id(antalya)",
+                    "terms": [
+                        {
+                            "functor": "antalya",
+                            "predicate": "antalya"
+                        }
+                    ]
+                },
+                {
+                    "functor": "event_name",
+                    "predicate": "event_name(\"Antalya\")",
+                    "terms": [
+                        "Antalya"
+                    ]
+                },
+                {
+                    "functor": "hazard_type",
+                    "predicate": "hazard_type(wildfire)",
+                    "terms": [
+                        {
+                            "functor": "wildfire",
+                            "predicate": "wildfire"
+                        }
+                    ]
+                },
+                {
+                    "functor": "country",
+                    "predicate": "country(turkey,\"Turkey\")",
+                    "terms": [
+                        {
+                            "functor": "turkey",
+                            "predicate": "turkey"
+                        },
+                        "Turkey"
+                    ]
+                },
+                {
+                    "functor": "region",
+                    "predicate": "region(mediterranean_region,\"Mediterranean Region\")",
+                    "terms": [
+                        {
+                            "functor": "mediterranean_region",
+                            "predicate": "mediterranean_region"
+                        },
+                        "Mediterranean Region"
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "assessment_frame",
+            "predicate": "assessment_frame(severity(mild),claim_label(mixed_fire_damage),fusion_confidence(low),concern_level(watch),interpretation_mode(tentative),case_profile(watch_case),exposure_class(low))",
+            "terms": [
+                {
+                    "functor": "severity",
+                    "predicate": "severity(mild)",
+                    "terms": [
+                        {
+                            "functor": "mild",
+                            "predicate": "mild"
+                        }
+                    ]
+                },
+                {
+                    "functor": "claim_label",
+                    "predicate": "claim_label(mixed_fire_damage)",
+                    "terms": [
+                        {
+                            "functor": "mixed_fire_damage",
+                            "predicate": "mixed_fire_damage"
+                        }
+                    ]
+                },
+                {
+                    "functor": "fusion_confidence",
+                    "predicate": "fusion_confidence(low)",
+                    "terms": [
+                        {
+                            "functor": "low",
+                            "predicate": "low"
+                        }
+                    ]
+                },
+                {
+                    "functor": "concern_level",
+                    "predicate": "concern_level(watch)",
+                    "terms": [
+                        {
+                            "functor": "watch",
+                            "predicate": "watch"
+                        }
+                    ]
+                },
+                {
+                    "functor": "interpretation_mode",
+                    "predicate": "interpretation_mode(tentative)",
+                    "terms": [
+                        {
+                            "functor": "tentative",
+                            "predicate": "tentative"
+                        }
+                    ]
+                },
+                {
+                    "functor": "case_profile",
+                    "predicate": "case_profile(watch_case)",
+                    "terms": [
+                        {
+                            "functor": "watch_case",
+                            "predicate": "watch_case"
+                        }
+                    ]
+                },
+                {
+                    "functor": "exposure_class",
+                    "predicate": "exposure_class(low)",
+                    "terms": [
+                        {
+                            "functor": "low",
+                            "predicate": "low"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "evidence_frame",
+            "predicate": "evidence_frame(primary_caveat(burn_signal_weak),evidence_items([vegetation_loss_pct,burned_area_pct]),caveat_items([burn_signal_weak,timeline_uncertain]),strongest_evidence(vegetation_loss_pct))",
+            "terms": [
+                {
+                    "functor": "primary_caveat",
+                    "predicate": "primary_caveat(burn_signal_weak)",
+                    "terms": [
+                        {
+                            "functor": "burn_signal_weak",
+                            "predicate": "burn_signal_weak"
+                        }
+                    ]
+                },
+                {
+                    "functor": "evidence_items",
+                    "predicate": "evidence_items([vegetation_loss_pct,burned_area_pct])",
+                    "terms": [
+                        [
+                            {
+                                "functor": "vegetation_loss_pct",
+                                "predicate": "vegetation_loss_pct"
+                            },
+                            {
+                                "functor": "burned_area_pct",
+                                "predicate": "burned_area_pct"
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "functor": "caveat_items",
+                    "predicate": "caveat_items([burn_signal_weak,timeline_uncertain])",
+                    "terms": [
+                        [
+                            {
+                                "functor": "burn_signal_weak",
+                                "predicate": "burn_signal_weak"
+                            },
+                            {
+                                "functor": "timeline_uncertain",
+                                "predicate": "timeline_uncertain"
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "functor": "strongest_evidence",
+                    "predicate": "strongest_evidence(vegetation_loss_pct)",
+                    "terms": [
+                        {
+                            "functor": "vegetation_loss_pct",
+                            "predicate": "vegetation_loss_pct"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "clarification_frame",
+            "predicate": "clarification_frame(clarification_status(clarification_provided),primary_limitation(burn_signal_weak),alternative_claim(inconclusive_fire_signal))",
+            "terms": [
+                {
+                    "functor": "clarification_status",
+                    "predicate": "clarification_status(clarification_provided)",
+                    "terms": [
+                        {
+                            "functor": "clarification_provided",
+                            "predicate": "clarification_provided"
+                        }
+                    ]
+                },
+                {
+                    "functor": "primary_limitation",
+                    "predicate": "primary_limitation(burn_signal_weak)",
+                    "terms": [
+                        {
+                            "functor": "burn_signal_weak",
+                            "predicate": "burn_signal_weak"
+                        }
+                    ]
+                },
+                {
+                    "functor": "alternative_claim",
+                    "predicate": "alternative_claim(inconclusive_fire_signal)",
+                    "terms": [
+                        {
+                            "functor": "inconclusive_fire_signal",
+                            "predicate": "inconclusive_fire_signal"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "provenance_frame",
+            "predicate": "provenance_frame(source_agent(forest_agent),rule_label(rule_mild_fire_mixed_signal))",
+            "terms": [
+                {
+                    "functor": "source_agent",
+                    "predicate": "source_agent(forest_agent)",
+                    "terms": [
+                        {
+                            "functor": "forest_agent",
+                            "predicate": "forest_agent"
+                        }
+                    ]
+                },
+                {
+                    "functor": "rule_label",
+                    "predicate": "rule_label(rule_mild_fire_mixed_signal)",
+                    "terms": [
+                        {
+                            "functor": "rule_mild_fire_mixed_signal",
+                            "predicate": "rule_mild_fire_mixed_signal"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "headline_frame",
+            "predicate": "headline_frame(event_name(\"Antalya\"),region_name(\"Mediterranean Region\"),country_name(\"Turkey\"),severity(mild),hazard_type(wildfire),fusion_confidence(low))",
+            "terms": [
+                {
+                    "functor": "event_name",
+                    "predicate": "event_name(\"Antalya\")",
+                    "terms": [
+                        "Antalya"
+                    ]
+                },
+                {
+                    "functor": "region_name",
+                    "predicate": "region_name(\"Mediterranean Region\")",
+                    "terms": [
+                        "Mediterranean Region"
+                    ]
+                },
+                {
+                    "functor": "country_name",
+                    "predicate": "country_name(\"Turkey\")",
+                    "terms": [
+                        "Turkey"
+                    ]
+                },
+                {
+                    "functor": "severity",
+                    "predicate": "severity(mild)",
+                    "terms": [
+                        {
+                            "functor": "mild",
+                            "predicate": "mild"
+                        }
+                    ]
+                },
+                {
+                    "functor": "hazard_type",
+                    "predicate": "hazard_type(wildfire)",
+                    "terms": [
+                        {
+                            "functor": "wildfire",
+                            "predicate": "wildfire"
+                        }
+                    ]
+                },
+                {
+                    "functor": "fusion_confidence",
+                    "predicate": "fusion_confidence(low)",
+                    "terms": [
+                        {
+                            "functor": "low",
+                            "predicate": "low"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "debug_text",
+            "predicate": "debug_text(short_headline(\"Antalya | mild wildfire | low\"),short_summary(\"claim=mixed_fire_damage; concern=watch; profile=watch_case; caveat=burn_signal_weak; clarification=clarification_provided; strongest_evidence=vegetation_loss_pct; alternative_claim=inconclusive_fire_signal\"))",
+            "terms": [
+                {
+                    "functor": "short_headline",
+                    "predicate": "short_headline(\"Antalya | mild wildfire | low\")",
+                    "terms": [
+                        "Antalya | mild wildfire | low"
+                    ]
+                },
+                {
+                    "functor": "short_summary",
+                    "predicate": "short_summary(\"claim=mixed_fire_damage; concern=watch; profile=watch_case; caveat=burn_signal_weak; clarification=clarification_provided; strongest_evidence=vegetation_loss_pct; alternative_claim=inconclusive_fire_signal\")",
+                    "terms": [
+                        "claim=mixed_fire_damage; concern=watch; profile=watch_case; caveat=burn_signal_weak; clarification=clarification_provided; strongest_evidence=vegetation_loss_pct; alternative_claim=inconclusive_fire_signal"
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "explanation_trace",
+            "predicate": "explanation_trace(forest_agent,rule_mild_fire_mixed_signal,mixed_fire_damage,[vegetation_loss_pct,burned_area_pct],[burn_signal_weak,timeline_uncertain],clarification_trace(clarification_provided,burn_signal_weak,vegetation_loss_pct,inconclusive_fire_signal))",
+            "terms": [
+                {
+                    "functor": "forest_agent",
+                    "predicate": "forest_agent"
+                },
+                {
+                    "functor": "rule_mild_fire_mixed_signal",
+                    "predicate": "rule_mild_fire_mixed_signal"
+                },
+                {
+                    "functor": "mixed_fire_damage",
+                    "predicate": "mixed_fire_damage"
+                },
+                [
+                    {
+                        "functor": "vegetation_loss_pct",
+                        "predicate": "vegetation_loss_pct"
+                    },
+                    {
+                        "functor": "burned_area_pct",
+                        "predicate": "burned_area_pct"
+                    }
+                ],
+                [
+                    {
+                        "functor": "burn_signal_weak",
+                        "predicate": "burn_signal_weak"
+                    },
+                    {
+                        "functor": "timeline_uncertain",
+                        "predicate": "timeline_uncertain"
+                    }
+                ],
+                {
+                    "functor": "clarification_trace",
+                    "predicate": "clarification_trace(clarification_provided,burn_signal_weak,vegetation_loss_pct,inconclusive_fire_signal)",
+                    "terms": [
+                        {
+                            "functor": "clarification_provided",
+                            "predicate": "clarification_provided"
+                        },
+                        {
+                            "functor": "burn_signal_weak",
+                            "predicate": "burn_signal_weak"
+                        },
+                        {
+                            "functor": "vegetation_loss_pct",
+                            "predicate": "vegetation_loss_pct"
+                        },
+                        {
+                            "functor": "inconclusive_fire_signal",
+                            "predicate": "inconclusive_fire_signal"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
