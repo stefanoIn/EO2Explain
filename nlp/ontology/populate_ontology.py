@@ -3,27 +3,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import xml.etree.ElementTree as ET
 from pathlib import Path
+
+from owlready2 import destroy_entity, get_ontology
 
 
 BASE_IRI = "http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain"
-NS = {
-    "eo2explain": f"{BASE_IRI}#",
-    "owl": "http://www.w3.org/2002/07/owl#",
-    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-    "xsd": "http://www.w3.org/2001/XMLSchema#",
-}
-
-ET.register_namespace("eo2explain", NS["eo2explain"])
-ET.register_namespace("owl", NS["owl"])
-ET.register_namespace("rdf", NS["rdf"])
-ET.register_namespace("rdfs", NS["rdfs"])
-
-
-def iri(local_name: str) -> str:
-    return f"{BASE_IRI}#{local_name}"
 
 
 def load_payloads(payload_dir: Path) -> list[dict]:
@@ -35,79 +20,6 @@ def load_payloads(payload_dir: Path) -> list[dict]:
     return payloads
 
 
-def named_individuals(root: ET.Element) -> list[ET.Element]:
-    return root.findall(f"{{{NS['owl']}}}NamedIndividual")
-
-
-def find_named_individual(root: ET.Element, local_name: str) -> ET.Element | None:
-    target = iri(local_name)
-    for element in named_individuals(root):
-        if element.get(f"{{{NS['rdf']}}}about") == target:
-            return element
-    return None
-
-
-def remove_named_individual(root: ET.Element, local_name: str) -> None:
-    element = find_named_individual(root, local_name)
-    if element is not None:
-        root.remove(element)
-
-
-def remove_generated_nodes(root: ET.Element, event_id: str) -> None:
-    suffixes = [
-        "event",
-        "assessment",
-        "evidence_bundle",
-        "clarification",
-        "provenance",
-        "explanation_trace",
-    ]
-    for suffix in suffixes:
-        remove_named_individual(root, f"{event_id}_{suffix}")
-
-
-def create_named_individual(root: ET.Element, local_name: str, class_local: str) -> ET.Element:
-    individual = ET.SubElement(
-        root,
-        f"{{{NS['owl']}}}NamedIndividual",
-        {f"{{{NS['rdf']}}}about": iri(local_name)},
-    )
-    ET.SubElement(
-        individual,
-        f"{{{NS['rdf']}}}type",
-        {f"{{{NS['rdf']}}}resource": iri(class_local)},
-    )
-    return individual
-
-
-def ensure_individual(
-    root: ET.Element,
-    local_name: str,
-    class_local: str,
-    *,
-    label: str | None = None,
-) -> ET.Element:
-    individual = find_named_individual(root, local_name)
-    if individual is None:
-        individual = create_named_individual(root, local_name, class_local)
-    if label:
-        set_text_property(individual, "hasName", label)
-    return individual
-
-
-def set_text_property(individual: ET.Element, property_name: str, value: str) -> None:
-    tag = f"{{{NS['eo2explain']}}}{property_name}"
-    for child in list(individual.findall(tag)):
-        individual.remove(child)
-    prop = ET.SubElement(individual, tag)
-    prop.text = value
-
-
-def add_object_property(individual: ET.Element, property_name: str, target_local: str) -> None:
-    tag = f"{{{NS['eo2explain']}}}{property_name}"
-    ET.SubElement(individual, tag, {f"{{{NS['rdf']}}}resource": iri(target_local)})
-
-
 def meaningful_name(value: str | None) -> bool:
     return value is not None and value not in {
         "none",
@@ -115,6 +27,43 @@ def meaningful_name(value: str | None) -> bool:
         "no_alternative_claim",
         "no_additional_limitation",
     }
+
+
+def get_entity(onto, local_name: str):
+    return onto.search_one(iri=f"{BASE_IRI}#{local_name}")
+
+
+def get_class(ns, class_name: str):
+    cls = getattr(ns, class_name, None)
+    if cls is None:
+        raise ValueError(f"Missing ontology class: {class_name}")
+    return cls
+
+
+def ensure_individual(onto, ns, local_name: str, class_name: str):
+    entity = get_entity(onto, local_name)
+    if entity is None:
+        entity = get_class(ns, class_name)(local_name)
+    return entity
+
+
+def ensure_generated_individual(onto, ns, local_name: str, class_name: str):
+    """Create or recover event-scoped generated individuals."""
+    return ensure_individual(onto, ns, local_name, class_name)
+
+
+def set_single_data_property(individual, property_name: str, value: str) -> None:
+    """Treat the target data property as single-valued for this project."""
+    values = getattr(individual, property_name)
+    values.clear()
+    values.append(value)
+
+
+def set_object_properties(individual, property_name: str, targets: list) -> None:
+    relation = getattr(individual, property_name)
+    relation.clear()
+    for target in targets:
+        relation.append(target)
 
 
 def hazard_individual(hazard: str) -> tuple[str, str]:
@@ -153,7 +102,23 @@ def agent_individual(agent: str) -> str:
     return f"{agent}_entity"
 
 
-def populate_controlled_terms(root: ET.Element, payload: dict) -> None:
+def remove_generated_nodes(onto, event_id: str) -> None:
+    # Only destroy event-scoped generated nodes. Shared vocabulary terms such as
+    # hazards, caveats, rules, agents, and claim labels must remain untouched.
+    for suffix in [
+        "event",
+        "assessment",
+        "evidence_bundle",
+        "clarification",
+        "provenance",
+        "explanation_trace",
+    ]:
+        entity = get_entity(onto, f"{event_id}_{suffix}")
+        if entity is not None:
+            destroy_entity(entity)
+
+
+def populate_controlled_terms(onto, ns, payload: dict) -> None:
     event = payload["event"]
     assessment = payload["assessment"]
     evidence = payload["evidence"]
@@ -161,30 +126,43 @@ def populate_controlled_terms(root: ET.Element, payload: dict) -> None:
     provenance = payload["provenance"]
 
     hazard_local, hazard_class = hazard_individual(event["hazard_type"])
-    ensure_individual(root, hazard_local, hazard_class, label=event["hazard_type"].capitalize())
-    ensure_individual(root, severity_individual(assessment["severity"]), "Severity")
-    ensure_individual(root, confidence_individual(assessment["fusion_confidence"]), "ConfidenceLevel")
-    ensure_individual(root, exposure_individual(assessment["exposure_class"]), "ExposureLevel")
-    ensure_individual(root, concern_individual(assessment["concern_level"]), "ConcernLevel")
-    ensure_individual(root, claim_individual(assessment["claim_label"]), "ClaimLabel", label=assessment["claim_label"])
-    ensure_individual(root, agent_individual(provenance["source_agent"]), "Agent", label=provenance["source_agent"])
-    ensure_individual(root, rule_individual(provenance["rule_label"]), "Rule", label=provenance["rule_label"])
-    ensure_individual(root, event["country"]["id"], "Country", label=event["country"]["name"])
-    ensure_individual(root, event["region"]["id"], "Region", label=event["region"]["name"])
+    hazard = ensure_individual(onto, ns, hazard_local, hazard_class)
+    set_single_data_property(hazard, "hasName", event["hazard_type"].capitalize())
+
+    ensure_individual(onto, ns, severity_individual(assessment["severity"]), "Severity")
+    ensure_individual(onto, ns, confidence_individual(assessment["fusion_confidence"]), "ConfidenceLevel")
+    ensure_individual(onto, ns, exposure_individual(assessment["exposure_class"]), "ExposureLevel")
+    ensure_individual(onto, ns, concern_individual(assessment["concern_level"]), "ConcernLevel")
+
+    claim = ensure_individual(onto, ns, claim_individual(assessment["claim_label"]), "ClaimLabel")
+    set_single_data_property(claim, "hasName", assessment["claim_label"])
+
+    agent = ensure_individual(onto, ns, agent_individual(provenance["source_agent"]), "Agent")
+    set_single_data_property(agent, "hasName", provenance["source_agent"])
+
+    rule = ensure_individual(onto, ns, rule_individual(provenance["rule_label"]), "Rule")
+    set_single_data_property(rule, "hasName", provenance["rule_label"])
+
+    country = ensure_individual(onto, ns, event["country"]["id"], "Country")
+    set_single_data_property(country, "hasName", event["country"]["name"])
+
+    region = ensure_individual(onto, ns, event["region"]["id"], "Region")
+    set_single_data_property(region, "hasName", event["region"]["name"])
 
     if meaningful_name(clarification.get("alternative_claim")):
-        ensure_individual(
-            root,
+        alt_claim = ensure_individual(
+            onto,
+            ns,
             claim_individual(clarification["alternative_claim"]),
             "ClaimLabel",
-            label=clarification["alternative_claim"],
         )
+        set_single_data_property(alt_claim, "hasName", clarification["alternative_claim"])
 
     evidence_names = set(evidence["evidence_items"])
     if meaningful_name(evidence.get("strongest_evidence")):
         evidence_names.add(evidence["strongest_evidence"])
     for evidence_name in evidence_names:
-        ensure_individual(root, evidence_name, "Evidence")
+        ensure_individual(onto, ns, evidence_name, "Evidence")
 
     caveat_names = set(evidence["caveat_items"])
     if meaningful_name(evidence.get("primary_caveat")):
@@ -192,10 +170,10 @@ def populate_controlled_terms(root: ET.Element, payload: dict) -> None:
     if meaningful_name(clarification.get("primary_limitation")):
         caveat_names.add(clarification["primary_limitation"])
     for caveat_name in caveat_names:
-        ensure_individual(root, caveat_name, "Caveat")
+        ensure_individual(onto, ns, caveat_name, "Caveat")
 
 
-def populate_event(root: ET.Element, payload: dict) -> None:
+def populate_event(onto, ns, payload: dict) -> None:
     event = payload["event"]
     assessment = payload["assessment"]
     evidence = payload["evidence"]
@@ -211,69 +189,155 @@ def populate_event(root: ET.Element, payload: dict) -> None:
     provenance_local = f"{event_id}_provenance"
     trace_local = f"{event_id}_explanation_trace"
 
-    remove_generated_nodes(root, event_id)
-    populate_controlled_terms(root, payload)
+    remove_generated_nodes(onto, event_id)
+    populate_controlled_terms(onto, ns, payload)
 
-    hazard_local, hazard_class = hazard_individual(event["hazard_type"])
-    ensure_individual(root, hazard_local, hazard_class, label=event["hazard_type"].capitalize())
+    hazard_local, _ = hazard_individual(event["hazard_type"])
 
-    event_individual = create_named_individual(root, event_local, "Event")
-    set_text_property(event_individual, "hasEventId", event_id)
-    set_text_property(event_individual, "hasName", event["event_name"])
-    add_object_property(event_individual, "hasCountry", event["country"]["id"])
-    add_object_property(event_individual, "hasRegion", event["region"]["id"])
-    add_object_property(event_individual, "hasAssessment", assessment_local)
-    add_object_property(event_individual, "hasExplanationTrace", trace_local)
+    event_individual = ensure_generated_individual(onto, ns, event_local, "Event")
+    set_single_data_property(event_individual, "hasEventId", event_id)
+    set_single_data_property(event_individual, "hasName", event["event_name"])
+    set_object_properties(
+        event_individual,
+        "hasCountry",
+        [get_entity(onto, event["country"]["id"])],
+    )
+    set_object_properties(
+        event_individual,
+        "hasRegion",
+        [get_entity(onto, event["region"]["id"])],
+    )
+    set_object_properties(
+        event_individual,
+        "hasAssessment",
+        [ensure_generated_individual(onto, ns, assessment_local, "Assessment")],
+    )
+    set_object_properties(
+        event_individual,
+        "hasExplanationTrace",
+        [ensure_generated_individual(onto, ns, trace_local, "ExplanationTrace")],
+    )
 
-    assessment_individual = create_named_individual(root, assessment_local, "Assessment")
-    set_text_property(assessment_individual, "hasClaimLabel", assessment["claim_label"])
-    set_text_property(assessment_individual, "hasCaseProfile", assessment["case_profile"])
-    set_text_property(assessment_individual, "hasInterpretationMode", assessment["interpretation_mode"])
-    add_object_property(assessment_individual, "hasHazard", hazard_local)
-    add_object_property(assessment_individual, "hasClaim", claim_individual(assessment["claim_label"]))
-    add_object_property(assessment_individual, "hasSeverity", severity_individual(assessment["severity"]))
-    add_object_property(assessment_individual, "hasConfidence", confidence_individual(assessment["fusion_confidence"]))
-    add_object_property(assessment_individual, "hasExposure", exposure_individual(assessment["exposure_class"]))
-    add_object_property(assessment_individual, "hasConcern", concern_individual(assessment["concern_level"]))
-    add_object_property(assessment_individual, "hasEvidenceBundle", bundle_local)
-    add_object_property(assessment_individual, "hasClarification", clarification_local)
-    add_object_property(assessment_individual, "hasProvenance", provenance_local)
+    assessment_individual = ensure_generated_individual(onto, ns, assessment_local, "Assessment")
+    # The ontology keeps both string labels and semantic links:
+    # - string properties support direct reporting/debug access
+    # - object properties support ontology querying
+    set_single_data_property(assessment_individual, "hasClaimLabel", assessment["claim_label"])
+    set_single_data_property(assessment_individual, "hasCaseProfile", assessment["case_profile"])
+    set_single_data_property(assessment_individual, "hasInterpretationMode", assessment["interpretation_mode"])
+    set_object_properties(assessment_individual, "hasHazard", [get_entity(onto, hazard_local)])
+    set_object_properties(
+        assessment_individual,
+        "hasClaim",
+        [get_entity(onto, claim_individual(assessment["claim_label"]))],
+    )
+    set_object_properties(
+        assessment_individual,
+        "hasSeverity",
+        [get_entity(onto, severity_individual(assessment["severity"]))],
+    )
+    set_object_properties(
+        assessment_individual,
+        "hasConfidence",
+        [get_entity(onto, confidence_individual(assessment["fusion_confidence"]))],
+    )
+    set_object_properties(
+        assessment_individual,
+        "hasExposure",
+        [get_entity(onto, exposure_individual(assessment["exposure_class"]))],
+    )
+    set_object_properties(
+        assessment_individual,
+        "hasConcern",
+        [get_entity(onto, concern_individual(assessment["concern_level"]))],
+    )
+    set_object_properties(
+        assessment_individual,
+        "hasEvidenceBundle",
+        [ensure_generated_individual(onto, ns, bundle_local, "EvidenceBundle")],
+    )
+    set_object_properties(
+        assessment_individual,
+        "hasClarification",
+        [ensure_generated_individual(onto, ns, clarification_local, "Clarification")],
+    )
+    set_object_properties(
+        assessment_individual,
+        "hasProvenance",
+        [ensure_generated_individual(onto, ns, provenance_local, "Provenance")],
+    )
 
-    bundle_individual = create_named_individual(root, bundle_local, "EvidenceBundle")
-    for evidence_name in evidence["evidence_items"]:
-        add_object_property(bundle_individual, "hasEvidenceItem", evidence_name)
+    bundle_individual = ensure_generated_individual(onto, ns, bundle_local, "EvidenceBundle")
+    set_object_properties(
+        bundle_individual,
+        "hasEvidenceItem",
+        [get_entity(onto, evidence_name) for evidence_name in evidence["evidence_items"]],
+    )
+    strongest_targets = []
     if meaningful_name(evidence.get("strongest_evidence")):
-        add_object_property(bundle_individual, "hasStrongestEvidence", evidence["strongest_evidence"])
-    for caveat_name in evidence["caveat_items"]:
-        add_object_property(bundle_individual, "hasCaveat", caveat_name)
+        strongest_targets.append(get_entity(onto, evidence["strongest_evidence"]))
+    set_object_properties(bundle_individual, "hasStrongestEvidence", strongest_targets)
+    set_object_properties(
+        bundle_individual,
+        "hasCaveat",
+        [get_entity(onto, caveat_name) for caveat_name in evidence["caveat_items"]],
+    )
+    primary_caveat_targets = []
     if meaningful_name(evidence.get("primary_caveat")):
-        add_object_property(bundle_individual, "hasPrimaryCaveat", evidence["primary_caveat"])
+        primary_caveat_targets.append(get_entity(onto, evidence["primary_caveat"]))
+    set_object_properties(bundle_individual, "hasPrimaryCaveat", primary_caveat_targets)
 
-    clarification_individual = create_named_individual(root, clarification_local, "Clarification")
-    set_text_property(clarification_individual, "hasClarificationStatus", clarification["clarification_status"])
-    set_text_property(clarification_individual, "hasAlternativeClaimLabel", clarification["alternative_claim"])
+    clarification_individual = ensure_generated_individual(onto, ns, clarification_local, "Clarification")
+    set_single_data_property(
+        clarification_individual,
+        "hasClarificationStatus",
+        clarification["clarification_status"],
+    )
+    set_single_data_property(
+        clarification_individual,
+        "hasAlternativeClaimLabel",
+        clarification["alternative_claim"],
+    )
+    primary_limitation_targets = []
     if meaningful_name(clarification.get("primary_limitation")):
-        add_object_property(clarification_individual, "hasPrimaryLimitation", clarification["primary_limitation"])
+        primary_limitation_targets.append(get_entity(onto, clarification["primary_limitation"]))
+    set_object_properties(
+        clarification_individual,
+        "hasPrimaryLimitation",
+        primary_limitation_targets,
+    )
+    alternative_claim_targets = []
     if meaningful_name(clarification.get("alternative_claim")):
-        add_object_property(
-            clarification_individual,
-            "hasAlternativeClaim",
-            claim_individual(clarification["alternative_claim"]),
+        alternative_claim_targets.append(
+            get_entity(onto, claim_individual(clarification["alternative_claim"]))
         )
+    set_object_properties(
+        clarification_individual,
+        "hasAlternativeClaim",
+        alternative_claim_targets,
+    )
 
-    provenance_individual = create_named_individual(root, provenance_local, "Provenance")
-    set_text_property(provenance_individual, "hasSourceAgent", provenance["source_agent"])
-    set_text_property(provenance_individual, "hasRuleLabel", provenance["rule_label"])
-    add_object_property(provenance_individual, "hasSourceAgentEntity", agent_individual(provenance["source_agent"]))
-    add_object_property(provenance_individual, "hasRule", rule_individual(provenance["rule_label"]))
+    provenance_individual = ensure_generated_individual(onto, ns, provenance_local, "Provenance")
+    set_single_data_property(provenance_individual, "hasSourceAgent", provenance["source_agent"])
+    set_single_data_property(provenance_individual, "hasRuleLabel", provenance["rule_label"])
+    set_object_properties(
+        provenance_individual,
+        "hasSourceAgentEntity",
+        [get_entity(onto, agent_individual(provenance["source_agent"]))],
+    )
+    set_object_properties(
+        provenance_individual,
+        "hasRule",
+        [get_entity(onto, rule_individual(provenance["rule_label"]))],
+    )
 
-    trace_individual = create_named_individual(root, trace_local, "ExplanationTrace")
-    set_text_property(trace_individual, "hasHeadline", debug["short_headline"])
-    set_text_property(trace_individual, "hasSummary", debug["short_summary"])
-    add_object_property(trace_individual, "tracesAssessment", assessment_local)
-    add_object_property(trace_individual, "tracesEvidenceBundle", bundle_local)
-    add_object_property(trace_individual, "tracesClarification", clarification_local)
-    add_object_property(trace_individual, "tracesProvenance", provenance_local)
+    trace_individual = ensure_generated_individual(onto, ns, trace_local, "ExplanationTrace")
+    set_single_data_property(trace_individual, "hasHeadline", debug["short_headline"])
+    set_single_data_property(trace_individual, "hasSummary", debug["short_summary"])
+    set_object_properties(trace_individual, "tracesAssessment", [assessment_individual])
+    set_object_properties(trace_individual, "tracesEvidenceBundle", [bundle_individual])
+    set_object_properties(trace_individual, "tracesClarification", [clarification_individual])
+    set_object_properties(trace_individual, "tracesProvenance", [provenance_individual])
 
 
 def main() -> None:
@@ -297,14 +361,13 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    tree = ET.parse(Path(args.ontology))
-    root = tree.getroot()
+    onto = get_ontology(str(Path(args.ontology))).load()
+    ns = onto.get_namespace(f"{BASE_IRI}#")
 
     for payload in load_payloads(Path(args.payload_dir)):
-        populate_event(root, payload)
+        populate_event(onto, ns, payload)
 
-    ET.indent(tree, space="    ")
-    tree.write(Path(args.output), encoding="utf-8", xml_declaration=True)
+    onto.save(file=str(Path(args.output)), format="rdfxml")
     print(f"Populated ontology written to {args.output}")
 
 

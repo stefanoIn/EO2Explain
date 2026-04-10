@@ -7,10 +7,10 @@ from pathlib import Path
 
 
 def main() -> int:
-    root = Path(__file__).resolve().parents[1]
-    transformer = root / "nlp" / "transformer" / "transform_payload.py"
-    ontology_populator = root / "nlp" / "ontology" / "populate_ontology.py"
-    report_generator = root / "nlp" / "generator" / "report_generator.py"
+    root = Path(".")
+    transformer = Path("nlp/transformer/transform_payload.py")
+    ontology_populator = Path("nlp/ontology/populate_ontology.py")
+    report_generator = Path("nlp/generator/report_generator.py")
 
     commands = [
         [sys.executable, str(transformer)],

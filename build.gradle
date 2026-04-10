@@ -69,11 +69,11 @@ shadowJar {
         copy {
             from 'mas/config/eo.mas2j'
             rename 'eo.mas2j','default.mas2j'
-            into project.projectDir.absolutePath + '/'
+            into '.'
         }
     }
     archiveFileName = "jason-${project.name}-all.jar" // the name must start with jacamo so that jacamo...jar is found in the classpath
-    from (project.projectDir.absolutePath + '/mas') {
+    from ('mas') {
         include '**/*.asl'
         include '**/*.xml'
         include '**/*.sai'
@@ -82,13 +82,13 @@ shadowJar {
         include '*.properties'
         exclude 'test'
     }
-    from (project.buildDir.absolutePath + '/classes') {
+    from ('build/classes') {
         include '**/*'
     }
-    from (project.buildDir.absolutePath + '/jcm') {
+    from ('build/jcm') {
         include '**/*'
     }
-    from (project.projectDir.absolutePath + '/') {
+    from ('.') {
         include '*.properties'
         include 'default.mas2j'
     }

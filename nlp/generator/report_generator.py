@@ -4,9 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+if "." not in sys.path:
+    sys.path.insert(0, ".")
 
 from nlp.loader.load_payloads import load_payloads
 
@@ -272,7 +271,7 @@ def build_report_text(payload: dict) -> str:
 
 
 def main() -> None:
-    output_dir = ROOT / "outputs/reports"
+    output_dir = Path("outputs/reports")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for payload in load_payloads():
