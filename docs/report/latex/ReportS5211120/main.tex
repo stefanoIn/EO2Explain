@@ -636,6 +636,57 @@ The generated reports explicitly describe:
 
 This is important because the reporting layer is not producing free text from scratch. It is verbalizing a structured semantic object that has already been made explicit by the MAS, packaged by the \texttt{explanation\_agent}, and normalized by the transformer. The final English report is therefore grounded in a traceable symbolic source rather than in an opaque language-generation step.
 
+\subsection{Example Generated Report}
+
+To make the behavior of the NLP layer more concrete, below we report one example of the final text produced by the system for the Ahr Valley flood case. This example shows how the information assembled by the \texttt{explanation\_agent}, transformed in Python, and verbalized by the report generator is presented to the final user.
+
+\begin{lstlisting}
+EO2Explain Event Report: Ahr Valley
+Location: Rhineland-Palatinate, Germany
+Hazard Type: Flood
+
+Summary
+Ahr Valley is assessed as a mild flood event with moderate confidence,
+based on the available observational evidence.
+
+What Happened
+The event is located in Rhineland-Palatinate, Germany. The system
+interprets it as a mild flood event.
+
+Assessment
+The integrated concern level is guarded, and the case profile is
+classified as a guarded monitoring case. The system considers this
+assessment plausible but still caveat-sensitive. The interpretation is
+cautious because the available support is limited or caveat-heavy. This
+indicates a situation that should be monitored cautiously due to
+remaining uncertainty.
+
+Supporting Evidence
+The system detects a residual flood footprint, suggesting that flood
+impact remains visible even though the image may have missed peak
+conditions. The reasoning path relies on surface-water increase and
+newly flooded area.
+
+Caveats And Limitations
+The main caveat is that the observed footprint likely reflects residual
+conditions rather than peak impact. Additional limitations include late
+image acquisition, possible underestimation of the event extent, and a
+weak water signal that must be interpreted cautiously.
+
+Clarification
+A second-pass clarification was requested. The specialist identified the
+main limitation as the observed footprint likely reflects residual
+conditions rather than peak impact. The specialist retained newly
+flooded area as the strongest supporting evidence, and noted an
+inconclusive water signal as the closest alternative interpretation.
+
+Provenance
+This assessment was produced by the water agent and grounded in the
+symbolic rule `rule_residual_flood_late_observation`.
+\end{lstlisting}
+
+This example is useful because it makes visible the transition from symbolic reasoning to human-readable explanation. The final text is not hand-written: it is generated automatically from the semantic explanation package and therefore remains linked to the underlying evidence, caveats, clarification outcome, and provenance information.
+
 \subsection{Implementation Structure}
 
 From an implementation point of view, the NLP layer is organized into four small modules:
