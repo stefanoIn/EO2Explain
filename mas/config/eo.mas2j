@@ -2,8 +2,10 @@ MAS eo2explain {
     infrastructure: Centralised
 
     agents:
-        coordinator_agent ../agents/coordinatorAgent.asl;
-        water_agent ../agents/waterAgent.asl;
-        forest_agent ../agents/forestAgent.asl;
-        explanation_agent ../agents/explanationAgent.asl;
+        coordinator_agent coordinatorAgent.asl;
+        water_agent waterAgent.asl;
+        forest_agent forestAgent.asl;
+        explanation_agent explanationAgent.asl;
+
+    aslSourcePath: "mas/agents";
 }
