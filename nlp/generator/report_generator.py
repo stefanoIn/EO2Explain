@@ -37,6 +37,17 @@ CAVEAT_TEXT = {
     "limited_multisignal_support": "the interpretation is not supported by a full set of corroborating signals",
 }
 
+CAVEAT_LIST_TEXT = {
+    "late_observation": "late image acquisition",
+    "possible_underestimation": "possible underestimation of the event extent",
+    "weak_water_signal": "a weak water signal that must be interpreted cautiously",
+    "burn_signal_weak": "a weak or partly contradictory burn signal",
+    "timeline_uncertain": "a timeline mixing confirmed and approximate temporal information",
+    "coarse_timeline": "coarse temporal constraints on the event timing",
+    "residual_observation_window": "an observed footprint that likely reflects residual conditions rather than peak impact",
+    "limited_multisignal_support": "limited multisignal support",
+}
+
 CONCERN_TEXT = {
     "critical": "This means the event should be treated as a critical case requiring immediate attention.",
     "high": "This means the event should be treated as a high-priority case.",
@@ -46,11 +57,11 @@ CONCERN_TEXT = {
 }
 
 CASE_PROFILE_TEXT = {
-    "critical_concern_case": "This profile indicates a critical concern case.",
-    "high_priority_event": "This profile indicates a high-priority event.",
-    "monitoring_case": "This profile indicates a case that should remain under monitoring.",
-    "guarded_monitoring_case": "This profile indicates a guarded monitoring case.",
-    "watch_case": "This case is currently in watch status.",
+    "critical_concern_case": "This indicates a critical situation requiring immediate attention.",
+    "high_priority_event": "This indicates a high-priority situation that should remain under close observation.",
+    "monitoring_case": "This indicates a situation that should remain under routine monitoring.",
+    "guarded_monitoring_case": "This indicates a situation that should be monitored cautiously due to remaining uncertainty.",
+    "watch_case": "This indicates a watch-level situation that should be monitored for possible escalation.",
 }
 
 CLAIM_TEXT = {
@@ -126,9 +137,9 @@ def caveat_sentence(primary_caveat: str, caveat_items: list[str]) -> str:
     if not remaining_items:
         return f"The main caveat is that {primary_text}."
 
-    caveat_phrases = [CAVEAT_TEXT.get(item, humanize(item)) for item in remaining_items]
+    caveat_phrases = [CAVEAT_LIST_TEXT.get(item, humanize(item)) for item in remaining_items]
     return (
-        f"The main caveat is that {primary_text}. Additional limitations are that "
+        f"The main caveat is that {primary_text}. Additional limitations include "
         f"{join_phrases(caveat_phrases)}."
     )
 
@@ -159,7 +170,7 @@ def clarification_sentence(payload: dict) -> str:
     )
     return (
         "A second-pass clarification was requested. "
-        f"The specialist identified the main limitation as follows: {limitation}. "
+        f"The specialist identified the main limitation as {limitation}. "
         f"The specialist retained {strongest} as the strongest supporting evidence, "
         f"and noted {alternative} as the closest alternative interpretation."
     )
@@ -183,7 +194,7 @@ def build_report_text(payload: dict) -> str:
 
     summary = (
         f"{event['event_name']} is assessed as a {assessment['severity']} {event['hazard_type']} "
-        f"event with {confidence_phrase(assessment['fusion_confidence'])}, based on the available evidence."
+        f"event with {confidence_phrase(assessment['fusion_confidence'])}, based on the available observational evidence."
     )
     what_happened = (
         f"The event is located in {event['region']['name']}, {event['country']['name']}. "
@@ -191,6 +202,8 @@ def build_report_text(payload: dict) -> str:
     )
     concern_expl = CONCERN_TEXT.get(assessment["concern_level"], "")
     profile_expl = CASE_PROFILE_TEXT.get(assessment["case_profile"], "")
+    if assessment["case_profile"] in CASE_PROFILE_TEXT:
+        concern_expl = ""
     if (
         (assessment["concern_level"], assessment["case_profile"])
         in {
@@ -203,7 +216,7 @@ def build_report_text(payload: dict) -> str:
     assessment_text = join_sentences(
         [
             f"The integrated concern level is {humanize(assessment['concern_level'])}, and the case "
-            f"profile is {humanize(assessment['case_profile'])}.",
+            f"profile is classified as a {humanize(assessment['case_profile'])}.",
             CONFIDENCE_TEXT.get(assessment["fusion_confidence"], ""),
             interpretation_sentence(assessment["interpretation_mode"]),
             concern_expl,

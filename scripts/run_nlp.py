@@ -10,10 +10,12 @@ def main() -> int:
     root = Path(__file__).resolve().parents[1]
     transformer = root / "nlp" / "transformer" / "transform_payload.py"
     ontology_populator = root / "nlp" / "ontology" / "populate_ontology.py"
+    report_generator = root / "nlp" / "generator" / "report_generator.py"
 
     commands = [
         [sys.executable, str(transformer)],
         [sys.executable, str(ontology_populator)],
+        [sys.executable, str(report_generator)],
     ]
 
     for command in commands:

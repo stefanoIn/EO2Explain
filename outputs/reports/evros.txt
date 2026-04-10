@@ -3,13 +3,13 @@ Location: Eastern Macedonia and Thrace, Greece
 Hazard Type: Wildfire
 
 Summary
-Evros is assessed as a moderate wildfire event with moderate confidence, based on the available evidence.
+Evros is assessed as a moderate wildfire event with moderate confidence, based on the available observational evidence.
 
 What Happened
 The event is located in Eastern Macedonia and Thrace, Greece. The system interprets it as a moderate wildfire event.
 
 Assessment
-The integrated concern level is moderate, and the case profile is monitoring case. The system considers this assessment plausible but still caveat-sensitive. The interpretation is cautious because the available support is limited or caveat-heavy. This means the event should be monitored as a moderate concern. This profile indicates a case that should remain under monitoring.
+The integrated concern level is moderate, and the case profile is classified as a monitoring case. The system considers this assessment plausible but still caveat-sensitive. The interpretation is cautious because the available support is limited or caveat-heavy. This indicates a situation that should remain under routine monitoring.
 
 Supporting Evidence
 The wildfire assessment is supported by consistent vegetation-loss and burned-area evidence. The reasoning path relies on vegetation loss and burned-area extent.

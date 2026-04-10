@@ -3,19 +3,19 @@ Location: Emilia-Romagna, Italy
 Hazard Type: Flood
 
 Summary
-Emilia-Romagna is assessed as a severe flood event with high confidence, based on the available evidence.
+Emilia-Romagna is assessed as a severe flood event with high confidence, based on the available observational evidence.
 
 What Happened
 The event is located in Emilia-Romagna, Italy. The system interprets it as a severe flood event.
 
 Assessment
-The integrated concern level is high, and the case profile is high priority event. The system treats this assessment as highly reliable within the available symbolic evidence. The interpretation is qualified by contextual limitations. This means the event should be treated as a high-priority case.
+The integrated concern level is high, and the case profile is classified as a high priority event. The system treats this assessment as highly reliable within the available symbolic evidence. The interpretation is qualified by contextual limitations.
 
 Supporting Evidence
 The flood assessment is supported by a strong multi-signal pattern combining water expansion, newly flooded area, and spectral water change. The reasoning path relies on surface-water increase, newly flooded area, and NDWI change.
 
 Caveats And Limitations
-The main caveat is that post-event imagery was acquired late, so peak impact may no longer be fully visible. Additional limitations are that the measured footprint may underestimate the real extent of the event.
+The main caveat is that post-event imagery was acquired late, so peak impact may no longer be fully visible. Additional limitations include possible underestimation of the event extent.
 
 Clarification
 No second-pass clarification was required because the first-pass specialist assessment was considered sufficient.

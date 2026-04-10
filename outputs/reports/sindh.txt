@@ -3,13 +3,13 @@ Location: Sindh Province, Pakistan
 Hazard Type: Flood
 
 Summary
-Sindh is assessed as a severe flood event with high confidence, based on the available evidence.
+Sindh is assessed as a severe flood event with high confidence, based on the available observational evidence.
 
 What Happened
 The event is located in Sindh Province, Pakistan. The system interprets it as a severe flood event.
 
 Assessment
-The integrated concern level is critical, and the case profile is critical concern case. The system treats this assessment as highly reliable within the available symbolic evidence. The interpretation is qualified by contextual limitations. This means the event should be treated as a critical case requiring immediate attention.
+The integrated concern level is critical, and the case profile is classified as a critical concern case. The system treats this assessment as highly reliable within the available symbolic evidence. The interpretation is qualified by contextual limitations.
 
 Supporting Evidence
 The flood assessment is supported by a strong multi-signal pattern combining water expansion, newly flooded area, and spectral water change. The reasoning path relies on surface-water increase, newly flooded area, and NDWI change.
