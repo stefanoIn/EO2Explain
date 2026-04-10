@@ -20,6 +20,12 @@ EVIDENCE_LABELS = {
     "mean_dnbr": "mean dNBR burn severity",
 }
 
+ALTERNATIVE_CLAIM_TEXT = {
+    "inconclusive_fire_signal": "an inconclusive fire signal",
+    "inconclusive_water_signal": "an inconclusive water signal",
+    "no_alternative_claim": "no alternative claim",
+}
+
 CAVEAT_TEXT = {
     "late_observation": "post-event imagery was acquired late, so peak impact may no longer be fully visible",
     "possible_underestimation": "the measured footprint may underestimate the real extent of the event",
@@ -29,6 +35,22 @@ CAVEAT_TEXT = {
     "coarse_timeline": "the event timing is only coarsely constrained",
     "residual_observation_window": "the observed footprint likely reflects residual conditions rather than peak impact",
     "limited_multisignal_support": "the interpretation is not supported by a full set of corroborating signals",
+}
+
+CONCERN_TEXT = {
+    "critical": "This means the event should be treated as a critical case requiring immediate attention.",
+    "high": "This means the event should be treated as a high-priority case.",
+    "moderate": "This means the event should be monitored as a moderate concern.",
+    "guarded": "This means the event should be handled cautiously because the situation remains uncertain or limited in scope.",
+    "watch": "This means the event is currently in watch status and should be monitored for possible escalation.",
+}
+
+CASE_PROFILE_TEXT = {
+    "critical_concern_case": "This profile indicates a critical concern case.",
+    "high_priority_event": "This profile indicates a high-priority event.",
+    "monitoring_case": "This profile indicates a case that should remain under monitoring.",
+    "guarded_monitoring_case": "This profile indicates a guarded monitoring case.",
+    "watch_case": "This case is currently in watch status.",
 }
 
 CLAIM_TEXT = {
@@ -71,12 +93,12 @@ def join_phrases(items: list[str]) -> str:
     return ", ".join(items[:-1]) + f", and {items[-1]}"
 
 
+def join_sentences(parts: list[str]) -> str:
+    return " ".join(part.strip() for part in parts if part and part.strip())
+
+
 def evidence_phrase(evidence_items: list[str]) -> str:
     return join_phrases([EVIDENCE_LABELS.get(item, humanize(item)) for item in evidence_items])
-
-
-def hazard_phrase(hazard: str) -> str:
-    return {"flood": "flooding", "wildfire": "wildfire damage"}.get(hazard, humanize(hazard))
 
 
 def confidence_phrase(confidence: str) -> str:
@@ -125,11 +147,16 @@ def clarification_sentence(payload: dict) -> str:
         clarification["primary_limitation"],
         humanize(clarification["primary_limitation"]),
     )
-    strongest = EVIDENCE_LABELS.get(
-        evidence["strongest_evidence"],
-        humanize(evidence["strongest_evidence"]),
+    strongest_raw = evidence.get("strongest_evidence", "none")
+    strongest = (
+        "no single strongest evidence item"
+        if not strongest_raw or strongest_raw == "none"
+        else EVIDENCE_LABELS.get(strongest_raw, humanize(strongest_raw))
     )
-    alternative = humanize(clarification["alternative_claim"])
+    alternative = ALTERNATIVE_CLAIM_TEXT.get(
+        clarification["alternative_claim"],
+        humanize(clarification["alternative_claim"]),
+    )
     return (
         "A second-pass clarification was requested. "
         f"The specialist identified the main limitation as follows: {limitation}. "
@@ -142,7 +169,7 @@ def provenance_sentence(provenance: dict) -> str:
     agent = humanize(provenance["source_agent"])
     rule = provenance["rule_label"]
     return (
-        f"The final assessment was produced by the {agent} and grounded in the symbolic "
+        f"This assessment was produced by the {agent} and grounded in the symbolic "
         f"rule `{rule}`."
     )
 
@@ -156,19 +183,33 @@ def build_report_text(payload: dict) -> str:
 
     summary = (
         f"{event['event_name']} is assessed as a {assessment['severity']} {event['hazard_type']} "
-        f"event with {confidence_phrase(assessment['fusion_confidence'])}."
+        f"event with {confidence_phrase(assessment['fusion_confidence'])}, based on the available evidence."
     )
     what_happened = (
         f"The event is located in {event['region']['name']}, {event['country']['name']}. "
-        f"The system interprets it as {hazard_phrase(event['hazard_type'])} at "
-        f"{humanize(assessment['severity'])} severity."
+        f"The system interprets it as a {humanize(assessment['severity'])} {humanize(event['hazard_type'])} event."
     )
-    assessment_text = (
-        f"The integrated concern level is {humanize(assessment['concern_level'])}, and the case "
-        f"profile is {humanize(assessment['case_profile'])}. "
-        f"{CONFIDENCE_TEXT.get(assessment['fusion_confidence'], '')} "
-        f"{interpretation_sentence(assessment['interpretation_mode'])}"
-    ).strip()
+    concern_expl = CONCERN_TEXT.get(assessment["concern_level"], "")
+    profile_expl = CASE_PROFILE_TEXT.get(assessment["case_profile"], "")
+    if (
+        (assessment["concern_level"], assessment["case_profile"])
+        in {
+            ("watch", "watch_case"),
+            ("high", "high_priority_event"),
+            ("critical", "critical_concern_case"),
+        }
+    ) or (profile_expl and profile_expl == concern_expl):
+        profile_expl = ""
+    assessment_text = join_sentences(
+        [
+            f"The integrated concern level is {humanize(assessment['concern_level'])}, and the case "
+            f"profile is {humanize(assessment['case_profile'])}.",
+            CONFIDENCE_TEXT.get(assessment["fusion_confidence"], ""),
+            interpretation_sentence(assessment["interpretation_mode"]),
+            concern_expl,
+            profile_expl,
+        ]
+    )
     evidence_text = (
         f"{CLAIM_TEXT.get(assessment['claim_label'], 'The assessment is grounded in the available symbolic evidence.')} "
         f"The reasoning path relies on {evidence_phrase(evidence['evidence_items'])}."

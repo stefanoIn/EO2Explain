@@ -3,13 +3,13 @@ Location: Mediterranean Region, Turkey
 Hazard Type: Wildfire
 
 Summary
-Antalya is assessed as a mild wildfire event with low confidence.
+Antalya is assessed as a mild wildfire event with low confidence, based on the available evidence.
 
 What Happened
-The event is located in Mediterranean Region, Turkey. The system interprets it as wildfire damage at mild severity.
+The event is located in Mediterranean Region, Turkey. The system interprets it as a mild wildfire event.
 
 Assessment
-The integrated concern level is watch, and the case profile is watch case. The system considers this assessment tentative and sensitive to uncertainty in the available evidence. The interpretation remains tentative and should be read as an early warning rather than a definitive conclusion.
+The integrated concern level is watch, and the case profile is watch case. The system considers this assessment tentative and sensitive to uncertainty in the available evidence. The interpretation remains tentative and should be read as an early warning rather than a definitive conclusion. This means the event is currently in watch status and should be monitored for possible escalation.
 
 Supporting Evidence
 Wildfire damage is still indicated, but the spectral burn evidence is mixed relative to the vegetation-loss and burned-area signals. The reasoning path relies on vegetation loss and burned-area extent.
@@ -18,10 +18,10 @@ Caveats And Limitations
 The main caveat is that the burn signal is weak or partly contradictory. Additional limitations are that the event timeline mixes confirmed and approximate temporal information.
 
 Clarification
-A second-pass clarification was requested. The specialist identified the main limitation as follows: the burn signal is weak or partly contradictory. The specialist retained vegetation loss as the strongest supporting evidence, and noted inconclusive fire signal as the closest alternative interpretation.
+A second-pass clarification was requested. The specialist identified the main limitation as follows: the burn signal is weak or partly contradictory. The specialist retained vegetation loss as the strongest supporting evidence, and noted an inconclusive fire signal as the closest alternative interpretation.
 
 Provenance
-The final assessment was produced by the forest agent and grounded in the symbolic rule `rule_mild_fire_mixed_signal`.
+This assessment was produced by the forest agent and grounded in the symbolic rule `rule_mild_fire_mixed_signal`.
 
 Symbolic Details
 - Claim label: mixed_fire_damage

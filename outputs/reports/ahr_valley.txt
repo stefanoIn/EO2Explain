@@ -3,13 +3,13 @@ Location: Rhineland-Palatinate, Germany
 Hazard Type: Flood
 
 Summary
-Ahr Valley is assessed as a mild flood event with moderate confidence.
+Ahr Valley is assessed as a mild flood event with moderate confidence, based on the available evidence.
 
 What Happened
-The event is located in Rhineland-Palatinate, Germany. The system interprets it as flooding at mild severity.
+The event is located in Rhineland-Palatinate, Germany. The system interprets it as a mild flood event.
 
 Assessment
-The integrated concern level is guarded, and the case profile is guarded monitoring case. The system considers this assessment plausible but still caveat-sensitive. The interpretation is cautious because the available support is limited or caveat-heavy.
+The integrated concern level is guarded, and the case profile is guarded monitoring case. The system considers this assessment plausible but still caveat-sensitive. The interpretation is cautious because the available support is limited or caveat-heavy. This means the event should be handled cautiously because the situation remains uncertain or limited in scope. This profile indicates a guarded monitoring case.
 
 Supporting Evidence
 The system detects a residual flood footprint, suggesting that flood impact remains visible even though the image may have missed peak conditions. The reasoning path relies on surface-water increase and newly flooded area.
@@ -18,10 +18,10 @@ Caveats And Limitations
 The main caveat is that the observed footprint likely reflects residual conditions rather than peak impact. Additional limitations are that post-event imagery was acquired late, so peak impact may no longer be fully visible, the measured footprint may underestimate the real extent of the event, and the water signal is weak and must be interpreted cautiously.
 
 Clarification
-A second-pass clarification was requested. The specialist identified the main limitation as follows: the observed footprint likely reflects residual conditions rather than peak impact. The specialist retained newly flooded area as the strongest supporting evidence, and noted inconclusive water signal as the closest alternative interpretation.
+A second-pass clarification was requested. The specialist identified the main limitation as follows: the observed footprint likely reflects residual conditions rather than peak impact. The specialist retained newly flooded area as the strongest supporting evidence, and noted an inconclusive water signal as the closest alternative interpretation.
 
 Provenance
-The final assessment was produced by the water agent and grounded in the symbolic rule `rule_residual_flood_late_observation`.
+This assessment was produced by the water agent and grounded in the symbolic rule `rule_residual_flood_late_observation`.
 
 Symbolic Details
 - Claim label: residual_flood_signal
