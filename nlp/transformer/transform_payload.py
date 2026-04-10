@@ -147,7 +147,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--input-dir",
-        default="outputs/semantic_explanations",
+        default="mas/outputs/semantic_explanations",
         help="Directory containing the raw Jason-exported JSON files.",
     )
     parser.add_argument(

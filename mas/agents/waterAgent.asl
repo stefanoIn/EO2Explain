@@ -1,5 +1,5 @@
-{ include("mas/beliefs/events.asl") }
-{ include("mas/beliefs/indicators.asl") }
+{ include("./beliefs/events.asl") }
+{ include("./beliefs/indicators.asl") }
 
 !start.
 

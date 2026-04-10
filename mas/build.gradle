@@ -2,7 +2,7 @@
    Project eo
 
    Gradle build file for Jason Application
-   April 10, 2026 - 18:40:22
+   April 10, 2026 - 19:00:06
 */
 
 plugins {
@@ -32,8 +32,8 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDir 'src/java'
-            srcDir 'src/env'
+            srcDir 'java'
+            srcDir 'env'
             srcDir '.' // some old jason apps store .java files in project root
         }
         resources {
@@ -73,7 +73,7 @@ shadowJar {
         }
     }
     archiveFileName = "jason-${project.name}-all.jar" // the name must start with jacamo so that jacamo...jar is found in the classpath
-    from (project.projectDir.absolutePath + '/src') {
+    from (project.projectDir.absolutePath) {
         include '**/*.asl'
         include '**/*.xml'
         include '**/*.sai'
@@ -101,4 +101,3 @@ shadowJar {
         println("You can run your application with: java -jar build/libs/jason-${project.name}-all.jar")
     }
 }
-

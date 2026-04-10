@@ -1,8 +1,8 @@
-{ include("mas/beliefs/events.asl") }
-{ include("mas/beliefs/indicators.asl") }
+{ include("./beliefs/events.asl") }
+{ include("./beliefs/indicators.asl") }
 // Reference labels are included only for post-hoc evaluation logging, not for
 // live coordination or runtime decision making.
-{ include("mas/beliefs/reference_labels.asl") }
+{ include("./beliefs/reference_labels.asl") }
 
 !start.
 

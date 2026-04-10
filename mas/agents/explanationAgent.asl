@@ -1,4 +1,4 @@
-{ include("mas/beliefs/events.asl") }
+{ include("./beliefs/events.asl") }
 
 !start.
 
