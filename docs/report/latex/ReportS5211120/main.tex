@@ -155,6 +155,8 @@ The workflow implemented in these notebooks consists of the following steps:
 \item exporting the results to CSV tables
 \end{enumerate}
 
+GeoTIFF inputs can be retrieved from the Copernicus Data Space Ecosystem by means of a separate Python client developed for this purpose, namely the \href{https://github.com/stefanoIn/CDSE-api}{\texttt{CDSE-api} client}. This client can be used to download TIFF products for new areas of interest, dates, and events, making the EO2Explain pipeline reusable beyond the specific case studies discussed in this report. This download component is external to the reasoning layer, but it is relevant because it provides a practical way to acquire the EO evidence later processed by the notebooks and, consequently, by the MAS.
+
 \subsection{Wildfire Indicators}
 
 Wildfire analysis was based on the computation of NDVI, NBR, and dNBR.
