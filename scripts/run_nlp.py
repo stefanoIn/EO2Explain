@@ -9,8 +9,18 @@ from pathlib import Path
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     transformer = root / "nlp" / "transformer" / "transform_payload.py"
-    command = [sys.executable, str(transformer)]
-    return subprocess.call(command, cwd=root)
+    ontology_populator = root / "nlp" / "ontology" / "populate_ontology.py"
+
+    commands = [
+        [sys.executable, str(transformer)],
+        [sys.executable, str(ontology_populator)],
+    ]
+
+    for command in commands:
+        result = subprocess.call(command, cwd=root)
+        if result != 0:
+            return result
+    return 0
 
 
 if __name__ == "__main__":

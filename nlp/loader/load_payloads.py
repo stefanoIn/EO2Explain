@@ -5,9 +5,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+ROOT = Path(__file__).resolve().parents[2]
 
-def load_payloads(payload_dir: Path | str = "outputs/transformed") -> list[dict[str, Any]]:
-    directory = Path(payload_dir)
+
+def load_payloads(payload_dir: Path | str | None = None) -> list[dict[str, Any]]:
+    directory = Path(payload_dir) if payload_dir is not None else ROOT / "outputs/transformed"
     payloads = []
     for path in sorted(directory.glob("*.json")):
         if path.name == "index.json":

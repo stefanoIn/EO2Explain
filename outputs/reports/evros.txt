@@ -1,0 +1,31 @@
+EO2Explain Event Report: Evros
+Location: Eastern Macedonia and Thrace, Greece
+Hazard Type: Wildfire
+
+Summary
+Evros is assessed as a moderate wildfire event with moderate confidence.
+
+What Happened
+The event is located in Eastern Macedonia and Thrace, Greece. The system interprets it as wildfire damage at moderate severity.
+
+Assessment
+The integrated concern level is moderate, and the case profile is monitoring case. The system considers this assessment plausible but still caveat-sensitive. The interpretation is cautious because the available support is limited or caveat-heavy.
+
+Supporting Evidence
+The wildfire assessment is supported by consistent vegetation-loss and burned-area evidence. The reasoning path relies on vegetation loss and burned-area extent.
+
+Caveats And Limitations
+The main caveat is that the event timing is only coarsely constrained.
+
+Clarification
+No second-pass clarification was required because the first-pass specialist assessment was considered sufficient.
+
+Provenance
+The final assessment was produced by the forest agent and grounded in the symbolic rule `rule_moderate_fire_vegetation_extent`.
+
+Symbolic Details
+- Claim label: coherent_fire_damage
+- Primary caveat: coarse_timeline
+- Clarification status: no_clarification
+- Source agent: forest_agent
+- Rule label: rule_moderate_fire_vegetation_extent

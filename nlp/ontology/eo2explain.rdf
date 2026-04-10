@@ -1,0 +1,328 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xml:base="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain/"
+    xmlns:eo2explain="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+
+    <owl:Ontology rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain"/>
+
+    <!-- Object properties -->
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasAssessment">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Event"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasEvidenceBundle">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#EvidenceBundle"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasClarification">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Clarification"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasProvenance">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Provenance"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasExplanationTrace">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Event"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExplanationTrace"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasCountry">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Event"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Country"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasRegion">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Event"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Region"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasHazard">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Hazard"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasClaim">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ClaimLabel"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasSeverity">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Severity"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasConfidence">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConfidenceLevel"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasConcern">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConcernLevel"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasExposure">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExposureLevel"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasEvidenceItem">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#EvidenceBundle"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Evidence"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasCaveat">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#EvidenceBundle"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasPrimaryCaveat">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#EvidenceBundle"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasStrongestEvidence">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#EvidenceBundle"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Evidence"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasPrimaryLimitation">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Clarification"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasAlternativeClaim">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Clarification"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ClaimLabel"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasSourceAgentEntity">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Provenance"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Agent"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasRule">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Provenance"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Rule"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#tracesAssessment">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExplanationTrace"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#tracesEvidenceBundle">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExplanationTrace"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#EvidenceBundle"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#tracesClarification">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExplanationTrace"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Clarification"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#tracesProvenance">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExplanationTrace"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Provenance"/>
+    </owl:ObjectProperty>
+
+    <!-- Data properties -->
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasEventId">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Event"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasName">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasClaimLabel">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasCaseProfile">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasInterpretationMode">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasClarificationStatus">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Clarification"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasAlternativeClaimLabel">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Clarification"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasSourceAgent">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Provenance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasRuleLabel">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Provenance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasHeadline">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExplanationTrace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#hasSummary">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExplanationTrace"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+
+    <!-- Classes -->
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Event"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Assessment"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#EvidenceBundle"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Clarification"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Provenance"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExplanationTrace"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Agent"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Rule"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ClaimLabel"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Evidence"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Hazard"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Flood">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Hazard"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Wildfire">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Hazard"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Severity"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConfidenceLevel"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExposureLevel"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConcernLevel"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Location"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Country">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Location"/>
+    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Region">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Location"/>
+    </owl:Class>
+
+    <!-- Controlled vocabulary individuals -->
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#flood_hazard">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Flood"/>
+        <eo2explain:hasName>Flood</eo2explain:hasName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#wildfire_hazard">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Wildfire"/>
+        <eo2explain:hasName>Wildfire</eo2explain:hasName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#mild_severity">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Severity"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#moderate_severity">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Severity"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#severe_severity">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Severity"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#low_confidence">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConfidenceLevel"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#medium_confidence">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConfidenceLevel"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#high_confidence">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConfidenceLevel"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#low_exposure">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExposureLevel"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#medium_exposure">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExposureLevel"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#high_exposure">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ExposureLevel"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#watch_concern">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConcernLevel"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#guarded_concern">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConcernLevel"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#moderate_concern">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConcernLevel"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#elevated_concern">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConcernLevel"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#high_concern">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConcernLevel"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#critical_concern">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ConcernLevel"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#water_increase_pct">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Evidence"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#newly_flooded_area_pct">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Evidence"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#ndwi_change">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Evidence"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#vegetation_loss_pct">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Evidence"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#burned_area_pct">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Evidence"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#mean_dnbr">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Evidence"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#late_observation">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#possible_underestimation">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#weak_water_signal">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#residual_observation_window">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#burn_signal_weak">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#timeline_uncertain">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#coarse_timeline">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#limited_multisignal_support">
+        <rdf:type rdf:resource="http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain#Caveat"/>
+    </owl:NamedIndividual>
+
+</rdf:RDF>
