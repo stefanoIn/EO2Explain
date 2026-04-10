@@ -38,7 +38,7 @@ public class export_payload extends DefaultInternalAction {
         Term payloadTerm = args[1].capply(un);
 
         String eventId = sanitizeFileStem(eventTerm.toString());
-        Path outputDir = Paths.get("outputs", "semantic_explanations");
+        Path outputDir = Paths.get("..", "outputs", "semantic_explanations");
         Files.createDirectories(outputDir);
 
         Path outputFile = outputDir.resolve(eventId + ".json");
