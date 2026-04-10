@@ -68,6 +68,7 @@
 
 +semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace)[source(explanation_agent)] :
     integrated_case(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim) <-
+    ?hazard_trace(E, SourceAgent, RuleLabel, EvidenceList, CaveatList);
     +final_explanation_payload(E, semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace));
     .custom.export_payload(E, semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace), ExportPath);
     +payload_export(E, ExportPath);
