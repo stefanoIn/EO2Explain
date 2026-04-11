@@ -1,0 +1,11 @@
+[EXPLANATION AGENT] --> Started explanation packager.
+[COORDINATOR AGENT] --> Started coordinator workflow.
+[FOREST AGENT] --> Started wildfire specialist.
+[WATER AGENT] --> Started water specialist.
+[COORDINATOR AGENT] --> Requesting assessment for a from water_agent.
+[COORDINATOR AGENT] --> All assessment requests dispatched.
+[WATER AGENT] --> First-pass assessment for a: severity=severe, confidence=high, claim=strong_multisignal_flooding.
+[COORDINATOR AGENT] --> Received first-pass assessment for a from water_agent with severity=severe, confidence=high.
+[COORDINATOR AGENT] --> Fused final case for a with concern=critical, profile=critical_concern_case.
+[EXPLANATION AGENT] --> Packaging explanation for a with headline a | severe flood | high.
+[COORDINATOR AGENT] --> Exported semantic explanation for a to ../outputs/semantic_explanations/a.json.

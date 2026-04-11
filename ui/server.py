@@ -61,8 +61,10 @@ def create_app() -> Flask:
 
         mas_stdout_path = job_dir / "logs" / "mas_stdout.log"
         mas_stderr_path = job_dir / "logs" / "mas_stderr.log"
+        agent_trace_path = job_dir / "logs" / "agent_trace.log"
         mas_stdout = mas_stdout_path.read_text(encoding="utf-8").strip() if mas_stdout_path.exists() else None
         mas_stderr = mas_stderr_path.read_text(encoding="utf-8").strip() if mas_stderr_path.exists() else None
+        agent_trace = agent_trace_path.read_text(encoding="utf-8").strip() if agent_trace_path.exists() else None
 
         report_raw = reports[0].read_text(encoding="utf-8")
         return render_template(
@@ -75,6 +77,7 @@ def create_app() -> Flask:
             ontology_path=ontology[0] if ontology else None,
             ontology_warning=ontology_warning,
             ontology_warning_summary=ontology_warning_summary,
+            agent_trace=agent_trace,
             mas_stdout=mas_stdout,
             mas_stderr=mas_stderr,
         )
@@ -88,6 +91,7 @@ def create_app() -> Flask:
             "semantic": next((job_dir / "outputs" / "semantic_explanations").glob("*.json"), None),
             "figure": next((job_dir / "outputs" / "figures").glob("*.png"), None),
             "ontology": next((job_dir / "outputs" / "ontology").glob("*.rdf"), None),
+            "agent_trace": job_dir / "logs" / "agent_trace.log",
             "mas_stdout": job_dir / "logs" / "mas_stdout.log",
             "mas_stderr": job_dir / "logs" / "mas_stderr.log",
         }

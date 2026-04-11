@@ -1092,6 +1092,19 @@ body[data-page="result"] .result-back {
   margin-top: 1.15rem;
 }
 
+.result-job-id {
+  margin: 0.65rem 0 0;
+}
+
+.result-job-id code {
+  display: inline-block;
+  padding: 0.18rem 0.45rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(232, 240, 237, 0.92);
+  font-size: 0.88em;
+}
+
 .panel-heading {
   margin-bottom: 1rem;
 }

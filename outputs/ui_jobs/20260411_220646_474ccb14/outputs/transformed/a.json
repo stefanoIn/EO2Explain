@@ -1,0 +1,80 @@
+{
+  "event_id": "a",
+  "event": {
+    "event_id": "a",
+    "event_name": "a",
+    "hazard_type": "wildfire",
+    "country": {
+      "id": "a",
+      "name": "a"
+    },
+    "region": {
+      "id": "a",
+      "name": "a"
+    }
+  },
+  "assessment": {
+    "severity": "mild",
+    "claim_label": "inconclusive_fire_signal",
+    "fusion_confidence": "low",
+    "concern_level": "watch",
+    "interpretation_mode": "tentative",
+    "case_profile": "watch_case",
+    "exposure_class": "low"
+  },
+  "evidence": {
+    "primary_caveat": "late_observation",
+    "evidence_items": [],
+    "caveat_items": [
+      "late_observation",
+      "possible_underestimation"
+    ],
+    "strongest_evidence": "no_dominant_evidence"
+  },
+  "clarification": {
+    "clarification_status": "clarification_provided",
+    "primary_limitation": "late_observation",
+    "alternative_claim": "no_alternative_claim"
+  },
+  "user_assessment": {
+    "user_assessment": "severe",
+    "user_assessment_alignment": "differs"
+  },
+  "provenance": {
+    "source_agent": "forest_agent",
+    "rule_label": "rule_inconclusive_fire_signal"
+  },
+  "headline": {
+    "event_name": "a",
+    "region_name": "a",
+    "country_name": "a",
+    "severity": "mild",
+    "hazard_type": "wildfire",
+    "fusion_confidence": "low"
+  },
+  "debug": {
+    "short_headline": "a | mild wildfire | low",
+    "short_summary": "claim=inconclusive_fire_signal; concern=watch; profile=watch_case; caveat=late_observation; clarification=clarification_provided; strongest_evidence=no_dominant_evidence; alternative_claim=no_alternative_claim"
+  },
+  "trace": {
+    "source_agent": "forest_agent",
+    "rule_label": "rule_inconclusive_fire_signal",
+    "claim_label": "inconclusive_fire_signal",
+    "evidence_items": [],
+    "caveat_items": [
+      "late_observation",
+      "possible_underestimation"
+    ],
+    "clarification_trace": {
+      "clarification_status": "clarification_provided",
+      "primary_limitation": "late_observation",
+      "strongest_evidence": "no_dominant_evidence",
+      "alternative_claim": "no_alternative_claim"
+    }
+  },
+  "metadata": {
+    "source_raw_file": "a.json",
+    "source_functor": "semantic_explanation",
+    "source_predicate": "semantic_explanation(a,event_frame(event_id(a),event_name(\"a\"),hazard_type(wildfire),country(a,\"a\"),region(a,\"a\")),assessment_frame(severity(mild),claim_label(inconclusive_fire_signal),fusion_confidence(low),concern_level(watch),interpretation_mode(tentative),case_profile(watch_case),exposure_class(low)),evidence_frame(primary_caveat(late_observation),evidence_items([]),caveat_items([late_observation,possible_underestimation]),strongest_evidence(no_dominant_evidence)),clarification_frame(clarification_status(clarification_provided),primary_limitation(late_observation),alternative_claim(no_alternative_claim)),user_assessment_frame(user_assessment(severe),user_assessment_alignment(differs)),provenance_frame(source_agent(forest_agent),rule_label(rule_inconclusive_fire_signal)),headline_frame(event_name(\"a\"),region_name(\"a\"),country_name(\"a\"),severity(mild),hazard_type(wildfire),fusion_confidence(low)),debug_text(short_headline(\"a | mild wildfire | low\"),short_summary(\"claim=inconclusive_fire_signal; concern=watch; profile=watch_case; caveat=late_observation; clarification=clarification_provided; strongest_evidence=no_dominant_evidence; alternative_claim=no_alternative_claim\")),explanation_trace(forest_agent,rule_inconclusive_fire_signal,inconclusive_fire_signal,[],[late_observation,possible_underestimation],clarification_trace(clarification_provided,late_observation,no_dominant_evidence,no_alternative_claim)))"
+  }
+}

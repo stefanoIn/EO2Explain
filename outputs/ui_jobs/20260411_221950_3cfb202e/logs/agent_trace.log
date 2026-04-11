@@ -1,0 +1,14 @@
+[WATER AGENT] --> Started water specialist.
+[COORDINATOR AGENT] --> Started coordinator workflow.
+[EXPLANATION AGENT] --> Started explanation packager.
+[FOREST AGENT] --> Started wildfire specialist.
+[COORDINATOR AGENT] --> Requesting assessment for ad from water_agent.
+[COORDINATOR AGENT] --> All assessment requests dispatched.
+[WATER AGENT] --> First-pass assessment for ad: severity=mild, status=hazard_assessed, confidence=medium, claim=residual_flood_signal.
+[COORDINATOR AGENT] --> Received first-pass assessment for ad from water_agent with severity=mild, status=hazard_assessed, confidence=medium.
+[COORDINATOR AGENT] --> Requesting clarification for ad from water_agent because caveat=residual_observation_window.
+[WATER AGENT] --> Clarification for ad: limitation=residual_observation_window, strongest_evidence=newly_flooded_area_pct.
+[COORDINATOR AGENT] --> Received clarification for ad from water_agent with limitation=residual_observation_window.
+[COORDINATOR AGENT] --> Fused final case for ad with concern=guarded, profile=guarded_monitoring_case.
+[EXPLANATION AGENT] --> Packaging explanation for ad with headline ada | mild flood | medium.
+[COORDINATOR AGENT] --> Exported semantic explanation for ad to ../outputs/semantic_explanations/ad.json.

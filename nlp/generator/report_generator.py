@@ -142,6 +142,40 @@ def interpretation_sentence(interpretation_mode: str) -> str:
     )
 
 
+def is_inconclusive_assessment(assessment: dict) -> bool:
+    return assessment.get("conclusion_status", "hazard_assessed") == "inconclusive"
+
+
+def inconclusive_summary(event: dict, assessment: dict) -> str:
+    return (
+        f"{event['event_name']} could not be assigned a reliable {event['hazard_type']} severity "
+        f"from the available evidence. The system keeps the case at {confidence_phrase(assessment['fusion_confidence'])} "
+        "and treats it as an inconclusive signal rather than a confirmed hazard conclusion."
+    )
+
+
+def inconclusive_what_happened(event: dict) -> str:
+    return (
+        f"The event is located in {event['region']['name']}, {event['country']['name']}. "
+        f"The system did not find enough coherent {humanize(event['hazard_type'])}-related evidence "
+        "to reach a firm conclusion."
+    )
+
+
+def inconclusive_evidence_text(event: dict, evidence: dict, assessment: dict) -> str:
+    if evidence["evidence_items"]:
+        return (
+            f"{CLAIM_TEXT.get(assessment['claim_label'], 'The available evidence remains inconclusive.')} "
+            f"The partial reasoning path considered {evidence_phrase(evidence['evidence_items'])}, "
+            "but those indicators were not sufficient to support a firm conclusion."
+        )
+    return (
+        f"{CLAIM_TEXT.get(assessment['claim_label'], 'The available evidence remains inconclusive.')} "
+        f"No supporting {humanize(event['hazard_type'])}-specific indicators crossed the thresholds "
+        "required for a reliable conclusion."
+    )
+
+
 def caveat_sentence(primary_caveat: str, caveat_items: list[str]) -> str:
     if not caveat_items:
         return "No major caveats were attached to this assessment."
@@ -205,6 +239,9 @@ def user_assessment_sentence(payload: dict) -> str | None:
     provided = user_assessment.get("user_assessment", "none")
     alignment = user_assessment.get("user_assessment_alignment", "not_provided")
     inferred = payload["assessment"]["severity"]
+    assessment = payload["assessment"]
+    claim_label = assessment["claim_label"]
+    hazard_type = payload["event"]["hazard_type"]
 
     if provided in {"none", "", None} or alignment == "not_provided":
         return None
@@ -222,6 +259,14 @@ def user_assessment_sentence(payload: dict) -> str | None:
             f" The interpretation is additionally qualified by {CAVEAT_TEXT.get(primary_caveat, humanize(primary_caveat))}."
         )
 
+    if is_inconclusive_assessment(assessment):
+        return (
+            f"A user-provided severity of {humanize(provided)} was supplied, but the system could not reach "
+            f"a reliable {humanize(hazard_type)} severity conclusion. "
+            f"{CLAIM_TEXT.get(claim_label, 'The available evidence remains inconclusive.')}"
+            f"{caveat_clause}"
+        )
+
     return (
         f"A user-provided severity of {humanize(provided)} was supplied, but the system inferred "
         f"a {humanize(inferred)} event. {CLAIM_TEXT.get(payload['assessment']['claim_label'], 'The available symbolic evidence supports the inferred severity rather than the user-provided one.')}"
@@ -236,15 +281,20 @@ def build_report_text(payload: dict) -> str:
     provenance = payload["provenance"]
     clarification = payload["clarification"]
     user_assessment_text = user_assessment_sentence(payload)
+    inconclusive = is_inconclusive_assessment(assessment)
 
-    summary = (
-        f"{event['event_name']} is assessed as a {assessment['severity']} {event['hazard_type']} "
-        f"event with {confidence_phrase(assessment['fusion_confidence'])}, based on the available observational evidence."
-    )
-    what_happened = (
-        f"The event is located in {event['region']['name']}, {event['country']['name']}. "
-        f"The system interprets it as a {humanize(assessment['severity'])} {humanize(event['hazard_type'])} event."
-    )
+    if inconclusive:
+        summary = inconclusive_summary(event, assessment)
+        what_happened = inconclusive_what_happened(event)
+    else:
+        summary = (
+            f"{event['event_name']} is assessed as a {assessment['severity']} {event['hazard_type']} "
+            f"event with {confidence_phrase(assessment['fusion_confidence'])}, based on the available observational evidence."
+        )
+        what_happened = (
+            f"The event is located in {event['region']['name']}, {event['country']['name']}. "
+            f"The system interprets it as a {humanize(assessment['severity'])} {humanize(event['hazard_type'])} event."
+        )
     concern_expl = CONCERN_TEXT.get(assessment["concern_level"], "")
     profile_expl = CASE_PROFILE_TEXT.get(assessment["case_profile"], "")
     if assessment["case_profile"] in CASE_PROFILE_TEXT:
@@ -268,14 +318,19 @@ def build_report_text(payload: dict) -> str:
             profile_expl,
         ]
     )
-    evidence_text = (
-        f"{CLAIM_TEXT.get(assessment['claim_label'], 'The assessment is grounded in the available symbolic evidence.')} "
-        f"The reasoning path relies on {evidence_phrase(evidence['evidence_items'])}."
-    )
+    if inconclusive:
+        evidence_text = inconclusive_evidence_text(event, evidence, assessment)
+    else:
+        evidence_text = (
+            f"{CLAIM_TEXT.get(assessment['claim_label'], 'The assessment is grounded in the available symbolic evidence.')} "
+            f"The reasoning path relies on {evidence_phrase(evidence['evidence_items'])}."
+        )
     caveats_text = caveat_sentence(evidence["primary_caveat"], evidence["caveat_items"])
     clarification_text = clarification_sentence(payload)
     provenance_text = provenance_sentence(provenance)
     symbolic = [
+        f"- Conclusion status: {assessment.get('conclusion_status', 'hazard_assessed')}",
+        f"- Severity label: {assessment['severity']}",
         f"- Claim label: {assessment['claim_label']}",
         f"- Primary caveat: {evidence['primary_caveat']}",
         f"- Clarification status: {clarification['clarification_status']}",

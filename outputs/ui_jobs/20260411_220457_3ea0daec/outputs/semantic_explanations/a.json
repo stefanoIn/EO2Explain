@@ -1,0 +1,433 @@
+
+{
+    "functor": "semantic_explanation",
+    "predicate": "semantic_explanation(a,event_frame(event_id(a),event_name(\"a\"),hazard_type(flood),country(a,\"a\"),region(a,\"a\")),assessment_frame(severity(severe),claim_label(strong_multisignal_flooding),fusion_confidence(high),concern_level(critical),interpretation_mode(qualified),case_profile(critical_concern_case),exposure_class(high)),evidence_frame(primary_caveat(late_observation),evidence_items([water_increase_pct,newly_flooded_area_pct,ndwi_change]),caveat_items([late_observation,possible_underestimation]),strongest_evidence(none)),clarification_frame(clarification_status(no_clarification),primary_limitation(no_additional_limitation),alternative_claim(no_alternative_claim)),user_assessment_frame(user_assessment(moderate),user_assessment_alignment(differs)),provenance_frame(source_agent(water_agent),rule_label(rule_severe_flood_multisignal)),headline_frame(event_name(\"a\"),region_name(\"a\"),country_name(\"a\"),severity(severe),hazard_type(flood),fusion_confidence(high)),debug_text(short_headline(\"a | severe flood | high\"),short_summary(\"claim=strong_multisignal_flooding; concern=critical; profile=critical_concern_case; caveat=late_observation; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\")),explanation_trace(water_agent,rule_severe_flood_multisignal,strong_multisignal_flooding,[water_increase_pct,newly_flooded_area_pct,ndwi_change],[late_observation,possible_underestimation],clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim)))",
+    "terms": [
+        {
+            "functor": "a",
+            "predicate": "a"
+        },
+        {
+            "functor": "event_frame",
+            "predicate": "event_frame(event_id(a),event_name(\"a\"),hazard_type(flood),country(a,\"a\"),region(a,\"a\"))",
+            "terms": [
+                {
+                    "functor": "event_id",
+                    "predicate": "event_id(a)",
+                    "terms": [
+                        {
+                            "functor": "a",
+                            "predicate": "a"
+                        }
+                    ]
+                },
+                {
+                    "functor": "event_name",
+                    "predicate": "event_name(\"a\")",
+                    "terms": [
+                        "a"
+                    ]
+                },
+                {
+                    "functor": "hazard_type",
+                    "predicate": "hazard_type(flood)",
+                    "terms": [
+                        {
+                            "functor": "flood",
+                            "predicate": "flood"
+                        }
+                    ]
+                },
+                {
+                    "functor": "country",
+                    "predicate": "country(a,\"a\")",
+                    "terms": [
+                        {
+                            "functor": "a",
+                            "predicate": "a"
+                        },
+                        "a"
+                    ]
+                },
+                {
+                    "functor": "region",
+                    "predicate": "region(a,\"a\")",
+                    "terms": [
+                        {
+                            "functor": "a",
+                            "predicate": "a"
+                        },
+                        "a"
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "assessment_frame",
+            "predicate": "assessment_frame(severity(severe),claim_label(strong_multisignal_flooding),fusion_confidence(high),concern_level(critical),interpretation_mode(qualified),case_profile(critical_concern_case),exposure_class(high))",
+            "terms": [
+                {
+                    "functor": "severity",
+                    "predicate": "severity(severe)",
+                    "terms": [
+                        {
+                            "functor": "severe",
+                            "predicate": "severe"
+                        }
+                    ]
+                },
+                {
+                    "functor": "claim_label",
+                    "predicate": "claim_label(strong_multisignal_flooding)",
+                    "terms": [
+                        {
+                            "functor": "strong_multisignal_flooding",
+                            "predicate": "strong_multisignal_flooding"
+                        }
+                    ]
+                },
+                {
+                    "functor": "fusion_confidence",
+                    "predicate": "fusion_confidence(high)",
+                    "terms": [
+                        {
+                            "functor": "high",
+                            "predicate": "high"
+                        }
+                    ]
+                },
+                {
+                    "functor": "concern_level",
+                    "predicate": "concern_level(critical)",
+                    "terms": [
+                        {
+                            "functor": "critical",
+                            "predicate": "critical"
+                        }
+                    ]
+                },
+                {
+                    "functor": "interpretation_mode",
+                    "predicate": "interpretation_mode(qualified)",
+                    "terms": [
+                        {
+                            "functor": "qualified",
+                            "predicate": "qualified"
+                        }
+                    ]
+                },
+                {
+                    "functor": "case_profile",
+                    "predicate": "case_profile(critical_concern_case)",
+                    "terms": [
+                        {
+                            "functor": "critical_concern_case",
+                            "predicate": "critical_concern_case"
+                        }
+                    ]
+                },
+                {
+                    "functor": "exposure_class",
+                    "predicate": "exposure_class(high)",
+                    "terms": [
+                        {
+                            "functor": "high",
+                            "predicate": "high"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "evidence_frame",
+            "predicate": "evidence_frame(primary_caveat(late_observation),evidence_items([water_increase_pct,newly_flooded_area_pct,ndwi_change]),caveat_items([late_observation,possible_underestimation]),strongest_evidence(none))",
+            "terms": [
+                {
+                    "functor": "primary_caveat",
+                    "predicate": "primary_caveat(late_observation)",
+                    "terms": [
+                        {
+                            "functor": "late_observation",
+                            "predicate": "late_observation"
+                        }
+                    ]
+                },
+                {
+                    "functor": "evidence_items",
+                    "predicate": "evidence_items([water_increase_pct,newly_flooded_area_pct,ndwi_change])",
+                    "terms": [
+                        [
+                            {
+                                "functor": "water_increase_pct",
+                                "predicate": "water_increase_pct"
+                            },
+                            {
+                                "functor": "newly_flooded_area_pct",
+                                "predicate": "newly_flooded_area_pct"
+                            },
+                            {
+                                "functor": "ndwi_change",
+                                "predicate": "ndwi_change"
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "functor": "caveat_items",
+                    "predicate": "caveat_items([late_observation,possible_underestimation])",
+                    "terms": [
+                        [
+                            {
+                                "functor": "late_observation",
+                                "predicate": "late_observation"
+                            },
+                            {
+                                "functor": "possible_underestimation",
+                                "predicate": "possible_underestimation"
+                            }
+                        ]
+                    ]
+                },
+                {
+                    "functor": "strongest_evidence",
+                    "predicate": "strongest_evidence(none)",
+                    "terms": [
+                        {
+                            "functor": "none",
+                            "predicate": "none"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "clarification_frame",
+            "predicate": "clarification_frame(clarification_status(no_clarification),primary_limitation(no_additional_limitation),alternative_claim(no_alternative_claim))",
+            "terms": [
+                {
+                    "functor": "clarification_status",
+                    "predicate": "clarification_status(no_clarification)",
+                    "terms": [
+                        {
+                            "functor": "no_clarification",
+                            "predicate": "no_clarification"
+                        }
+                    ]
+                },
+                {
+                    "functor": "primary_limitation",
+                    "predicate": "primary_limitation(no_additional_limitation)",
+                    "terms": [
+                        {
+                            "functor": "no_additional_limitation",
+                            "predicate": "no_additional_limitation"
+                        }
+                    ]
+                },
+                {
+                    "functor": "alternative_claim",
+                    "predicate": "alternative_claim(no_alternative_claim)",
+                    "terms": [
+                        {
+                            "functor": "no_alternative_claim",
+                            "predicate": "no_alternative_claim"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "user_assessment_frame",
+            "predicate": "user_assessment_frame(user_assessment(moderate),user_assessment_alignment(differs))",
+            "terms": [
+                {
+                    "functor": "user_assessment",
+                    "predicate": "user_assessment(moderate)",
+                    "terms": [
+                        {
+                            "functor": "moderate",
+                            "predicate": "moderate"
+                        }
+                    ]
+                },
+                {
+                    "functor": "user_assessment_alignment",
+                    "predicate": "user_assessment_alignment(differs)",
+                    "terms": [
+                        {
+                            "functor": "differs",
+                            "predicate": "differs"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "provenance_frame",
+            "predicate": "provenance_frame(source_agent(water_agent),rule_label(rule_severe_flood_multisignal))",
+            "terms": [
+                {
+                    "functor": "source_agent",
+                    "predicate": "source_agent(water_agent)",
+                    "terms": [
+                        {
+                            "functor": "water_agent",
+                            "predicate": "water_agent"
+                        }
+                    ]
+                },
+                {
+                    "functor": "rule_label",
+                    "predicate": "rule_label(rule_severe_flood_multisignal)",
+                    "terms": [
+                        {
+                            "functor": "rule_severe_flood_multisignal",
+                            "predicate": "rule_severe_flood_multisignal"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "headline_frame",
+            "predicate": "headline_frame(event_name(\"a\"),region_name(\"a\"),country_name(\"a\"),severity(severe),hazard_type(flood),fusion_confidence(high))",
+            "terms": [
+                {
+                    "functor": "event_name",
+                    "predicate": "event_name(\"a\")",
+                    "terms": [
+                        "a"
+                    ]
+                },
+                {
+                    "functor": "region_name",
+                    "predicate": "region_name(\"a\")",
+                    "terms": [
+                        "a"
+                    ]
+                },
+                {
+                    "functor": "country_name",
+                    "predicate": "country_name(\"a\")",
+                    "terms": [
+                        "a"
+                    ]
+                },
+                {
+                    "functor": "severity",
+                    "predicate": "severity(severe)",
+                    "terms": [
+                        {
+                            "functor": "severe",
+                            "predicate": "severe"
+                        }
+                    ]
+                },
+                {
+                    "functor": "hazard_type",
+                    "predicate": "hazard_type(flood)",
+                    "terms": [
+                        {
+                            "functor": "flood",
+                            "predicate": "flood"
+                        }
+                    ]
+                },
+                {
+                    "functor": "fusion_confidence",
+                    "predicate": "fusion_confidence(high)",
+                    "terms": [
+                        {
+                            "functor": "high",
+                            "predicate": "high"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "debug_text",
+            "predicate": "debug_text(short_headline(\"a | severe flood | high\"),short_summary(\"claim=strong_multisignal_flooding; concern=critical; profile=critical_concern_case; caveat=late_observation; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\"))",
+            "terms": [
+                {
+                    "functor": "short_headline",
+                    "predicate": "short_headline(\"a | severe flood | high\")",
+                    "terms": [
+                        "a | severe flood | high"
+                    ]
+                },
+                {
+                    "functor": "short_summary",
+                    "predicate": "short_summary(\"claim=strong_multisignal_flooding; concern=critical; profile=critical_concern_case; caveat=late_observation; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\")",
+                    "terms": [
+                        "claim=strong_multisignal_flooding; concern=critical; profile=critical_concern_case; caveat=late_observation; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim"
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "explanation_trace",
+            "predicate": "explanation_trace(water_agent,rule_severe_flood_multisignal,strong_multisignal_flooding,[water_increase_pct,newly_flooded_area_pct,ndwi_change],[late_observation,possible_underestimation],clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim))",
+            "terms": [
+                {
+                    "functor": "water_agent",
+                    "predicate": "water_agent"
+                },
+                {
+                    "functor": "rule_severe_flood_multisignal",
+                    "predicate": "rule_severe_flood_multisignal"
+                },
+                {
+                    "functor": "strong_multisignal_flooding",
+                    "predicate": "strong_multisignal_flooding"
+                },
+                [
+                    {
+                        "functor": "water_increase_pct",
+                        "predicate": "water_increase_pct"
+                    },
+                    {
+                        "functor": "newly_flooded_area_pct",
+                        "predicate": "newly_flooded_area_pct"
+                    },
+                    {
+                        "functor": "ndwi_change",
+                        "predicate": "ndwi_change"
+                    }
+                ],
+                [
+                    {
+                        "functor": "late_observation",
+                        "predicate": "late_observation"
+                    },
+                    {
+                        "functor": "possible_underestimation",
+                        "predicate": "possible_underestimation"
+                    }
+                ],
+                {
+                    "functor": "clarification_trace",
+                    "predicate": "clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim)",
+                    "terms": [
+                        {
+                            "functor": "no_clarification",
+                            "predicate": "no_clarification"
+                        },
+                        {
+                            "functor": "no_additional_limitation",
+                            "predicate": "no_additional_limitation"
+                        },
+                        {
+                            "functor": "none",
+                            "predicate": "none"
+                        },
+                        {
+                            "functor": "no_alternative_claim",
+                            "predicate": "no_alternative_claim"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

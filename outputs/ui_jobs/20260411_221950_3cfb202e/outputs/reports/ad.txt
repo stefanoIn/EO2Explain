@@ -1,0 +1,36 @@
+EO2Explain Event Report: ada
+Location: ad, ada
+Hazard Type: Flood
+
+Summary
+ada is assessed as a mild flood event with moderate confidence, based on the available observational evidence.
+
+What Happened
+The event is located in ad, ada. The system interprets it as a mild flood event.
+
+Assessment
+The integrated concern level is guarded, and the case profile is classified as a guarded monitoring case. The system considers this assessment plausible but still caveat-sensitive. The interpretation is cautious because the available support is limited or caveat-heavy. This indicates a situation that should be monitored cautiously due to remaining uncertainty.
+
+User Assessment
+A user-provided severity of severe was supplied, but the system inferred a mild event. The system detects a residual flood footprint, suggesting that flood impact remains visible even though the image may have missed peak conditions. The interpretation is additionally qualified by the observed footprint likely reflects residual conditions rather than peak impact.
+
+Supporting Evidence
+The system detects a residual flood footprint, suggesting that flood impact remains visible even though the image may have missed peak conditions. The reasoning path relies on surface-water increase and newly flooded area.
+
+Caveats And Limitations
+The main caveat is that the observed footprint likely reflects residual conditions rather than peak impact. Additional limitations include late image acquisition, possible underestimation of the event extent, and a weak water signal that must be interpreted cautiously.
+
+Clarification
+A second-pass clarification was requested. The specialist identified the main limitation as the observed footprint likely reflects residual conditions rather than peak impact. The specialist retained newly flooded area as the strongest supporting evidence, and noted an inconclusive water signal as the closest alternative interpretation.
+
+Provenance
+This assessment was produced by the water agent and grounded in the symbolic rule `rule_residual_flood_late_observation`.
+
+Symbolic Details
+- Conclusion status: hazard_assessed
+- Severity label: mild
+- Claim label: residual_flood_signal
+- Primary caveat: residual_observation_window
+- Clarification status: clarification_provided
+- Source agent: water_agent
+- Rule label: rule_residual_flood_late_observation

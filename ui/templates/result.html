@@ -15,7 +15,8 @@
       <div class="hero-grid">
         <div>
           <p class="kicker">EO2Explain Result</p>
-          <h1>Analysis Job {{ job_id }}</h1>
+          <h1>Analysis Complete</h1>
+          <p class="panel-sub result-job-id">Job ID: <code>{{ job_id }}</code></p>
           <p class="lede">The EO, MAS, and NLP stages completed and produced a report together with the intermediate semantic artifacts.</p>
           <p class="result-back"><a class="hero-cta" href="{{ url_for('index') }}">Run another analysis</a></p>
         </div>
@@ -59,6 +60,7 @@
         {% if transformed_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='transformed') }}">Transformed JSON</a>{% endif %}
         {% if semantic_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='semantic') }}">Raw MAS JSON</a>{% endif %}
         {% if ontology_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='ontology') }}">Ontology RDF</a>{% endif %}
+        {% if agent_trace %}<a href="{{ url_for('artifact', job_id=job_id, artifact='agent_trace') }}">Agent Trace</a>{% endif %}
         {% if mas_stdout %}<a href="{{ url_for('artifact', job_id=job_id, artifact='mas_stdout') }}">MAS stdout</a>{% endif %}
         {% if mas_stderr %}<a href="{{ url_for('artifact', job_id=job_id, artifact='mas_stderr') }}">MAS stderr</a>{% endif %}
       </div>
@@ -87,8 +89,14 @@
         <h2>MAS Execution Trace</h2>
         <p class="panel-sub">Agent prints captured during the MAS run.</p>
       </div>
-      {% if mas_stdout %}
+      {% if agent_trace %}
       <details class="trace-block" open>
+        <summary>Agent conversation</summary>
+        <pre class="trace-pre">{{ agent_trace }}</pre>
+      </details>
+      {% endif %}
+      {% if mas_stdout %}
+      <details class="trace-block" {% if not agent_trace %}open{% endif %}>
         <summary>MAS stdout</summary>
         <pre class="trace-pre">{{ mas_stdout }}</pre>
       </details>
@@ -99,8 +107,8 @@
         <pre class="trace-pre">{{ mas_stderr }}</pre>
       </details>
       {% endif %}
-      {% if not mas_stdout and not mas_stderr %}
-      <p class="panel-sub">No MAS console output was captured for this run. After the runner switch, restart the UI server and launch a new analysis to collect the agent conversation in the result page.</p>
+      {% if not agent_trace and not mas_stdout and not mas_stderr %}
+      <p class="panel-sub">No MAS trace was captured for this run. Launch a new analysis after restarting the UI server.</p>
       {% endif %}
     </section>
   </main>
