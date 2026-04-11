@@ -17,6 +17,9 @@ from eo_processing.common import find_band_file, read_band, safe_index
 
 
 def load_pyplot():
+    import matplotlib
+
+    matplotlib.use("Agg", force=True)
     import matplotlib.pyplot as plt
 
     return plt

@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EO2Explain UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+{% set ht = form.get('hazard_type', 'flood') if form else 'flood' %}
+<body data-page="index" data-hazard="{{ ht }}">
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <p class="kicker">EO2Explain</p>
+          <h1>Satellite evidence in, symbolic explanation out.</h1>
+          <p class="lede">Upload Sentinel-derived TIFF bands, compute EO indicators, run the Jason multi-agent system, and generate a report grounded in explicit symbolic reasoning.</p>
+          <div class="hero-badges">
+            <span class="hero-badge">Sentinel-2 TIFF Inputs</span>
+            <span class="hero-badge">Jason MAS</span>
+            <span class="hero-badge">Semantic Report</span>
+          </div>
+        </div>
+        <aside class="hero-card hero-card-pipeline" aria-labelledby="hero-pipeline-title">
+          <p class="hero-card-label" id="hero-pipeline-title">Pipeline</p>
+          <p class="hero-pipeline-lede">Three linked stages from raw bands to readable explanation.</p>
+          <ol class="pipeline-diagram">
+            <li class="pipeline-step">
+              <span class="pipeline-step-marker">1</span>
+              <div class="pipeline-step-body">
+                <strong class="pipeline-step-title">EO indicators</strong>
+                <span class="pipeline-step-desc">Stack Sentinel TIFFs and derive NDWI, NBR, dNBR, and change metrics.</span>
+              </div>
+            </li>
+            <li class="pipeline-step">
+              <span class="pipeline-step-marker">2</span>
+              <div class="pipeline-step-body">
+                <strong class="pipeline-step-title">MAS reasoning</strong>
+                <span class="pipeline-step-desc">Jason agents ground observations in symbolic beliefs and rules.</span>
+              </div>
+            </li>
+            <li class="pipeline-step">
+              <span class="pipeline-step-marker">3</span>
+              <div class="pipeline-step-body">
+                <strong class="pipeline-step-title">NLP report</strong>
+                <span class="pipeline-step-desc">Semantic JSON is turned into a narrative report you can audit.</span>
+              </div>
+            </li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+
+    {% if error %}
+    <section class="panel error">
+      <h2>Run failed</h2>
+      <p>{{ error }}</p>
+    </section>
+    {% endif %}
+
+    <section class="workspace">
+      <form class="panel analysis-form" method="post" action="{{ url_for('analyze') }}" enctype="multipart/form-data" id="analysis-form">
+        <section class="form-header">
+          <div>
+            <p class="section-kicker">Scenario</p>
+            <h2>Event Setup</h2>
+            <p>Define the event context, set the optional user assessment, and upload the hazard-specific TIFF bands needed for EO processing.</p>
+          </div>
+          <div class="hazard-switch" role="group" aria-label="Hazard type">
+            <label class="hazard-option">
+              <input type="radio" name="hazard_type" value="flood" {% if not form or form.get('hazard_type', 'flood') == 'flood' %}checked{% endif %}>
+              <span>Flood</span>
+            </label>
+            <label class="hazard-option">
+              <input type="radio" name="hazard_type" value="wildfire" {% if form and form.get('hazard_type') == 'wildfire' %}checked{% endif %}>
+              <span>Wildfire</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="input-guidance">
+          <div class="guidance-card">
+            <h3>What This Form Expects</h3>
+            <ul>
+              <li>Single-band Sentinel-2 L2A GeoTIFFs, one file per band.</li>
+              <li>The uploaded bands should refer to the same area of interest and the same before/after event pair.</li>
+              <li>The rasters should already be cropped to the event area and readable by the EO pipeline as standard TIFF files.</li>
+            </ul>
+          </div>
+          <div class="guidance-card">
+            <h3>Band Usage In This Project</h3>
+            <ul>
+              <li>Flood workflow: B03 and B08 only.</li>
+              <li>Wildfire workflow: B04, B08, and B12.</li>
+              <li>The wildfire pipeline computes NBR and dNBR with B12.</li>
+            </ul>
+          </div>
+        </section>
+
+        <div class="meta-grid">
+          <section class="form-section">
+            <div class="section-intro compact">
+              <p class="section-kicker">Identity</p>
+              <h3>Location and Event</h3>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="event_name">Event Name</label>
+                <input id="event_name" name="event_name" required value="{{ form.event_name if form else '' }}">
+              </div>
+
+              <div class="field">
+                <label for="event_id">Event ID Override</label>
+                <input id="event_id" name="event_id" placeholder="optional_slug" value="{{ form.event_id if form else '' }}">
+              </div>
+
+              <div class="field">
+                <label for="country_name">Country</label>
+                <input id="country_name" name="country_name" required value="{{ form.country_name if form else '' }}">
+              </div>
+
+              <div class="field">
+                <label for="region_name">Region</label>
+                <input id="region_name" name="region_name" required value="{{ form.region_name if form else '' }}">
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <div class="section-intro compact">
+              <p class="section-kicker">Reasoning Context</p>
+              <h3>Assumptions and Exposure</h3>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="timeline_confidence">Timeline Confidence</label>
+                <select id="timeline_confidence" name="timeline_confidence">
+                  <option value="confirmed" {% if not form or form.get('timeline_confidence', 'confirmed') == 'confirmed' %}selected{% endif %}>confirmed</option>
+                  <option value="approximate" {% if form and form.get('timeline_confidence') == 'approximate' %}selected{% endif %}>approximate</option>
+                  <option value="mixed_confirmed_and_approximate" {% if form and form.get('timeline_confidence') == 'mixed_confirmed_and_approximate' %}selected{% endif %}>mixed_confirmed_and_approximate</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="population_exposure_class">Population Exposure Class</label>
+                <select id="population_exposure_class" name="population_exposure_class">
+                  <option value="medium" {% if not form or form.get('population_exposure_class', 'medium') == 'medium' %}selected{% endif %}>medium</option>
+                  <option value="low" {% if form and form.get('population_exposure_class') == 'low' %}selected{% endif %}>low</option>
+                  <option value="high" {% if form and form.get('population_exposure_class') == 'high' %}selected{% endif %}>high</option>
+                </select>
+              </div>
+
+              <div class="field full">
+                <label for="user_assessment">User Assessment</label>
+                <select id="user_assessment" name="user_assessment">
+                  <option value="none" {% if not form or form.get('user_assessment', 'none') == 'none' %}selected{% endif %}>none</option>
+                  <option value="mild" {% if form and form.get('user_assessment') == 'mild' %}selected{% endif %}>mild</option>
+                  <option value="moderate" {% if form and form.get('user_assessment') == 'moderate' %}selected{% endif %}>moderate</option>
+                  <option value="severe" {% if form and form.get('user_assessment') == 'severe' %}selected{% endif %}>severe</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="toggle-row">
+              <div class="check-card">
+                <label class="check-label">
+                  <input type="checkbox" name="late_observation" {% if form and form.get('late_observation') %}checked{% endif %}>
+                  <span class="check-text"><strong>Late observation</strong><span class="check-hint">Acquisition may miss peak conditions</span></span>
+                </label>
+              </div>
+
+              <div class="check-card">
+                <label class="check-label">
+                  <input type="checkbox" name="possible_underestimation" {% if form and form.get('possible_underestimation') %}checked{% endif %}>
+                  <span class="check-text"><strong>Possible underestimation</strong><span class="check-hint">Extent or severity may be understated</span></span>
+                </label>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="section-intro upload-intro">
+          <p class="section-kicker">Imagery</p>
+          <h3>Band Uploads</h3>
+          <p>The upload area switches with the selected hazard type so only the relevant Sentinel bands stay active.</p>
+        </section>
+
+        <section class="upload-block" id="flood-inputs" {% if ht == 'wildfire' %}hidden{% endif %}>
+            <div class="upload-header">
+              <div>
+                <h2>Flood Bands</h2>
+                <p class="upload-help">Flood analysis uses only the green and near-infrared Sentinel-2 bands for the before/after pair. Upload single-band TIFFs for `B03` and `B08`.</p>
+              </div>
+              <span class="upload-mode water">NDWI workflow</span>
+            </div>
+            <div class="upload-phases">
+              <section class="phase-column">
+                <div class="phase-header">
+                  <p class="phase-kicker">Time Slice</p>
+                  <h3>Before</h3>
+                </div>
+                <div class="phase-grid">
+                  <label class="band-card" for="before_b03"><span class="band-meta"><strong>B03</strong><em>Green</em></span><span class="file-picker"><span class="file-action">Select TIFF</span><span class="file-name" data-file-name>Nothing selected</span></span><input class="file-input" id="before_b03" type="file" name="before_b03" accept=".tif,.tiff" {% if ht == 'wildfire' %}disabled{% endif %}></label>
+                  <label class="band-card" for="before_b08"><span class="band-meta"><strong>B08</strong><em>Near Infrared</em></span><span class="file-picker"><span class="file-action">Select TIFF</span><span class="file-name" data-file-name>Nothing selected</span></span><input class="file-input" id="before_b08" type="file" name="before_b08" accept=".tif,.tiff" {% if ht == 'wildfire' %}disabled{% endif %}></label>
+                </div>
+              </section>
+              <section class="phase-column">
+                <div class="phase-header">
+                  <p class="phase-kicker">Time Slice</p>
+                  <h3>After</h3>
+                </div>
+                <div class="phase-grid">
+                  <label class="band-card" for="after_b03"><span class="band-meta"><strong>B03</strong><em>Green</em></span><span class="file-picker"><span class="file-action">Select TIFF</span><span class="file-name" data-file-name>Nothing selected</span></span><input class="file-input" id="after_b03" type="file" name="after_b03" accept=".tif,.tiff" {% if ht == 'wildfire' %}disabled{% endif %}></label>
+                  <label class="band-card" for="after_b08"><span class="band-meta"><strong>B08</strong><em>Near Infrared</em></span><span class="file-picker"><span class="file-action">Select TIFF</span><span class="file-name" data-file-name>Nothing selected</span></span><input class="file-input" id="after_b08" type="file" name="after_b08" accept=".tif,.tiff" {% if ht == 'wildfire' %}disabled{% endif %}></label>
+                </div>
+              </section>
+            </div>
+        </section>
+
+        <section class="upload-block" id="wildfire-inputs" {% if ht == 'flood' %}hidden{% endif %}>
+            <div class="upload-header">
+              <div>
+                <h2>Wildfire Bands</h2>
+                <p class="upload-help">Wildfire analysis needs red, near-infrared, and short-wave infrared bands for both timestamps. The current NBR/dNBR implementation uses `B12`, not `B11`.</p>
+              </div>
+              <span class="upload-mode land">NDVI / NBR / dNBR</span>
+            </div>
+            <div class="upload-phases">
+              <section class="phase-column">
+                <div class="phase-header">
+                  <p class="phase-kicker">Time Slice</p>
+                  <h3>Before</h3>
+                </div>
+                <div class="phase-grid phase-grid-three">
+                  <label class="band-card" for="before_b04"><span class="band-meta"><strong>B04</strong><em>Red</em></span><span class="file-picker"><span class="file-action">Select TIFF</span><span class="file-name" data-file-name>Nothing selected</span></span><input class="file-input" id="before_b04" type="file" name="before_b04" accept=".tif,.tiff" {% if ht == 'flood' %}disabled{% endif %}></label>
+                  <label class="band-card" for="before_b08_fire"><span class="band-meta"><strong>B08</strong><em>Near Infrared</em></span><span class="file-picker"><span class="file-action">Select TIFF</span><span class="file-name" data-file-name>Nothing selected</span></span><input class="file-input" id="before_b08_fire" type="file" name="before_b08" accept=".tif,.tiff" {% if ht == 'flood' %}disabled{% endif %}></label>
+                  <label class="band-card" for="before_b12"><span class="band-meta"><strong>B12</strong><em>Short-Wave Infrared</em></span><span class="file-picker"><span class="file-action">Select TIFF</span><span class="file-name" data-file-name>Nothing selected</span></span><input class="file-input" id="before_b12" type="file" name="before_b12" accept=".tif,.tiff" {% if ht == 'flood' %}disabled{% endif %}></label>
+                </div>
+              </section>
+              <section class="phase-column">
+                <div class="phase-header">
+                  <p class="phase-kicker">Time Slice</p>
+                  <h3>After</h3>
+                </div>
+                <div class="phase-grid phase-grid-three">
+                  <label class="band-card" for="after_b04"><span class="band-meta"><strong>B04</strong><em>Red</em></span><span class="file-picker"><span class="file-action">Select TIFF</span><span class="file-name" data-file-name>Nothing selected</span></span><input class="file-input" id="after_b04" type="file" name="after_b04" accept=".tif,.tiff" {% if ht == 'flood' %}disabled{% endif %}></label>
+                  <label class="band-card" for="after_b08_fire"><span class="band-meta"><strong>B08</strong><em>Near Infrared</em></span><span class="file-picker"><span class="file-action">Select TIFF</span><span class="file-name" data-file-name>Nothing selected</span></span><input class="file-input" id="after_b08_fire" type="file" name="after_b08" accept=".tif,.tiff" {% if ht == 'flood' %}disabled{% endif %}></label>
+                  <label class="band-card" for="after_b12"><span class="band-meta"><strong>B12</strong><em>Short-Wave Infrared</em></span><span class="file-picker"><span class="file-action">Select TIFF</span><span class="file-name" data-file-name>Nothing selected</span></span><input class="file-input" id="after_b12" type="file" name="after_b12" accept=".tif,.tiff" {% if ht == 'flood' %}disabled{% endif %}></label>
+                </div>
+              </section>
+            </div>
+        </section>
+
+        <div class="actions">
+          <p class="actions-hint">Required bands must be attached for the selected hazard. Processing may take several minutes.</p>
+          <button type="submit" class="btn-primary">Run Analysis</button>
+        </div>
+      </form>
+
+      <aside class="panel mission-panel" aria-labelledby="mission-title">
+        <p class="section-kicker">Mission deck</p>
+        <h2 id="mission-title">Flood Scenario</h2>
+        <p id="mission-copy" class="mission-lede">Use before/after B03 and B08 bands to derive NDWI change, water expansion, and newly flooded area before the MAS interprets the event.</p>
+
+        <div class="mission-pipeline" role="list" aria-label="How this run maps onto the pipeline">
+          <div class="mission-flow-step" role="listitem">
+            <span class="mission-flow-index">1</span>
+            <div class="mission-flow-body">
+              <span class="mission-flow-stage">EO indicators</span>
+              <p class="mission-flow-detail" id="mission-eo">NDWI delta and flood footprint</p>
+              <p class="mission-flow-meta"><span class="mission-meta-label">Bands</span> <span id="mission-bands">B03, B08 before and after</span></p>
+            </div>
+          </div>
+          <div class="mission-flow-step" role="listitem">
+            <span class="mission-flow-index">2</span>
+            <div class="mission-flow-body">
+              <span class="mission-flow-stage">MAS reasoning</span>
+              <p class="mission-flow-detail" id="mission-agent">water_agent specialist reasoning</p>
+            </div>
+          </div>
+          <div class="mission-flow-step" role="listitem">
+            <span class="mission-flow-index">3</span>
+            <div class="mission-flow-body">
+              <span class="mission-flow-stage">NLP report</span>
+              <p class="mission-flow-detail" id="mission-nlp">{% if ht == 'wildfire' %}Explain burn severity and vegetation loss from symbolic outputs.{% else %}Explain water extent and exposure in plain language from MAS JSON.{% endif %}</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const body = document.body;
+    const hazardInputs = document.querySelectorAll('input[name="hazard_type"]');
+    const floodInputs = document.getElementById("flood-inputs");
+    const wildfireInputs = document.getElementById("wildfire-inputs");
+    const floodFiles = floodInputs.querySelectorAll('input[type="file"]');
+    const wildfireFiles = wildfireInputs.querySelectorAll('input[type="file"]');
+    const fileInputs = document.querySelectorAll('.file-input');
+    const missionTitle = document.getElementById("mission-title");
+    const missionCopy = document.getElementById("mission-copy");
+    const missionEo = document.getElementById("mission-eo");
+    const missionAgent = document.getElementById("mission-agent");
+    const missionBands = document.getElementById("mission-bands");
+    const missionNlp = document.getElementById("mission-nlp");
+
+    const missionConfig = {
+      flood: {
+        title: "Flood Scenario",
+        copy: "Use before/after B03 and B08 bands to derive NDWI change, water expansion, and newly flooded area before the MAS interprets the event.",
+        eo: "NDWI delta and flood footprint",
+        agent: "water_agent specialist reasoning",
+        bands: "B03, B08 before and after",
+        nlp: "Explain water extent and exposure in plain language from MAS JSON."
+      },
+      wildfire: {
+        title: "Wildfire Scenario",
+        copy: "Use before/after B04, B08, and B12 bands to derive NDVI, NBR, dNBR, vegetation loss, and burned area before the MAS classifies the event.",
+        eo: "NDVI, NBR, dNBR fire metrics",
+        agent: "forest_agent specialist reasoning",
+        bands: "B04, B08, B12 before and after",
+        nlp: "Explain burn severity and vegetation loss from symbolic outputs."
+      }
+    };
+
+    function setInputState(inputs, enabled) {
+      inputs.forEach((input) => {
+        input.disabled = !enabled;
+        input.required = enabled;
+      });
+    }
+
+    function clearFileInputs(inputs) {
+      inputs.forEach((input) => {
+        input.value = "";
+        const card = input.closest(".band-card");
+        if (!card) return;
+        const nameNode = card.querySelector("[data-file-name]");
+        if (nameNode) nameNode.textContent = "Nothing selected";
+        card.classList.remove("has-file");
+      });
+    }
+
+    let previousHazard = null;
+
+    function syncHazard() {
+      const hazard = document.querySelector('input[name="hazard_type"]:checked').value;
+      const floodSelected = hazard === "flood";
+      if (previousHazard !== null && previousHazard !== hazard) {
+        if (floodSelected) clearFileInputs(wildfireFiles);
+        else clearFileInputs(floodFiles);
+      }
+      previousHazard = hazard;
+      const config = missionConfig[hazard];
+      floodInputs.hidden = !floodSelected;
+      wildfireInputs.hidden = floodSelected;
+      floodInputs.setAttribute("aria-hidden", floodSelected ? "false" : "true");
+      wildfireInputs.setAttribute("aria-hidden", floodSelected ? "true" : "false");
+      setInputState(floodFiles, floodSelected);
+      setInputState(wildfireFiles, !floodSelected);
+      body.dataset.hazard = hazard;
+      missionTitle.textContent = config.title;
+      missionCopy.textContent = config.copy;
+      missionEo.textContent = config.eo;
+      missionAgent.textContent = config.agent;
+      missionBands.textContent = config.bands;
+      missionNlp.textContent = config.nlp;
+    }
+
+    hazardInputs.forEach((input) => input.addEventListener("change", syncHazard));
+    syncHazard();
+
+    fileInputs.forEach((input) => {
+      const card = input.closest('.band-card');
+      const nameNode = card.querySelector('[data-file-name]');
+
+      input.addEventListener("change", () => {
+        const file = input.files && input.files[0];
+        const hasFile = Boolean(file);
+        nameNode.textContent = hasFile ? file.name : "Nothing selected";
+        card.classList.toggle("has-file", hasFile);
+      });
+    });
+  </script>
+</body>
+</html>

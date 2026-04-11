@@ -276,12 +276,12 @@ def main() -> None:
     )
     parser.add_argument(
         "--indicators-out",
-        default="mas/beliefs/generated/indicators.asl",
+        default="mas/beliefs/indicators.asl",
         help="Output path for combined indicators beliefs.",
     )
     parser.add_argument(
         "--population-out",
-        default="mas/beliefs/generated/population_exposure.asl",
+        default="mas/beliefs/population_exposure.asl",
         help="Output path for population exposure beliefs.",
     )
     args = parser.parse_args()

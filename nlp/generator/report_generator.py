@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 import sys
 
-if "." not in sys.path:
-    sys.path.insert(0, ".")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from nlp.loader.load_payloads import load_payloads
 
@@ -327,10 +329,35 @@ def build_report_text(payload: dict) -> str:
 
 
 def main() -> None:
-    output_dir = Path("outputs/reports")
+    parser = argparse.ArgumentParser(
+        description="Generate raw report text files from transformed semantic JSON payloads."
+    )
+    parser.add_argument(
+        "--input-dir",
+        default="outputs/transformed",
+        help="Directory containing transformed semantic JSON files.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default="outputs/reports",
+        help="Directory where raw text reports will be written.",
+    )
+    args = parser.parse_args()
+
+    input_dir = Path(args.input_dir)
+    if not input_dir.is_absolute():
+        input_dir = PROJECT_ROOT / input_dir
+
+    output_dir = Path(args.output_dir)
+    if not output_dir.is_absolute():
+        output_dir = PROJECT_ROOT / output_dir
+
+    if not input_dir.exists():
+        raise SystemExit(f"Input directory does not exist: {input_dir}")
+
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    for payload in load_payloads():
+    for payload in load_payloads(input_dir):
         report_path = output_dir / f"{payload['event_id']}.txt"
         report_path.write_text(build_report_text(payload), encoding="utf-8")
 

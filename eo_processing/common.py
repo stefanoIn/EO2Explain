@@ -6,6 +6,12 @@ import re
 import numpy as np
 import rasterio
 
+"""
+This module provides common utilities for reading and 
+processing EO data, such as finding band files and reading
+them into numpy arrays.
+"""
+
 
 def find_band_file(folder: Path, band: str) -> Path:
     candidates = sorted(folder.glob("*.tif")) + sorted(folder.glob("*.tiff"))

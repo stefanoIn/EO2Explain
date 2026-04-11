@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
 
 def decode_value(node: Any) -> Any:
     if isinstance(node, list):
@@ -188,7 +190,12 @@ def main() -> None:
     args = parser.parse_args()
 
     input_dir = Path(args.input_dir)
+    if not input_dir.is_absolute():
+        input_dir = PROJECT_ROOT / input_dir
+
     output_dir = Path(args.output_dir)
+    if not output_dir.is_absolute():
+        output_dir = PROJECT_ROOT / output_dir
 
     if not input_dir.exists():
         raise SystemExit(f"Input directory does not exist: {input_dir}")

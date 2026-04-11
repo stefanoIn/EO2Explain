@@ -1,7 +1,7 @@
 
 {
     "functor": "semantic_explanation",
-    "predicate": "semantic_explanation(antalya,event_frame(event_id(antalya),event_name(\"Antalya\"),hazard_type(wildfire),country(turkey,\"Turkey\"),region(mediterranean_region,\"Mediterranean Region\")),assessment_frame(severity(mild),claim_label(mixed_fire_damage),fusion_confidence(low),concern_level(watch),interpretation_mode(tentative),case_profile(watch_case),exposure_class(low)),evidence_frame(primary_caveat(burn_signal_weak),evidence_items([vegetation_loss_pct,burned_area_pct]),caveat_items([burn_signal_weak,timeline_uncertain]),strongest_evidence(vegetation_loss_pct)),clarification_frame(clarification_status(clarification_provided),primary_limitation(burn_signal_weak),alternative_claim(inconclusive_fire_signal)),provenance_frame(source_agent(forest_agent),rule_label(rule_mild_fire_mixed_signal)),headline_frame(event_name(\"Antalya\"),region_name(\"Mediterranean Region\"),country_name(\"Turkey\"),severity(mild),hazard_type(wildfire),fusion_confidence(low)),debug_text(short_headline(\"Antalya | mild wildfire | low\"),short_summary(\"claim=mixed_fire_damage; concern=watch; profile=watch_case; caveat=burn_signal_weak; clarification=clarification_provided; strongest_evidence=vegetation_loss_pct; alternative_claim=inconclusive_fire_signal\")),explanation_trace(forest_agent,rule_mild_fire_mixed_signal,mixed_fire_damage,[vegetation_loss_pct,burned_area_pct],[burn_signal_weak,timeline_uncertain],clarification_trace(clarification_provided,burn_signal_weak,vegetation_loss_pct,inconclusive_fire_signal)))",
+    "predicate": "semantic_explanation(antalya,event_frame(event_id(antalya),event_name(\"Antalya\"),hazard_type(wildfire),country(turkey,\"Turkey\"),region(mediterranean_region,\"Mediterranean Region\")),assessment_frame(severity(mild),claim_label(mixed_fire_damage),fusion_confidence(low),concern_level(watch),interpretation_mode(tentative),case_profile(watch_case),exposure_class(low)),evidence_frame(primary_caveat(burn_signal_weak),evidence_items([vegetation_loss_pct,burned_area_pct]),caveat_items([burn_signal_weak,timeline_uncertain]),strongest_evidence(vegetation_loss_pct)),clarification_frame(clarification_status(clarification_provided),primary_limitation(burn_signal_weak),alternative_claim(inconclusive_fire_signal)),user_assessment_frame(user_assessment(none),user_assessment_alignment(not_provided)),provenance_frame(source_agent(forest_agent),rule_label(rule_mild_fire_mixed_signal)),headline_frame(event_name(\"Antalya\"),region_name(\"Mediterranean Region\"),country_name(\"Turkey\"),severity(mild),hazard_type(wildfire),fusion_confidence(low)),debug_text(short_headline(\"Antalya | mild wildfire | low\"),short_summary(\"claim=mixed_fire_damage; concern=watch; profile=watch_case; caveat=burn_signal_weak; clarification=clarification_provided; strongest_evidence=vegetation_loss_pct; alternative_claim=inconclusive_fire_signal\")),explanation_trace(forest_agent,rule_mild_fire_mixed_signal,mixed_fire_damage,[vegetation_loss_pct,burned_area_pct],[burn_signal_weak,timeline_uncertain],clarification_trace(clarification_provided,burn_signal_weak,vegetation_loss_pct,inconclusive_fire_signal)))",
     "terms": [
         {
             "functor": "antalya",
@@ -227,6 +227,32 @@
                         {
                             "functor": "inconclusive_fire_signal",
                             "predicate": "inconclusive_fire_signal"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "functor": "user_assessment_frame",
+            "predicate": "user_assessment_frame(user_assessment(none),user_assessment_alignment(not_provided))",
+            "terms": [
+                {
+                    "functor": "user_assessment",
+                    "predicate": "user_assessment(none)",
+                    "terms": [
+                        {
+                            "functor": "none",
+                            "predicate": "none"
+                        }
+                    ]
+                },
+                {
+                    "functor": "user_assessment_alignment",
+                    "predicate": "user_assessment_alignment(not_provided)",
+                    "terms": [
+                        {
+                            "functor": "not_provided",
+                            "predicate": "not_provided"
                         }
                     ]
                 }

@@ -5,12 +5,14 @@ import subprocess
 import sys
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
 
 def main() -> int:
-    root = Path(".")
-    transformer = Path("nlp/transformer/transform_payload.py")
-    ontology_populator = Path("nlp/ontology/populate_ontology.py")
-    report_generator = Path("nlp/generator/report_generator.py")
+    root = PROJECT_ROOT
+    transformer = PROJECT_ROOT / "nlp/transformer/transform_payload.py"
+    ontology_populator = PROJECT_ROOT / "nlp/ontology/populate_ontology.py"
+    report_generator = PROJECT_ROOT / "nlp/generator/report_generator.py"
 
     commands = [
         [sys.executable, str(transformer)],

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from owlready2 import destroy_entity, get_ontology
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 BASE_IRI = "http://www.semanticweb.org/stefanoinfusini/ontologies/2026/3/eo2explain"
 
@@ -361,14 +362,27 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    onto = get_ontology(str(Path(args.ontology))).load()
+    ontology_path = Path(args.ontology)
+    if not ontology_path.is_absolute():
+        ontology_path = PROJECT_ROOT / ontology_path
+
+    payload_dir = Path(args.payload_dir)
+    if not payload_dir.is_absolute():
+        payload_dir = PROJECT_ROOT / payload_dir
+
+    output_path = Path(args.output)
+    if not output_path.is_absolute():
+        output_path = PROJECT_ROOT / output_path
+
+    onto = get_ontology(str(ontology_path)).load()
     ns = onto.get_namespace(f"{BASE_IRI}#")
 
-    for payload in load_payloads(Path(args.payload_dir)):
+    for payload in load_payloads(payload_dir):
         populate_event(onto, ns, payload)
 
-    onto.save(file=str(Path(args.output)), format="rdfxml")
-    print(f"Populated ontology written to {args.output}")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    onto.save(file=str(output_path), format="rdfxml")
+    print(f"Populated ontology written to {output_path}")
 
 
 if __name__ == "__main__":

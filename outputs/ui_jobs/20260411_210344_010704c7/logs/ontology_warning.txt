@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/stefanoinfusini/Desktop/SecondYear_MS/SDAI/PROJECT SDAI&NLP/EO2Explain/nlp/ontology/populate_ontology.py", line 8, in <module>
+    from owlready2 import destroy_entity, get_ontology
+ModuleNotFoundError: No module named 'owlready2'

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EO2Explain Result</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-page="result">
+  <main class="shell">
+    <section class="hero result-hero">
+      <div class="hero-grid">
+        <div>
+          <p class="kicker">EO2Explain Result</p>
+          <h1>Analysis Job {{ job_id }}</h1>
+          <p class="lede">The EO, MAS, and NLP stages completed and produced a report together with the intermediate semantic artifacts.</p>
+          <p class="result-back"><a class="hero-cta" href="{{ url_for('index') }}">Run another analysis</a></p>
+        </div>
+        <aside class="hero-card hero-card-pipeline" aria-labelledby="result-outputs-title">
+          <p class="hero-card-label" id="result-outputs-title">Outputs</p>
+          <p class="hero-pipeline-lede">Artifacts produced by this job, focused on the semantic reasoning output rather than the intermediate EO visualizations.</p>
+          <ol class="pipeline-diagram">
+            <li class="pipeline-step">
+              <span class="pipeline-step-marker">1</span>
+              <div class="pipeline-step-body">
+                <strong class="pipeline-step-title">Semantic JSON</strong>
+                <span class="pipeline-step-desc">MAS explanation payload, raw and transformed for downstream use.</span>
+              </div>
+            </li>
+            <li class="pipeline-step">
+              <span class="pipeline-step-marker">2</span>
+              <div class="pipeline-step-body">
+                <strong class="pipeline-step-title">Ontology RDF</strong>
+                <span class="pipeline-step-desc">Optional ontology population output when the ontology step completes.</span>
+              </div>
+            </li>
+            <li class="pipeline-step">
+              <span class="pipeline-step-marker">3</span>
+              <div class="pipeline-step-body">
+                <strong class="pipeline-step-title">Report</strong>
+                <span class="pipeline-step-desc">NLP-generated narrative grounded in the symbolic reasoning trace.</span>
+              </div>
+            </li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+
+    <section class="panel artifacts result-artifacts">
+      <div class="panel-heading">
+        <h2>Artifacts</h2>
+        <p class="panel-sub">Download intermediate files and the final report from this run.</p>
+      </div>
+      <div class="artifact-links">
+        <a href="{{ url_for('artifact', job_id=job_id, artifact='report') }}">Report</a>
+        {% if transformed_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='transformed') }}">Transformed JSON</a>{% endif %}
+        {% if semantic_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='semantic') }}">Raw MAS JSON</a>{% endif %}
+        {% if ontology_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='ontology') }}">Ontology RDF</a>{% endif %}
+        {% if mas_stdout %}<a href="{{ url_for('artifact', job_id=job_id, artifact='mas_stdout') }}">MAS stdout</a>{% endif %}
+        {% if mas_stderr %}<a href="{{ url_for('artifact', job_id=job_id, artifact='mas_stderr') }}">MAS stderr</a>{% endif %}
+      </div>
+      {% if ontology_warning %}
+      <details class="ontology-alert">
+        <summary>Ontology step did not complete</summary>
+        <p class="ontology-alert-lede">{{ ontology_warning_summary }}</p>
+        <details class="trace-block ontology-trace">
+          <summary>Technical details</summary>
+          <pre class="ontology-alert-pre">{{ ontology_warning }}</pre>
+        </details>
+      </details>
+      {% endif %}
+    </section>
+
+    <section class="panel report-panel">
+      <div class="panel-heading">
+        <h2>Generated Report</h2>
+        <p class="panel-sub">Raw report text produced from the transformed semantic payload.</p>
+      </div>
+      <pre class="report-raw-pre">{{ report_raw }}</pre>
+    </section>
+
+    <section class="panel mas-panel">
+      <div class="panel-heading">
+        <h2>MAS Execution Trace</h2>
+        <p class="panel-sub">Agent prints captured during the MAS run.</p>
+      </div>
+      {% if mas_stdout %}
+      <details class="trace-block" open>
+        <summary>MAS stdout</summary>
+        <pre class="trace-pre">{{ mas_stdout }}</pre>
+      </details>
+      {% endif %}
+      {% if mas_stderr %}
+      <details class="trace-block">
+        <summary>MAS stderr</summary>
+        <pre class="trace-pre">{{ mas_stderr }}</pre>
+      </details>
+      {% endif %}
+      {% if not mas_stdout and not mas_stderr %}
+      <p class="panel-sub">No MAS console output was captured for this run. After the runner switch, restart the UI server and launch a new analysis to collect the agent conversation in the result page.</p>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>
