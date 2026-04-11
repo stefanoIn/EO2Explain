@@ -2,9 +2,6 @@
 { include("./beliefs/indicators.asl") }
 { include("./beliefs/population_exposure.asl") }
 { include("./beliefs/user_inputs.asl") }
-// Reference labels are included only for post-hoc evaluation logging, not for
-// live coordination or runtime decision making.
-{ include("./beliefs/reference_labels.asl") }
 
 !start.
 
@@ -77,12 +74,6 @@
     .custom.export_payload(E, semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, UserAssessmentFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace), ExportPath);
     +payload_export(E, ExportPath);
     +claim_support(E, explanation_packaging, explanation_agent, [ClaimLabel, FusionConfidence, ExplanationTrace]);
-    ?reference_hazard(E, ReferenceHazard);
-    ?reference_severity(E, ReferenceSeverity);
-    ?reference_confidence(E, ReferenceConfidence);
-    !match_label(Hazard, ReferenceHazard, HazardMatch);
-    !match_label(Severity, ReferenceSeverity, SeverityMatch);
-    !match_label(FusionConfidence, ReferenceConfidence, ConfidenceMatch);
     .concat("-----\nEvent: ", E, Block1);
     .concat(Block1, "\nSummary: ", Block2);
     .concat(Block2, DebugHeadline, Block3);
@@ -118,18 +109,9 @@
     .concat(Block32, UserAssessment, Block33);
     .concat(Block33, ", alignment=", Block34);
     .concat(Block34, UserAssessmentAlignment, Block35);
-    .concat(Block35, "\nEvaluation: hazard=", Block36);
-    .concat(Block36, HazardMatch, Block37);
-    .concat(Block37, ", severity=", Block38);
-    .concat(Block38, SeverityMatch, Block39);
-    .concat(Block39, ", confidence=", Block40);
-    .concat(Block40, ConfidenceMatch, Block41);
-    .concat(Block41, "\nExport: ", Block42);
-    .concat(Block42, ExportPath, FullBlock);
+    .concat(Block35, "\nExport: ", Block36);
+    .concat(Block36, ExportPath, FullBlock);
     .print(FullBlock).
-
-+!match_label(Value, Value, match) <- true.
-+!match_label(Value, Reference, differs) : Value \== Reference <- true.
 
 optional_user_assessment(E, UserAssessment) :-
     user_assessment(E, UserAssessment).

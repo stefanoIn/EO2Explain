@@ -344,18 +344,14 @@ vegetation_loss_pct(evros, 21.06).
 burned_area_pct(evros, 13.85).
 \end{lstlisting}
 
-\subsubsection{Context and Evaluation Beliefs}
+\subsubsection{Context Beliefs}
 
-The belief base also contains contextual information used during fusion. In particular, each event is associated with a population exposure class derived from WorldPop data \cite{worldpop2025}, and with reference labels used for evaluation. These reference labels are not part of the live decision loop. They are used only to compare the final symbolic output against a small expected label set after reasoning has already been completed.
+The belief base also contains contextual information used during fusion. In particular, each event is associated with a population exposure class derived from WorldPop data \cite{worldpop2025}. These contextual beliefs are not hazard claims by themselves, but they are used by the coordinator to combine hazard evidence with exposure and derive the final integrated concern profile.
 
 \begin{lstlisting}
 population_exposure_class(sindh, high).
 population_exposure_class(emilia, medium).
 population_exposure_class(evros, low).
-
-reference_hazard(evros, wildfire).
-reference_severity(evros, moderate).
-reference_confidence(evros, medium).
 \end{lstlisting}
 
 This additional symbolic context is important because the system does not stop at hazard detection. It also reasons about how strong the case is, how much confidence should be attached to it, and how severe the situation becomes once hazard evidence is combined with exposure.
