@@ -1,6 +1,6 @@
 // ----------------------------------------------
 // Population exposure indicators
-// Auto-generated from population_exposure_from_bbox.ipynb
+// Auto-generated from eo_processing/population/population_exposure_from_bbox.ipynb
 // ----------------------------------------------
 
 total_population(ahr_valley, 38365.01).

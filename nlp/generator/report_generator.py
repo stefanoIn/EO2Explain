@@ -17,6 +17,8 @@ EVIDENCE_LABELS = {
     "vegetation_loss_pct": "vegetation loss",
     "burned_area_pct": "burned-area extent",
     "mean_dnbr": "mean dNBR burn severity",
+    "ndvi_drop": "NDVI drop",
+    "no_dominant_evidence": "no single strongest evidence item",
 }
 
 ALTERNATIVE_CLAIM_TEXT = {
@@ -50,6 +52,7 @@ CAVEAT_LIST_TEXT = {
 CONCERN_TEXT = {
     "critical": "This means the event should be treated as a critical case requiring immediate attention.",
     "high": "This means the event should be treated as a high-priority case.",
+    "elevated": "This means the event should be treated as an elevated concern that deserves careful monitoring.",
     "moderate": "This means the event should be monitored as a moderate concern.",
     "guarded": "This means the event should be handled cautiously because the situation remains uncertain or limited in scope.",
     "watch": "This means the event is currently in watch status and should be monitored for possible escalation.",
@@ -58,17 +61,28 @@ CONCERN_TEXT = {
 CASE_PROFILE_TEXT = {
     "critical_concern_case": "This indicates a critical situation requiring immediate attention.",
     "high_priority_event": "This indicates a high-priority situation that should remain under close observation.",
+    "confidence_limited_priority_event": "This indicates a high-priority situation, but with confidence limitations that require a cautious reading.",
+    "elevated_priority_event": "This indicates an elevated-priority situation that deserves close monitoring.",
+    "cautious_monitoring_case": "This indicates a monitoring case that should be interpreted cautiously because of remaining uncertainty.",
     "monitoring_case": "This indicates a situation that should remain under routine monitoring.",
     "guarded_monitoring_case": "This indicates a situation that should be monitored cautiously due to remaining uncertainty.",
     "watch_case": "This indicates a watch-level situation that should be monitored for possible escalation.",
 }
 
 CLAIM_TEXT = {
+    "strong_multisignal_fire_damage": "The wildfire assessment is supported by a strong multi-signal pattern combining vegetation loss, burned-area extent, and spectral burn severity.",
     "strong_multisignal_flooding": "The flood assessment is supported by a strong multi-signal pattern combining water expansion, newly flooded area, and spectral water change.",
+    "coherent_flooding": "The flood assessment is supported by mutually consistent evidence across water expansion, newly flooded area, and spectral water change.",
+    "extent_supported_flooding": "The flood assessment is supported mainly by water expansion and newly flooded area, although the spectral water signal is less decisive.",
     "residual_flood_signal": "The system detects a residual flood footprint, suggesting that flood impact remains visible even though the image may have missed peak conditions.",
+    "limited_water_shift_signal": "The flood assessment is driven mainly by a limited spectral water shift rather than by a strong spatial flood footprint.",
+    "inconclusive_water_signal": "The available water-related evidence remains inconclusive.",
     "coherent_fire_damage": "The wildfire assessment is supported by consistent vegetation-loss and burned-area evidence.",
     "spectral_extent_fire_damage": "The wildfire assessment is supported by burn extent together with spectral burn-severity evidence.",
     "mixed_fire_damage": "Wildfire damage is still indicated, but the spectral burn evidence is mixed relative to the vegetation-loss and burned-area signals.",
+    "ndvi_only_fire_signal": "The wildfire assessment is driven mainly by vegetation change, with limited support from burn extent or spectral burn evidence.",
+    "vegetation_loss_only_fire_signal": "The wildfire assessment is supported mainly by vegetation-loss evidence.",
+    "inconclusive_fire_signal": "The available fire-related evidence remains inconclusive.",
 }
 
 CONFIDENCE_TEXT = {
