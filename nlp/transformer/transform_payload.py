@@ -57,6 +57,24 @@ def parse_debug_text(node: dict[str, Any]) -> dict[str, Any]:
     return parse_frame(node, "debug_text")
 
 
+def parse_optional_user_assessment_frame(node: dict[str, Any]) -> dict[str, Any]:
+    functor = node.get("functor")
+    if functor == "user_assessment_frame":
+        return parse_frame(node, "user_assessment_frame")
+    if functor == "expectation_frame":
+        legacy = parse_frame(node, "expectation_frame")
+        return {
+            "user_assessment": legacy.get("expected_severity", "none"),
+            "user_assessment_alignment": legacy.get(
+                "severity_alignment", "not_provided"
+            ),
+        }
+    raise ValueError(
+        "Expected user_assessment_frame or legacy expectation_frame, "
+        f"found '{functor}'"
+    )
+
+
 def parse_clarification_trace(node: dict[str, Any]) -> dict[str, Any]:
     if node.get("functor") != "clarification_trace":
         raise ValueError(
@@ -100,18 +118,29 @@ def transform_semantic_explanation(raw: dict[str, Any], source_name: str) -> dic
         )
 
     terms = raw.get("terms", [])
-    if len(terms) != 9:
-        raise ValueError("semantic_explanation must have exactly 9 top-level terms")
+    if len(terms) not in {9, 10}:
+        raise ValueError("semantic_explanation must have exactly 9 or 10 top-level terms")
 
     event_id = decode_value(terms[0])
     event_frame = parse_frame(terms[1], "event_frame")
     assessment = parse_frame(terms[2], "assessment_frame")
     evidence = parse_frame(terms[3], "evidence_frame")
     clarification = parse_frame(terms[4], "clarification_frame")
-    provenance = parse_frame(terms[5], "provenance_frame")
-    headline = parse_frame(terms[6], "headline_frame")
-    debug = parse_debug_text(terms[7])
-    trace = parse_explanation_trace(terms[8])
+    if len(terms) == 10:
+        user_assessment = parse_optional_user_assessment_frame(terms[5])
+        provenance = parse_frame(terms[6], "provenance_frame")
+        headline = parse_frame(terms[7], "headline_frame")
+        debug = parse_debug_text(terms[8])
+        trace = parse_explanation_trace(terms[9])
+    else:
+        user_assessment = {
+            "user_assessment": "none",
+            "user_assessment_alignment": "not_provided",
+        }
+        provenance = parse_frame(terms[5], "provenance_frame")
+        headline = parse_frame(terms[6], "headline_frame")
+        debug = parse_debug_text(terms[7])
+        trace = parse_explanation_trace(terms[8])
 
     return {
         "event_id": event_id,
@@ -119,6 +148,7 @@ def transform_semantic_explanation(raw: dict[str, Any], source_name: str) -> dic
         "assessment": assessment,
         "evidence": evidence,
         "clarification": clarification,
+        "user_assessment": user_assessment,
         "provenance": provenance,
         "headline": headline,
         "debug": debug,

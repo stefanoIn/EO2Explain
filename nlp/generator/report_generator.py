@@ -198,12 +198,42 @@ def provenance_sentence(provenance: dict) -> str:
     )
 
 
+def user_assessment_sentence(payload: dict) -> str | None:
+    user_assessment = payload.get("user_assessment", {})
+    provided = user_assessment.get("user_assessment", "none")
+    alignment = user_assessment.get("user_assessment_alignment", "not_provided")
+    inferred = payload["assessment"]["severity"]
+
+    if provided in {"none", "", None} or alignment == "not_provided":
+        return None
+
+    if alignment == "matches":
+        return (
+            f"A user-provided severity of {humanize(provided)} was supplied, and it matches "
+            "the system's inferred severity."
+        )
+
+    primary_caveat = payload["evidence"]["primary_caveat"]
+    caveat_clause = ""
+    if primary_caveat != "no_major_caveat":
+        caveat_clause = (
+            f" The interpretation is additionally qualified by {CAVEAT_TEXT.get(primary_caveat, humanize(primary_caveat))}."
+        )
+
+    return (
+        f"A user-provided severity of {humanize(provided)} was supplied, but the system inferred "
+        f"a {humanize(inferred)} event. {CLAIM_TEXT.get(payload['assessment']['claim_label'], 'The available symbolic evidence supports the inferred severity rather than the user-provided one.')}"
+        f"{caveat_clause}"
+    )
+
+
 def build_report_text(payload: dict) -> str:
     event = payload["event"]
     assessment = payload["assessment"]
     evidence = payload["evidence"]
     provenance = payload["provenance"]
     clarification = payload["clarification"]
+    user_assessment_text = user_assessment_sentence(payload)
 
     summary = (
         f"{event['event_name']} is assessed as a {assessment['severity']} {event['hazard_type']} "
@@ -265,6 +295,18 @@ def build_report_text(payload: dict) -> str:
         "Assessment",
         assessment_text,
         "",
+    ]
+
+    if user_assessment_text:
+        sections.extend(
+            [
+                "User Assessment",
+                user_assessment_text,
+                "",
+            ]
+        )
+
+    sections.extend([
         "Supporting Evidence",
         evidence_text,
         "",
@@ -279,7 +321,7 @@ def build_report_text(payload: dict) -> str:
         "",
         "Symbolic Details",
         "\n".join(symbolic),
-    ]
+    ])
 
     return "\n".join(sections) + "\n"
 

@@ -1,5 +1,6 @@
 // ----------------------------------------------
 // Flood indicators
+// Auto-generated from data/processed/indicators/flood_eo_indicators_summary.csv
 // ----------------------------------------------
 
 mean_ndwi_before(ahr_valley, -0.5759).
@@ -10,7 +11,7 @@ newly_flooded_area_pct(ahr_valley, 0.16).
 
 mean_ndwi_before(emilia, -0.5065).
 mean_ndwi_after(emilia, -0.3007).
-ndwi_change(emilia, 0.2057).
+ndwi_change(emilia, 0.2058).
 water_increase_pct(emilia, 22.73).
 newly_flooded_area_pct(emilia, 22.90).
 
@@ -22,6 +23,7 @@ newly_flooded_area_pct(sindh, 42.70).
 
 // ----------------------------------------------
 // Wildfire indicators
+// Auto-generated from data/processed/indicators/wildfire_eo_indicators_summary.csv
 // ----------------------------------------------
 
 mean_ndvi_before(evros, 0.4516).
@@ -47,6 +49,7 @@ burned_area_pct(antalya, 3.68).
 
 // ----------------------------------------------
 // Population exposure indicators
+// Auto-generated from data/processed/exposure/population_exposure_summary.csv
 // ----------------------------------------------
 
 total_population(ahr_valley, 38365.01).
@@ -74,7 +77,7 @@ population_valid_pixels(evros, 117438).
 population_exposure_class(evros, low).
 
 total_population(serra_de_estrela, 69997.87).
-population_area_km2(serra_de_estrela, 1320.437).
+population_area_km2(serra_de_estrela, 1320.4370).
 population_density_km2(serra_de_estrela, 53.01).
 population_valid_pixels(serra_de_estrela, 68839).
 population_exposure_class(serra_de_estrela, low).

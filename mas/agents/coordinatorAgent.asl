@@ -1,5 +1,7 @@
 { include("./beliefs/events.asl") }
 { include("./beliefs/indicators.asl") }
+{ include("./beliefs/population_exposure.asl") }
+{ include("./beliefs/user_inputs.asl") }
 // Reference labels are included only for post-hoc evaluation logging, not for
 // live coordination or runtime decision making.
 { include("./beliefs/reference_labels.asl") }
@@ -56,21 +58,23 @@
 // confidence handling to produce the integrated case used by the explanation agent.
 +!fuse_case(E, Hazard, Severity, HazardConfidence, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim) <-
     ?population_exposure_class(E, ExposureClass);
+    ?optional_user_assessment(E, UserAssessment);
+    ?severity_user_alignment(Severity, UserAssessment, UserAssessmentAlignment);
     ?concern_level(Severity, ExposureClass, ConcernLevel);
     ?fusion_confidence(Severity, HazardConfidence, PrimaryCaveat, FusionConfidence);
     ?interpretation_mode(FusionConfidence, PrimaryCaveat, InterpretationMode);
     ?case_profile(ConcernLevel, FusionConfidence, InterpretationMode, Profile);
-    +integrated_case(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim);
+    +integrated_case(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim, UserAssessment, UserAssessmentAlignment);
     +claim_support(E, concern_classification, coordinator_agent, [population_exposure_class, severity_classification]);
     +claim_support(E, fusion_confidence, coordinator_agent, [confidence_assessment, PrimaryCaveat]);
     +claim_support(E, case_profile, coordinator_agent, [concern_classification, fusion_confidence]);
-    .send(explanation_agent, achieve, build_explanation(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim)).
+    .send(explanation_agent, achieve, build_explanation(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim, UserAssessment, UserAssessmentAlignment)).
 
-+semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace)[source(explanation_agent)] :
-    integrated_case(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim) <-
++semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, UserAssessmentFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace)[source(explanation_agent)] :
+    integrated_case(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim, UserAssessment, UserAssessmentAlignment) <-
     ?hazard_trace(E, SourceAgent, RuleLabel, EvidenceList, CaveatList);
-    +final_explanation_payload(E, semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace));
-    .custom.export_payload(E, semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace), ExportPath);
+    +final_explanation_payload(E, semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, UserAssessmentFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace));
+    .custom.export_payload(E, semantic_explanation(E, EventFrame, AssessmentFrame, EvidenceFrame, ClarificationFrame, UserAssessmentFrame, ProvenanceFrame, HeadlineFrame, debug_text(short_headline(DebugHeadline), short_summary(DebugSummary)), ExplanationTrace), ExportPath);
     +payload_export(E, ExportPath);
     +claim_support(E, explanation_packaging, explanation_agent, [ClaimLabel, FusionConfidence, ExplanationTrace]);
     ?reference_hazard(E, ReferenceHazard);
@@ -110,18 +114,33 @@
     .concat(Block28, StrongestEvidence, Block29);
     .concat(Block29, ", alternative_claim=", Block30);
     .concat(Block30, AlternativeClaim, Block31);
-    .concat(Block31, "\nEvaluation: hazard=", Block32);
-    .concat(Block32, HazardMatch, Block33);
-    .concat(Block33, ", severity=", Block34);
-    .concat(Block34, SeverityMatch, Block35);
-    .concat(Block35, ", confidence=", Block36);
-    .concat(Block36, ConfidenceMatch, Block37);
-    .concat(Block37, "\nExport: ", Block38);
-    .concat(Block38, ExportPath, FullBlock);
+    .concat(Block31, "\nUser assessment: severity=", Block32);
+    .concat(Block32, UserAssessment, Block33);
+    .concat(Block33, ", alignment=", Block34);
+    .concat(Block34, UserAssessmentAlignment, Block35);
+    .concat(Block35, "\nEvaluation: hazard=", Block36);
+    .concat(Block36, HazardMatch, Block37);
+    .concat(Block37, ", severity=", Block38);
+    .concat(Block38, SeverityMatch, Block39);
+    .concat(Block39, ", confidence=", Block40);
+    .concat(Block40, ConfidenceMatch, Block41);
+    .concat(Block41, "\nExport: ", Block42);
+    .concat(Block42, ExportPath, FullBlock);
     .print(FullBlock).
 
 +!match_label(Value, Value, match) <- true.
 +!match_label(Value, Reference, differs) : Value \== Reference <- true.
+
+optional_user_assessment(E, UserAssessment) :-
+    user_assessment(E, UserAssessment).
+optional_user_assessment(E, none) :-
+    not user_assessment(E, _).
+
+severity_user_alignment(_, none, not_provided).
+severity_user_alignment(Severity, Severity, matches).
+severity_user_alignment(Severity, UserAssessment, differs) :-
+    UserAssessment \== none &
+    Severity \== UserAssessment.
 
 clarification_required(low, _).
 clarification_required(medium, burn_signal_weak).

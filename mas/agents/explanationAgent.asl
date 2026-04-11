@@ -8,7 +8,7 @@
 // The explanation agent  acts as a semantic packaging layer between the
 // Jason reasoning system and a future external Python/OWL reporting pipeline.
 // It exports a structured explanation payload plus a compact debug summary.
-+!build_explanation(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim) <-
++!build_explanation(E, Hazard, Severity, ClaimLabel, ExposureClass, ConcernLevel, FusionConfidence, InterpretationMode, Profile, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel, SourceAgent, ClarificationStatus, PrimaryLimitation, StrongestEvidence, AlternativeClaim, UserAssessment, UserAssessmentAlignment) <-
     ?name(E, EventName);
     ?country(E, CountryId);
     ?country_name(CountryId, CountryName);
@@ -46,6 +46,10 @@
                 clarification_status(ClarificationStatus),
                 primary_limitation(PrimaryLimitation),
                 alternative_claim(AlternativeClaim)
+            ),
+            user_assessment_frame(
+                user_assessment(UserAssessment),
+                user_assessment_alignment(UserAssessmentAlignment)
             ),
             provenance_frame(
                 source_agent(SourceAgent),
