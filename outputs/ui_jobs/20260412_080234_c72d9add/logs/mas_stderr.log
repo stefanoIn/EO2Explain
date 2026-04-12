@@ -1,0 +1,18 @@
+started
+started
+started
+started
+all assessment requests dispatched
+first-pass ad -> severity=severe, status=hazard_assessed, confidence=high, claim=strong_multisignal_flooding, caveat=no_major_caveat
+packaged payload for ad -> ad | severe flood | high
+-----
+Event: ad
+Summary: ad | severe flood | high
+Flow: source=water_agent, clarification=no_clarification
+Assessment: hazard=flood, severity=severe, status=hazard_assessed, confidence=high, concern=high, profile=high_priority_event
+Reasoning: claim=strong_multisignal_flooding, rule=rule_severe_flood_multisignal
+Evidence: [water_increase_pct,newly_flooded_area_pct,ndwi_change]
+Caveats: []
+Clarification: limitation=no_additional_limitation, strongest_evidence=none, alternative_claim=no_alternative_claim
+User assessment: severity=none, alignment=not_provided
+Export: ../outputs/semantic_explanations/ad.json

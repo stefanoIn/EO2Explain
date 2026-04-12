@@ -1,0 +1,76 @@
+{
+  "event_id": "ad",
+  "event": {
+    "event_id": "ad",
+    "event_name": "ad",
+    "hazard_type": "flood",
+    "country": {
+      "id": "ad",
+      "name": "ad"
+    },
+    "region": {
+      "id": "ad",
+      "name": "ad"
+    }
+  },
+  "assessment": {
+    "severity": "undetermined",
+    "conclusion_status": "inconclusive",
+    "claim_label": "inconclusive_water_signal",
+    "fusion_confidence": "low",
+    "concern_level": "watch",
+    "interpretation_mode": "tentative",
+    "case_profile": "watch_case",
+    "exposure_class": "medium"
+  },
+  "evidence": {
+    "primary_caveat": "no_major_caveat",
+    "evidence_items": [],
+    "caveat_items": [],
+    "strongest_evidence": "no_dominant_evidence"
+  },
+  "clarification": {
+    "clarification_status": "clarification_provided",
+    "primary_limitation": "no_additional_limitation",
+    "alternative_claim": "no_alternative_claim"
+  },
+  "user_assessment": {
+    "user_assessment": "none",
+    "user_assessment_alignment": "not_provided"
+  },
+  "provenance": {
+    "source_agent": "water_agent",
+    "rule_label": "rule_inconclusive_flood_signal"
+  },
+  "headline": {
+    "event_name": "ad",
+    "region_name": "ad",
+    "country_name": "ad",
+    "severity": "undetermined",
+    "conclusion_status": "inconclusive",
+    "hazard_type": "flood",
+    "fusion_confidence": "low"
+  },
+  "debug": {
+    "short_headline": "ad | undetermined flood | low",
+    "short_summary": "claim=inconclusive_water_signal; concern=watch; profile=watch_case; caveat=no_major_caveat; clarification=clarification_provided; strongest_evidence=no_dominant_evidence; alternative_claim=no_alternative_claim"
+  },
+  "trace": {
+    "source_agent": "water_agent",
+    "rule_label": "rule_inconclusive_flood_signal",
+    "claim_label": "inconclusive_water_signal",
+    "evidence_items": [],
+    "caveat_items": [],
+    "clarification_trace": {
+      "clarification_status": "clarification_provided",
+      "primary_limitation": "no_additional_limitation",
+      "strongest_evidence": "no_dominant_evidence",
+      "alternative_claim": "no_alternative_claim"
+    }
+  },
+  "metadata": {
+    "source_raw_file": "ad.json",
+    "source_functor": "semantic_explanation",
+    "source_predicate": "semantic_explanation(ad,event_frame(event_id(ad),event_name(\"ad\"),hazard_type(flood),country(ad,\"ad\"),region(ad,\"ad\")),assessment_frame(severity(undetermined),conclusion_status(inconclusive),claim_label(inconclusive_water_signal),fusion_confidence(low),concern_level(watch),interpretation_mode(tentative),case_profile(watch_case),exposure_class(medium)),evidence_frame(primary_caveat(no_major_caveat),evidence_items([]),caveat_items([]),strongest_evidence(no_dominant_evidence)),clarification_frame(clarification_status(clarification_provided),primary_limitation(no_additional_limitation),alternative_claim(no_alternative_claim)),user_assessment_frame(user_assessment(none),user_assessment_alignment(not_provided)),provenance_frame(source_agent(water_agent),rule_label(rule_inconclusive_flood_signal)),headline_frame(event_name(\"ad\"),region_name(\"ad\"),country_name(\"ad\"),severity(undetermined),conclusion_status(inconclusive),hazard_type(flood),fusion_confidence(low)),debug_text(short_headline(\"ad | undetermined flood | low\"),short_summary(\"claim=inconclusive_water_signal; concern=watch; profile=watch_case; caveat=no_major_caveat; clarification=clarification_provided; strongest_evidence=no_dominant_evidence; alternative_claim=no_alternative_claim\")),explanation_trace(water_agent,rule_inconclusive_flood_signal,inconclusive_water_signal,[],[],clarification_trace(clarification_provided,no_additional_limitation,no_dominant_evidence,no_alternative_claim)))"
+  }
+}

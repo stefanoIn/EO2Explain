@@ -111,7 +111,17 @@ java.util.logging.SimpleFormatter.format=%5$s%n
 def build_mas_command(log_conf_path: Path) -> list[str]:
     gradle_path = shutil.which(GRADLE_BIN)
     if gradle_path:
-        return [gradle_path, "run", "--console=plain"]
+        mas_args = "@@".join(
+            [
+                "eo.mas2j",
+                "--no-net",
+                "--no-mbean",
+                "--no-mindinspector",
+                "--log-conf",
+                str(log_conf_path),
+            ]
+        )
+        return [gradle_path, "run", "--console=plain", f"-PmasArgs={mas_args}"]
 
     jason_path = shutil.which(JASON_BIN)
     if jason_path:

@@ -1,0 +1,14 @@
+[EXPLANATION AGENT] --> Started explanation packager.
+[COORDINATOR AGENT] --> Started coordinator workflow.
+[FOREST AGENT] --> Started wildfire specialist.
+[WATER AGENT] --> Started water specialist.
+[COORDINATOR AGENT] --> Requesting assessment for ad from water_agent.
+[COORDINATOR AGENT] --> All assessment requests dispatched.
+[WATER AGENT] --> First-pass assessment for ad: severity=undetermined, status=inconclusive, confidence=low, claim=inconclusive_water_signal.
+[COORDINATOR AGENT] --> Received first-pass assessment for ad from water_agent with severity=undetermined, status=inconclusive, confidence=low.
+[COORDINATOR AGENT] --> Requesting clarification for ad from water_agent because caveat=no_major_caveat.
+[WATER AGENT] --> Clarification for ad: limitation=no_additional_limitation, strongest_evidence=no_dominant_evidence.
+[COORDINATOR AGENT] --> Received clarification for ad from water_agent with limitation=no_additional_limitation.
+[COORDINATOR AGENT] --> Fused final case for ad with concern=watch, profile=watch_case.
+[EXPLANATION AGENT] --> Packaging explanation for ad with headline ad | undetermined flood | low.
+[COORDINATOR AGENT] --> Exported semantic explanation for ad to ../outputs/semantic_explanations/ad.json.
