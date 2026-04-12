@@ -1,0 +1,20 @@
+EXPLANATION AGENT started
+WATER AGENT started
+COORDINATOR AGENT started
+FOREST AGENT started
+all assessment requests dispatched
+first-pass ad -> severity=undetermined, status=inconclusive, confidence=low, claim=inconclusive_water_signal, caveat=no_major_caveat
+clarification requested for ad -> confidence=low, caveat=no_major_caveat, source=water_agent
+clarification ad -> limitation=no_additional_limitation, strongest_evidence=no_dominant_evidence, alternative_claim=no_alternative_claim
+packaged payload for ad -> ad | undetermined flood | low
+-----
+Event: ad
+Summary: ad | undetermined flood | low
+Flow: source=water_agent, clarification=clarification_provided
+Assessment: hazard=flood, severity=undetermined, status=inconclusive, confidence=low, concern=watch, profile=watch_case
+Reasoning: claim=inconclusive_water_signal, rule=rule_inconclusive_flood_signal
+Evidence: []
+Caveats: []
+Clarification: limitation=no_additional_limitation, strongest_evidence=no_dominant_evidence, alternative_claim=no_alternative_claim
+User assessment: severity=moderate, alignment=differs
+Export: ../outputs/semantic_explanations/ad.json

@@ -76,6 +76,54 @@
       {% endif %}
     </section>
 
+    {% if transformed_payload %}
+    <section class="panel analysis-summary-panel">
+      <div class="panel-heading">
+        <h2>Analysis Snapshot</h2>
+        <p class="panel-sub">Structured highlights extracted from the transformed MAS payload.</p>
+      </div>
+      <div class="summary-chip-row">
+        <span class="summary-chip summary-chip-hazard">{{ transformed_payload.event.hazard_type|replace('_', ' ')|title }}</span>
+        <span class="summary-chip summary-chip-severity summary-chip-severity-{{ transformed_payload.assessment.severity|default('unknown')|replace('_', '-') }}">{{ transformed_payload.assessment.severity|replace('_', ' ')|title }}</span>
+        <span class="summary-chip summary-chip-confidence summary-chip-confidence-{{ transformed_payload.assessment.fusion_confidence|default('unknown') }}">{{ transformed_payload.assessment.fusion_confidence|replace('_', ' ')|title }} confidence</span>
+        <span class="summary-chip summary-chip-mode">{{ transformed_payload.assessment.interpretation_mode|replace('_', ' ')|title }}</span>
+        <span class="summary-chip summary-chip-status">{{ transformed_payload.assessment.conclusion_status|default('hazard_assessed')|replace('_', ' ')|title }}</span>
+      </div>
+      <div class="summary-grid">
+        <article class="summary-card">
+          <h3>Event</h3>
+          <p><strong>{{ transformed_payload.event.event_name }}</strong></p>
+          <p>{{ transformed_payload.event.region.name }}, {{ transformed_payload.event.country.name }}</p>
+        </article>
+        <article class="summary-card">
+          <h3>Reasoning</h3>
+          <p><strong>Claim:</strong> {{ transformed_payload.assessment.claim_label|replace('_', ' ') }}</p>
+          <p><strong>Rule:</strong> {{ transformed_payload.provenance.rule_label }}</p>
+        </article>
+        <article class="summary-card">
+          <h3>Evidence</h3>
+          <div class="token-row">
+            {% for item in transformed_payload.evidence.evidence_items %}
+            <span class="token-badge">{{ item|replace('_', ' ') }}</span>
+            {% else %}
+            <span class="token-badge token-badge-muted">No explicit supporting evidence</span>
+            {% endfor %}
+          </div>
+        </article>
+        <article class="summary-card">
+          <h3>Caveats</h3>
+          <div class="token-row">
+            {% for item in transformed_payload.evidence.caveat_items %}
+            <span class="token-badge token-badge-warning">{{ item|replace('_', ' ') }}</span>
+            {% else %}
+            <span class="token-badge token-badge-muted">No major caveat</span>
+            {% endfor %}
+          </div>
+        </article>
+      </div>
+    </section>
+    {% endif %}
+
     <section class="panel report-panel">
       <div class="panel-heading">
         <h2>Generated Report</h2>

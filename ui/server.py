@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import sys
 
@@ -66,6 +67,10 @@ def create_app() -> Flask:
         mas_stderr = mas_stderr_path.read_text(encoding="utf-8").strip() if mas_stderr_path.exists() else None
         agent_trace = agent_trace_path.read_text(encoding="utf-8").strip() if agent_trace_path.exists() else None
 
+        transformed_payload = None
+        if transformed:
+            transformed_payload = json.loads(transformed[0].read_text(encoding="utf-8"))
+
         report_raw = reports[0].read_text(encoding="utf-8")
         return render_template(
             "result.html",
@@ -80,6 +85,7 @@ def create_app() -> Flask:
             agent_trace=agent_trace,
             mas_stdout=mas_stdout,
             mas_stderr=mas_stderr,
+            transformed_payload=transformed_payload,
         )
 
     @app.get("/jobs/<job_id>/artifact/<artifact>")

@@ -139,10 +139,59 @@ def severity_phrase(severity: str, hazard_type: str) -> str:
     return f"{humanize(severity)} {humanize(hazard_type)} event"
 
 
+def caveat_phrase_list(caveat_items: list[str]) -> str:
+    return join_phrases([CAVEAT_LIST_TEXT.get(item, humanize(item)) for item in caveat_items])
+
+
 def interpretation_sentence(interpretation_mode: str) -> str:
     return INTERPRETATION_TEXT.get(
         interpretation_mode,
         f"The interpretation mode is {humanize(interpretation_mode)}.",
+    )
+
+
+def confidence_rationale(assessment: dict, evidence: dict) -> str:
+    claim = assessment["claim_label"]
+    confidence = assessment["fusion_confidence"]
+    caveat_items = evidence["caveat_items"]
+    evidence_items = evidence["evidence_items"]
+
+    if assessment.get("conclusion_status", "hazard_assessed") == "inconclusive":
+        return (
+            "Confidence remains low because the available indicators did not form a coherent "
+            "hazard pattern strong enough to support a firm conclusion."
+        )
+
+    if confidence == "high":
+        if "strong_multisignal" in claim or len(evidence_items) >= 3:
+            return (
+                "Confidence is high because multiple independent EO indicators agree and no "
+                "major caveat substantially weakens the interpretation."
+            )
+        return (
+            "Confidence is high because the available indicators point in the same direction "
+            "without a strong contradictory signal."
+        )
+
+    if confidence == "medium":
+        if caveat_items:
+            return (
+                "Confidence is moderate because the main indicators support the assessment, "
+                f"but the reading is still qualified by {caveat_phrase_list(caveat_items)}."
+            )
+        return (
+            "Confidence is moderate because the symbolic evidence is coherent, but not strong "
+            "enough to be treated as fully robust."
+        )
+
+    if caveat_items:
+        return (
+            "Confidence is low because the evidence is weak, partial, or caveat-heavy, and is "
+            f"further qualified by {caveat_phrase_list(caveat_items)}."
+        )
+    return (
+        "Confidence is low because the available evidence does not provide enough support for a "
+        "stronger conclusion."
     )
 
 
@@ -317,6 +366,7 @@ def build_report_text(payload: dict) -> str:
             f"The integrated concern level is {humanize(assessment['concern_level'])}, and the case "
             f"profile is classified as a {humanize(assessment['case_profile'])}.",
             CONFIDENCE_TEXT.get(assessment["fusion_confidence"], ""),
+            confidence_rationale(assessment, evidence),
             interpretation_sentence(assessment["interpretation_mode"]),
             concern_expl,
             profile_expl,
