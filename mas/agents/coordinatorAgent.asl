@@ -8,7 +8,7 @@
 // The coordinator launches one assessment request per event and waits for the
 // responsible hazard agent to return a structured symbolic judgment.
 +!start <-
-    .print("started");
+    .print("COORDINATOR AGENT started");
     .custom.trace_line("COORDINATOR AGENT", "Started coordinator workflow.");
     .findall(E, event(E), Events);  // Gather all events at startup to dispatch assessment requests.
     !dispatch_events(Events).

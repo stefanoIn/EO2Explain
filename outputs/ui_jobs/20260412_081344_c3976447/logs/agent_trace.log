@@ -1,0 +1,14 @@
+[WATER AGENT] --> Started water specialist.
+[COORDINATOR AGENT] --> Started coordinator workflow.
+[FOREST AGENT] --> Started wildfire specialist.
+[EXPLANATION AGENT] --> Started explanation packager.
+[COORDINATOR AGENT] --> Requesting assessment for ahr_valley from water_agent.
+[COORDINATOR AGENT] --> All assessment requests dispatched.
+[WATER AGENT] --> First-pass assessment for ahr_valley: severity=mild, status=hazard_assessed, confidence=medium, claim=residual_flood_signal.
+[COORDINATOR AGENT] --> Received first-pass assessment for ahr_valley from water_agent with severity=mild, status=hazard_assessed, confidence=medium.
+[COORDINATOR AGENT] --> Requesting clarification for ahr_valley from water_agent because caveat=residual_observation_window.
+[WATER AGENT] --> Clarification for ahr_valley: limitation=residual_observation_window, strongest_evidence=newly_flooded_area_pct.
+[COORDINATOR AGENT] --> Received clarification for ahr_valley from water_agent with limitation=residual_observation_window.
+[COORDINATOR AGENT] --> Fused final case for ahr_valley with concern=elevated, profile=cautious_monitoring_case.
+[EXPLANATION AGENT] --> Packaging explanation for ahr_valley with headline Ahr Valley | mild flood | medium.
+[COORDINATOR AGENT] --> Exported semantic explanation for ahr_valley to ../outputs/semantic_explanations/ahr_valley.json.

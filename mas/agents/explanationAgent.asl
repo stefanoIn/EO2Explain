@@ -3,7 +3,7 @@
 !start.
 
 +!start <-
-    .print("started");
+    .print("EXPLANATION AGENT started");
     .custom.trace_line("EXPLANATION AGENT", "Started explanation packager.").
 
 // The explanation agent  acts as a semantic packaging layer between the

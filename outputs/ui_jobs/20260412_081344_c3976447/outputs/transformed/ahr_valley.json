@@ -1,0 +1,90 @@
+{
+  "event_id": "ahr_valley",
+  "event": {
+    "event_id": "ahr_valley",
+    "event_name": "Ahr Valley",
+    "hazard_type": "flood",
+    "country": {
+      "id": "germany",
+      "name": "Germany"
+    },
+    "region": {
+      "id": "rhineland_palatinate",
+      "name": "Rhineland-Palatinate"
+    }
+  },
+  "assessment": {
+    "severity": "mild",
+    "conclusion_status": "hazard_assessed",
+    "claim_label": "residual_flood_signal",
+    "fusion_confidence": "medium",
+    "concern_level": "elevated",
+    "interpretation_mode": "cautious",
+    "case_profile": "cautious_monitoring_case",
+    "exposure_class": "high"
+  },
+  "evidence": {
+    "primary_caveat": "residual_observation_window",
+    "evidence_items": [
+      "water_increase_pct",
+      "newly_flooded_area_pct"
+    ],
+    "caveat_items": [
+      "late_observation",
+      "possible_underestimation",
+      "weak_water_signal"
+    ],
+    "strongest_evidence": "newly_flooded_area_pct"
+  },
+  "clarification": {
+    "clarification_status": "clarification_provided",
+    "primary_limitation": "residual_observation_window",
+    "alternative_claim": "inconclusive_water_signal"
+  },
+  "user_assessment": {
+    "user_assessment": "severe",
+    "user_assessment_alignment": "differs"
+  },
+  "provenance": {
+    "source_agent": "water_agent",
+    "rule_label": "rule_residual_flood_late_observation"
+  },
+  "headline": {
+    "event_name": "Ahr Valley",
+    "region_name": "Rhineland-Palatinate",
+    "country_name": "Germany",
+    "severity": "mild",
+    "conclusion_status": "hazard_assessed",
+    "hazard_type": "flood",
+    "fusion_confidence": "medium"
+  },
+  "debug": {
+    "short_headline": "Ahr Valley | mild flood | medium",
+    "short_summary": "claim=residual_flood_signal; concern=elevated; profile=cautious_monitoring_case; caveat=residual_observation_window; clarification=clarification_provided; strongest_evidence=newly_flooded_area_pct; alternative_claim=inconclusive_water_signal"
+  },
+  "trace": {
+    "source_agent": "water_agent",
+    "rule_label": "rule_residual_flood_late_observation",
+    "claim_label": "residual_flood_signal",
+    "evidence_items": [
+      "water_increase_pct",
+      "newly_flooded_area_pct"
+    ],
+    "caveat_items": [
+      "late_observation",
+      "possible_underestimation",
+      "weak_water_signal"
+    ],
+    "clarification_trace": {
+      "clarification_status": "clarification_provided",
+      "primary_limitation": "residual_observation_window",
+      "strongest_evidence": "newly_flooded_area_pct",
+      "alternative_claim": "inconclusive_water_signal"
+    }
+  },
+  "metadata": {
+    "source_raw_file": "ahr_valley.json",
+    "source_functor": "semantic_explanation",
+    "source_predicate": "semantic_explanation(ahr_valley,event_frame(event_id(ahr_valley),event_name(\"Ahr Valley\"),hazard_type(flood),country(germany,\"Germany\"),region(rhineland_palatinate,\"Rhineland-Palatinate\")),assessment_frame(severity(mild),conclusion_status(hazard_assessed),claim_label(residual_flood_signal),fusion_confidence(medium),concern_level(elevated),interpretation_mode(cautious),case_profile(cautious_monitoring_case),exposure_class(high)),evidence_frame(primary_caveat(residual_observation_window),evidence_items([water_increase_pct,newly_flooded_area_pct]),caveat_items([late_observation,possible_underestimation,weak_water_signal]),strongest_evidence(newly_flooded_area_pct)),clarification_frame(clarification_status(clarification_provided),primary_limitation(residual_observation_window),alternative_claim(inconclusive_water_signal)),user_assessment_frame(user_assessment(severe),user_assessment_alignment(differs)),provenance_frame(source_agent(water_agent),rule_label(rule_residual_flood_late_observation)),headline_frame(event_name(\"Ahr Valley\"),region_name(\"Rhineland-Palatinate\"),country_name(\"Germany\"),severity(mild),conclusion_status(hazard_assessed),hazard_type(flood),fusion_confidence(medium)),debug_text(short_headline(\"Ahr Valley | mild flood | medium\"),short_summary(\"claim=residual_flood_signal; concern=elevated; profile=cautious_monitoring_case; caveat=residual_observation_window; clarification=clarification_provided; strongest_evidence=newly_flooded_area_pct; alternative_claim=inconclusive_water_signal\")),explanation_trace(water_agent,rule_residual_flood_late_observation,residual_flood_signal,[water_increase_pct,newly_flooded_area_pct],[late_observation,possible_underestimation,weak_water_signal],clarification_trace(clarification_provided,residual_observation_window,newly_flooded_area_pct,inconclusive_water_signal)))"
+  }
+}

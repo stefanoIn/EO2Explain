@@ -4,7 +4,7 @@
 !start.
 
 +!start <-
-    .print("started");
+    .print("FOREST AGENT started");
     .custom.trace_line("FOREST AGENT", "Started wildfire specialist.").
 
 // The forest agent reasons in layers: raw indicators become evidence signals,

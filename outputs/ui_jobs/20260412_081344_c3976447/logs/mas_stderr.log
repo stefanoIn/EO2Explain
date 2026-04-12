@@ -1,0 +1,20 @@
+WATER AGENT started
+FOREST AGENT started
+COORDINATOR AGENT started
+EXPLANATION AGENT started
+all assessment requests dispatched
+first-pass ahr_valley -> severity=mild, status=hazard_assessed, confidence=medium, claim=residual_flood_signal, caveat=residual_observation_window
+clarification requested for ahr_valley -> confidence=medium, caveat=residual_observation_window, source=water_agent
+clarification ahr_valley -> limitation=residual_observation_window, strongest_evidence=newly_flooded_area_pct, alternative_claim=inconclusive_water_signal
+packaged payload for ahr_valley -> Ahr Valley | mild flood | medium
+-----
+Event: ahr_valley
+Summary: Ahr Valley | mild flood | medium
+Flow: source=water_agent, clarification=clarification_provided
+Assessment: hazard=flood, severity=mild, status=hazard_assessed, confidence=medium, concern=elevated, profile=cautious_monitoring_case
+Reasoning: claim=residual_flood_signal, rule=rule_residual_flood_late_observation
+Evidence: [water_increase_pct,newly_flooded_area_pct]
+Caveats: [late_observation,possible_underestimation,weak_water_signal]
+Clarification: limitation=residual_observation_window, strongest_evidence=newly_flooded_area_pct, alternative_claim=inconclusive_water_signal
+User assessment: severity=severe, alignment=differs
+Export: ../outputs/semantic_explanations/ahr_valley.json

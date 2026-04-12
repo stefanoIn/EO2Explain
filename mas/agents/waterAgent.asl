@@ -4,7 +4,7 @@
 !start.
 
 +!start <-
-    .print("started");
+    .print("WATER AGENT started");
     .custom.trace_line("WATER AGENT", "Started water specialist.").
 
 // The water agent treats flood reasoning as a progression from indicator signals
