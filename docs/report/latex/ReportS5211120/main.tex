@@ -432,6 +432,20 @@ This design makes the reasoning path explicit. For example, the system can disti
 
 In the current implementation, inconclusive cases are represented explicitly in the MAS rather than being verbalized only at report time. When the available signals do not support a reliable hazard conclusion, the agents produce an \texttt{undetermined} severity together with an explicit \texttt{inconclusive} conclusion status.
 
+\subsubsection{Support-Level Abstraction}
+
+The current version of the reasoning layer introduces an intermediate symbolic abstraction between evidence synthesis and final decision. Rather than mapping evidence patterns directly to severity and confidence, the hazard agents first classify the available evidence in terms of support level. The main symbolic categories are:
+
+\begin{itemize}
+\item \texttt{strong}, for consistent multisignal evidence
+\item \texttt{moderate}, for coherent but not fully reinforced evidence
+\item \texttt{weak}, for limited or residual evidence
+\item \texttt{conflicting}, for partially contradictory evidence
+\item \texttt{insufficient}, for cases in which no reliable hazard-support pattern can be established
+\end{itemize}
+
+This layer is important because it separates \emph{evidence interpretation} from \emph{decision output}. Severity and confidence are therefore no longer derived as a single jump from thresholds to labels. Instead, the agents first construct a symbolic judgment about how strongly the evidence supports the hazard hypothesis, and only then map that support level into severity, confidence, and conclusion status.
+
 \subsubsection{Flood Reasoning in \texttt{water\_agent}}
 
 The flood agent uses an analogous reasoning structure. It starts from \texttt{water\_increase\_pct/2}, \texttt{newly\_flooded\_area\_pct/2}, and \texttt{ndwi\_change/2}, and converts them into symbolic flood evidence.
@@ -541,6 +555,21 @@ case_profile(ConcernLevel, FusionConfidence, InterpretationMode, Profile);
 The integrated case now also records whether clarification occurred and, if so, which limitation and strongest evidence were returned by the specialist. This means that the final interpretation is not based only on EO measurements. It also depends on contextual exposure, on the reliability of the hazard reading, and on whether the case required a second-pass refinement. A severe flood in a high-exposure area and a mild wildfire in a low-exposure area are therefore represented differently even if both originate from the same general reasoning architecture.
 
 The coordinator also stores the conclusion status returned by the specialist and, when available, compares the final inferred severity with the optional \texttt{user\_assessment/2} belief provided through the UI. This comparison does not modify the reasoning result. It is used only to expose alignment or disagreement in the final explanation.
+
+\subsection{Threshold Design and Limitations}
+
+The thresholds used in the hazard agents should be understood as interpretable prototype cutoffs rather than as operational EO standards. In the current implementation, they were selected to produce distinguishable symbolic categories within the small case-study dataset and to support meaningful differences between strong, moderate, weak, conflicting, and inconclusive reasoning paths.
+
+More precisely, the thresholds are intended to:
+
+\begin{itemize}
+\item reflect typical relative ranges observed in the EO indicators computed in this project
+\item separate strong multisignal cases from coherent but weaker cases
+\item isolate residual, weak, or contradictory situations that should trigger caveats or clarification
+\item keep the reasoning layer transparent and easy to inspect
+\end{itemize}
+
+This design choice improves interpretability, but it also introduces clear limitations. The current reasoning layer remains dependent on manually defined cutoffs, is sensitive to indicator noise and case-specific edge conditions, and has not been calibrated on a large benchmark dataset. These limitations are acceptable within the goals of the project, which focus on symbolic reasoning, explainability, and controlled demonstration rather than on operational large-scale deployment.
 
 \subsection{Explanation Generation and Traceability}
 

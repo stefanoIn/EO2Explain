@@ -236,6 +236,11 @@ def populate_event(onto, ns, payload: dict) -> None:
     set_single_data_property(assessment_individual, "hasInterpretationMode", assessment["interpretation_mode"])
     set_single_data_property(
         assessment_individual,
+        "hasSupportLevel",
+        assessment.get("support_level", "not_available"),
+    )
+    set_single_data_property(
+        assessment_individual,
         "hasConclusionStatus",
         assessment.get("conclusion_status", "hazard_assessed"),
     )

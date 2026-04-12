@@ -1136,6 +1136,14 @@ body[data-page="result"] .result-back {
   margin-top: 0.2rem;
 }
 
+.summary-explainer {
+  margin: 0.8rem 0 0;
+  max-width: 72ch;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
 .summary-chip {
   display: inline-flex;
   align-items: center;
@@ -1153,6 +1161,27 @@ body[data-page="result"] .result-back {
 .summary-chip-hazard {
   background: rgba(75, 163, 199, 0.12);
   color: var(--water-deep);
+}
+
+.summary-chip-support-strong {
+  background: rgba(111, 138, 64, 0.14);
+  color: #445724;
+}
+
+.summary-chip-support-moderate {
+  background: rgba(31, 111, 148, 0.1);
+  color: var(--water-deep);
+}
+
+.summary-chip-support-weak {
+  background: rgba(217, 122, 43, 0.1);
+  color: var(--fire-deep);
+}
+
+.summary-chip-support-conflicting,
+.summary-chip-support-insufficient {
+  background: rgba(16, 32, 36, 0.08);
+  color: var(--ink-soft);
 }
 
 .summary-chip-severity-severe {

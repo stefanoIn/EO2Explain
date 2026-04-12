@@ -1,7 +1,7 @@
 
 {
     "functor": "semantic_explanation",
-    "predicate": "semantic_explanation(serra_de_estrela,event_frame(event_id(serra_de_estrela),event_name(\"Serra da Estrela\"),hazard_type(wildfire),country(portugal,\"Portugal\"),region(centro_region,\"Centro Region\")),assessment_frame(severity(moderate),claim_label(spectral_extent_fire_damage),fusion_confidence(high),concern_level(moderate),interpretation_mode(qualified),case_profile(monitoring_case),exposure_class(low)),evidence_frame(primary_caveat(late_observation),evidence_items([burned_area_pct,mean_dnbr]),caveat_items([late_observation,possible_underestimation]),strongest_evidence(none)),clarification_frame(clarification_status(no_clarification),primary_limitation(no_additional_limitation),alternative_claim(no_alternative_claim)),user_assessment_frame(user_assessment(none),user_assessment_alignment(not_provided)),provenance_frame(source_agent(forest_agent),rule_label(rule_moderate_fire_spectral_extent)),headline_frame(event_name(\"Serra da Estrela\"),region_name(\"Centro Region\"),country_name(\"Portugal\"),severity(moderate),hazard_type(wildfire),fusion_confidence(high)),debug_text(short_headline(\"Serra da Estrela | moderate wildfire | high\"),short_summary(\"claim=spectral_extent_fire_damage; concern=moderate; profile=monitoring_case; caveat=late_observation; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\")),explanation_trace(forest_agent,rule_moderate_fire_spectral_extent,spectral_extent_fire_damage,[burned_area_pct,mean_dnbr],[late_observation,possible_underestimation],clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim)))",
+    "predicate": "semantic_explanation(serra_de_estrela,event_frame(event_id(serra_de_estrela),event_name(\"Serra da Estrela\"),hazard_type(wildfire),country(portugal,\"Portugal\"),region(centro_region,\"Centro Region\")),assessment_frame(severity(moderate),support_level(moderate),conclusion_status(hazard_assessed),claim_label(spectral_extent_fire_damage),fusion_confidence(medium),concern_level(moderate),interpretation_mode(cautious),case_profile(monitoring_case),exposure_class(low)),evidence_frame(primary_caveat(late_observation),evidence_items([burned_area_pct,mean_dnbr]),caveat_items([late_observation,possible_underestimation]),strongest_evidence(none)),clarification_frame(clarification_status(no_clarification),primary_limitation(no_additional_limitation),alternative_claim(no_alternative_claim)),user_assessment_frame(user_assessment(none),user_assessment_alignment(not_provided)),provenance_frame(source_agent(forest_agent),rule_label(rule_moderate_fire_spectral_extent)),headline_frame(event_name(\"Serra da Estrela\"),region_name(\"Centro Region\"),country_name(\"Portugal\"),severity(moderate),support_level(moderate),conclusion_status(hazard_assessed),hazard_type(wildfire),fusion_confidence(medium)),debug_text(short_headline(\"Serra da Estrela | moderate wildfire | medium\"),short_summary(\"claim=spectral_extent_fire_damage; concern=moderate; profile=monitoring_case; caveat=late_observation; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\")),explanation_trace(forest_agent,rule_moderate_fire_spectral_extent,spectral_extent_fire_damage,[burned_area_pct,mean_dnbr],[late_observation,possible_underestimation],clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim)))",
     "terms": [
         {
             "functor": "serra_de_estrela",
@@ -64,7 +64,7 @@
         },
         {
             "functor": "assessment_frame",
-            "predicate": "assessment_frame(severity(moderate),claim_label(spectral_extent_fire_damage),fusion_confidence(high),concern_level(moderate),interpretation_mode(qualified),case_profile(monitoring_case),exposure_class(low))",
+            "predicate": "assessment_frame(severity(moderate),support_level(moderate),conclusion_status(hazard_assessed),claim_label(spectral_extent_fire_damage),fusion_confidence(medium),concern_level(moderate),interpretation_mode(cautious),case_profile(monitoring_case),exposure_class(low))",
             "terms": [
                 {
                     "functor": "severity",
@@ -73,6 +73,26 @@
                         {
                             "functor": "moderate",
                             "predicate": "moderate"
+                        }
+                    ]
+                },
+                {
+                    "functor": "support_level",
+                    "predicate": "support_level(moderate)",
+                    "terms": [
+                        {
+                            "functor": "moderate",
+                            "predicate": "moderate"
+                        }
+                    ]
+                },
+                {
+                    "functor": "conclusion_status",
+                    "predicate": "conclusion_status(hazard_assessed)",
+                    "terms": [
+                        {
+                            "functor": "hazard_assessed",
+                            "predicate": "hazard_assessed"
                         }
                     ]
                 },
@@ -88,11 +108,11 @@
                 },
                 {
                     "functor": "fusion_confidence",
-                    "predicate": "fusion_confidence(high)",
+                    "predicate": "fusion_confidence(medium)",
                     "terms": [
                         {
-                            "functor": "high",
-                            "predicate": "high"
+                            "functor": "medium",
+                            "predicate": "medium"
                         }
                     ]
                 },
@@ -108,11 +128,11 @@
                 },
                 {
                     "functor": "interpretation_mode",
-                    "predicate": "interpretation_mode(qualified)",
+                    "predicate": "interpretation_mode(cautious)",
                     "terms": [
                         {
-                            "functor": "qualified",
-                            "predicate": "qualified"
+                            "functor": "cautious",
+                            "predicate": "cautious"
                         }
                     ]
                 },
@@ -286,7 +306,7 @@
         },
         {
             "functor": "headline_frame",
-            "predicate": "headline_frame(event_name(\"Serra da Estrela\"),region_name(\"Centro Region\"),country_name(\"Portugal\"),severity(moderate),hazard_type(wildfire),fusion_confidence(high))",
+            "predicate": "headline_frame(event_name(\"Serra da Estrela\"),region_name(\"Centro Region\"),country_name(\"Portugal\"),severity(moderate),support_level(moderate),conclusion_status(hazard_assessed),hazard_type(wildfire),fusion_confidence(medium))",
             "terms": [
                 {
                     "functor": "event_name",
@@ -320,6 +340,26 @@
                     ]
                 },
                 {
+                    "functor": "support_level",
+                    "predicate": "support_level(moderate)",
+                    "terms": [
+                        {
+                            "functor": "moderate",
+                            "predicate": "moderate"
+                        }
+                    ]
+                },
+                {
+                    "functor": "conclusion_status",
+                    "predicate": "conclusion_status(hazard_assessed)",
+                    "terms": [
+                        {
+                            "functor": "hazard_assessed",
+                            "predicate": "hazard_assessed"
+                        }
+                    ]
+                },
+                {
                     "functor": "hazard_type",
                     "predicate": "hazard_type(wildfire)",
                     "terms": [
@@ -331,11 +371,11 @@
                 },
                 {
                     "functor": "fusion_confidence",
-                    "predicate": "fusion_confidence(high)",
+                    "predicate": "fusion_confidence(medium)",
                     "terms": [
                         {
-                            "functor": "high",
-                            "predicate": "high"
+                            "functor": "medium",
+                            "predicate": "medium"
                         }
                     ]
                 }
@@ -343,13 +383,13 @@
         },
         {
             "functor": "debug_text",
-            "predicate": "debug_text(short_headline(\"Serra da Estrela | moderate wildfire | high\"),short_summary(\"claim=spectral_extent_fire_damage; concern=moderate; profile=monitoring_case; caveat=late_observation; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\"))",
+            "predicate": "debug_text(short_headline(\"Serra da Estrela | moderate wildfire | medium\"),short_summary(\"claim=spectral_extent_fire_damage; concern=moderate; profile=monitoring_case; caveat=late_observation; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\"))",
             "terms": [
                 {
                     "functor": "short_headline",
-                    "predicate": "short_headline(\"Serra da Estrela | moderate wildfire | high\")",
+                    "predicate": "short_headline(\"Serra da Estrela | moderate wildfire | medium\")",
                     "terms": [
-                        "Serra da Estrela | moderate wildfire | high"
+                        "Serra da Estrela | moderate wildfire | medium"
                     ]
                 },
                 {

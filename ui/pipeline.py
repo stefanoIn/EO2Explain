@@ -191,6 +191,8 @@ def write_indicators_asl(
             f"mean_ndwi_before({event_id}, {float(metrics['mean_ndwi_before']):.4f}).",
             f"mean_ndwi_after({event_id}, {float(metrics['mean_ndwi_after']):.4f}).",
             f"ndwi_change({event_id}, {float(metrics['ndwi_change']):.4f}).",
+            f"water_area_before_pct({event_id}, {float(metrics['water_area_before_pct']):.2f}).",
+            f"water_area_after_pct({event_id}, {float(metrics['water_area_after_pct']):.2f}).",
             f"water_increase_pct({event_id}, {float(metrics['water_increase_pct_points']):.2f}).",
             f"newly_flooded_area_pct({event_id}, {float(metrics['newly_flooded_area_pct']):.2f}).",
         ]

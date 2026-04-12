@@ -85,15 +85,26 @@
       <div class="summary-chip-row">
         <span class="summary-chip summary-chip-hazard">{{ transformed_payload.event.hazard_type|replace('_', ' ')|title }}</span>
         <span class="summary-chip summary-chip-severity summary-chip-severity-{{ transformed_payload.assessment.severity|default('unknown')|replace('_', '-') }}">{{ transformed_payload.assessment.severity|replace('_', ' ')|title }}</span>
-        <span class="summary-chip summary-chip-confidence summary-chip-confidence-{{ transformed_payload.assessment.fusion_confidence|default('unknown') }}">{{ transformed_payload.assessment.fusion_confidence|replace('_', ' ')|title }} confidence</span>
+        {% if transformed_payload.assessment.support_level %}
+        <span class="summary-chip summary-chip-support summary-chip-support-{{ transformed_payload.assessment.support_level|replace('_', '-') }}">Support: {{ transformed_payload.assessment.support_level|replace('_', ' ')|title }}</span>
+        {% endif %}
+        <span class="summary-chip summary-chip-confidence summary-chip-confidence-{{ transformed_payload.assessment.fusion_confidence|default('unknown') }}">Confidence: {{ transformed_payload.assessment.fusion_confidence|replace('_', ' ')|title }}</span>
         <span class="summary-chip summary-chip-mode">{{ transformed_payload.assessment.interpretation_mode|replace('_', ' ')|title }}</span>
         <span class="summary-chip summary-chip-status">{{ transformed_payload.assessment.conclusion_status|default('hazard_assessed')|replace('_', ' ')|title }}</span>
       </div>
+      <p class="summary-explainer">
+        Support expresses evidence strength. Confidence reflects uncertainty-aware reliability after caveats and fusion.
+      </p>
       <div class="summary-grid">
         <article class="summary-card">
           <h3>Event</h3>
           <p><strong>{{ transformed_payload.event.event_name }}</strong></p>
           <p>{{ transformed_payload.event.region.name }}, {{ transformed_payload.event.country.name }}</p>
+        </article>
+        <article class="summary-card">
+          <h3>Assessment Semantics</h3>
+          <p><strong>Support:</strong> {{ transformed_payload.assessment.support_level|default('not reported')|replace('_', ' ') }}</p>
+          <p><strong>Confidence:</strong> {{ transformed_payload.assessment.fusion_confidence|replace('_', ' ') }} reliability under the current caveats.</p>
         </article>
         <article class="summary-card">
           <h3>Reasoning</h3>

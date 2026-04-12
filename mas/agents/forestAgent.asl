@@ -10,22 +10,25 @@
 // The forest agent reasons in layers: raw indicators become evidence signals,
 // then those signals are combined into severity, confidence, and caveat outputs.
 +!assess_event(E, Requester) : fire_severity_path(E, Severity, ClaimLabel, EvidenceList, RuleLabel) <-
+    ?fire_support_level(E, SupportLevel);
     ?fire_conclusion_status(Severity, ClaimLabel, ConclusionStatus);
     ?fire_confidence(E, ConfidenceLevel);
     ?fire_caveat_profile(E, ClaimLabel, PrimaryCaveat, CaveatList);
-    .print("first-pass ", E, " -> severity=", Severity, ", status=", ConclusionStatus, ", confidence=", ConfidenceLevel, ", claim=", ClaimLabel, ", caveat=", PrimaryCaveat);
+    .print("first-pass ", E, " -> support=", SupportLevel, ", severity=", Severity, ", status=", ConclusionStatus, ", confidence=", ConfidenceLevel, ", claim=", ClaimLabel, ", caveat=", PrimaryCaveat);
     .concat("First-pass assessment for ", E, Msg1);
-    .concat(Msg1, ": severity=", Msg2);
-    .concat(Msg2, Severity, Msg3);
-    .concat(Msg3, ", status=", Msg4);
-    .concat(Msg4, ConclusionStatus, Msg5);
-    .concat(Msg5, ", confidence=", Msg6);
-    .concat(Msg6, ConfidenceLevel, Msg7);
-    .concat(Msg7, ", claim=", Msg8);
-    .concat(Msg8, ClaimLabel, Msg9);
-    .concat(Msg9, ".", Msg10);
-    .custom.trace_line("FOREST AGENT", Msg10);
-    .send(Requester, tell, hazard_assessment(E, wildfire, Severity, ConclusionStatus, ConfidenceLevel, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)).
+    .concat(Msg1, ": support=", Msg2);
+    .concat(Msg2, SupportLevel, Msg3);
+    .concat(Msg3, ", severity=", Msg4);
+    .concat(Msg4, Severity, Msg5);
+    .concat(Msg5, ", status=", Msg6);
+    .concat(Msg6, ConclusionStatus, Msg7);
+    .concat(Msg7, ", confidence=", Msg8);
+    .concat(Msg8, ConfidenceLevel, Msg9);
+    .concat(Msg9, ", claim=", Msg10);
+    .concat(Msg10, ClaimLabel, Msg11);
+    .concat(Msg11, ".", Msg12);
+    .custom.trace_line("FOREST AGENT", Msg12);
+    .send(Requester, tell, hazard_assessment(E, wildfire, Severity, SupportLevel, ConclusionStatus, ConfidenceLevel, ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)).
 
 // Second-pass clarification keeps the specialist in the loop only for caveat-heavy
 // cases that the coordinator decides are not straightforward.
@@ -103,6 +106,12 @@ weak_fire_evidence(E) :-
     not burn_extent_signal(E) &
     not spectral_burn_signal(E).
 
+weak_fire_evidence(E) :-
+    vegetation_damage_signal(E) &
+    not ndvi_damage_signal(E) &
+    not burn_extent_signal(E) &
+    not spectral_burn_signal(E).
+
 temporally_limited_observation(E) :-
     timeline_confidence(E, approximate).
 
@@ -135,72 +144,96 @@ fire_interpretation_limited(E) :-
 fire_interpretation_limited(E) :-
     weak_fire_evidence(E).
 
-// Each severity path keeps only the indicators that actually support that path.
-fire_severity_path(E, severe, strong_multisignal_fire_damage, [vegetation_loss_pct, burned_area_pct, mean_dnbr], rule_severe_fire_multisignal) :-
+classified_fire_support(E) :-
     strong_multisignal_fire_evidence(E).
 
-fire_severity_path(E, moderate, spectral_extent_fire_damage, [burned_area_pct, mean_dnbr], rule_moderate_fire_spectral_extent) :-
-    spectral_extent_fire_evidence(E) &
-    not strong_multisignal_fire_evidence(E).
+classified_fire_support(E) :-
+    spectral_extent_fire_evidence(E).
 
-fire_severity_path(E, moderate, coherent_fire_damage, [vegetation_loss_pct, burned_area_pct], rule_moderate_fire_vegetation_extent) :-
+classified_fire_support(E) :-
+    coherent_fire_evidence(E) &
+    not spectral_extent_fire_evidence(E).
+
+classified_fire_support(E) :-
+    mixed_fire_evidence(E).
+
+classified_fire_support(E) :-
+    weak_fire_evidence(E).
+
+fire_support_level(E, strong) :-
+    strong_multisignal_fire_evidence(E).
+
+fire_support_level(E, moderate) :-
+    spectral_extent_fire_evidence(E) &
+    not strong_multisignal_fire_evidence(E) &
+    not mixed_fire_evidence(E).
+
+fire_support_level(E, moderate) :-
     coherent_fire_evidence(E) &
     not strong_multisignal_fire_evidence(E) &
     not spectral_extent_fire_evidence(E) &
     not mixed_fire_evidence(E).
 
-fire_severity_path(E, mild, mixed_fire_damage, [vegetation_loss_pct, burned_area_pct], rule_mild_fire_mixed_signal) :-
+fire_support_level(E, conflicting) :-
     mixed_fire_evidence(E).
 
+fire_support_level(E, weak) :-
+    weak_fire_evidence(E) &
+    not mixed_fire_evidence(E).
+
+fire_support_level(E, insufficient) :-
+    not classified_fire_support(E).
+
+// Each severity path keeps only the indicators that actually support that path.
+fire_severity_path(E, severe, strong_multisignal_fire_damage, [vegetation_loss_pct, burned_area_pct, mean_dnbr], rule_severe_fire_multisignal) :-
+    fire_support_level(E, strong).
+
+fire_severity_path(E, moderate, spectral_extent_fire_damage, [burned_area_pct, mean_dnbr], rule_moderate_fire_spectral_extent) :-
+    fire_support_level(E, moderate) &
+    spectral_extent_fire_evidence(E).
+
+fire_severity_path(E, moderate, coherent_fire_damage, [vegetation_loss_pct, burned_area_pct], rule_moderate_fire_vegetation_extent) :-
+    fire_support_level(E, moderate) &
+    coherent_fire_evidence(E) &
+    not spectral_extent_fire_evidence(E).
+
+fire_severity_path(E, mild, mixed_fire_damage, [vegetation_loss_pct, burned_area_pct], rule_mild_fire_mixed_signal) :-
+    fire_support_level(E, conflicting).
+
 fire_severity_path(E, mild, ndvi_only_fire_signal, [ndvi_drop], rule_mild_fire_ndvi_only) :-
-    weak_fire_evidence(E).
+    fire_support_level(E, weak) &
+    ndvi_damage_signal(E).
 
 fire_severity_path(E, mild, vegetation_loss_only_fire_signal, [vegetation_loss_pct], rule_mild_fire_vegetation_only) :-
+    fire_support_level(E, weak) &
     vegetation_damage_signal(E) &
-    not ndvi_damage_signal(E) &
-    not burn_extent_signal(E) &
-    not spectral_burn_signal(E).
+    not ndvi_damage_signal(E).
 
 fire_severity_path(E, undetermined, inconclusive_fire_signal, [], rule_inconclusive_fire_signal) :-
-    not ndvi_damage_signal(E) &
-    not vegetation_damage_signal(E) &
-    not burn_extent_signal(E) &
-    not spectral_burn_signal(E).
+    fire_support_level(E, insufficient).
 
 fire_conclusion_status(undetermined, inconclusive_fire_signal, inconclusive).
 fire_conclusion_status(_, _, hazard_assessed).
 
 fire_confidence(E, high) :-
-    strong_multisignal_fire_evidence(E).
-
-fire_confidence(E, high) :-
-    spectral_extent_fire_evidence(E) &
-    not mixed_fire_evidence(E).
+    fire_support_level(E, strong).
 
 fire_confidence(E, medium) :-
-    coherent_fire_evidence(E) &
-    not strong_multisignal_fire_evidence(E) &
+    fire_support_level(E, moderate) &
     not fire_confidence_reduced(E).
 
-fire_confidence(E, medium) :-
-    coherent_fire_evidence(E) &
-    fire_confidence_reduced(E) &
-    not fire_interpretation_limited(E).
+fire_confidence(E, low) :-
+    fire_support_level(E, moderate) &
+    fire_confidence_reduced(E).
 
 fire_confidence(E, low) :-
-    fire_interpretation_limited(E).
+    fire_support_level(E, weak).
 
 fire_confidence(E, low) :-
-    not fire_interpretation_supported(E) &
-    ndvi_damage_signal(E).
+    fire_support_level(E, conflicting).
 
 fire_confidence(E, low) :-
-    not fire_interpretation_supported(E) &
-    vegetation_damage_signal(E).
-
-fire_confidence(E, low) :-
-    not fire_interpretation_supported(E) &
-    not ndvi_damage_signal(E).
+    fire_support_level(E, insufficient).
 
 // Caveats explain why a valid interpretation may still need a qualified reading.
 fire_caveat_profile(E, _, burn_signal_weak, [burn_signal_weak, timeline_uncertain]) :-

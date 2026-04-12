@@ -14,6 +14,7 @@ from nlp.loader.load_payloads import load_payloads
 
 EVIDENCE_LABELS = {
     "water_increase_pct": "surface-water increase",
+    "water_area_before_pct": "pre-event water coverage",
     "newly_flooded_area_pct": "newly flooded area",
     "ndwi_change": "NDWI change",
     "vegetation_loss_pct": "vegetation loss",
@@ -30,7 +31,9 @@ ALTERNATIVE_CLAIM_TEXT = {
 }
 
 CAVEAT_TEXT = {
+    "coastal_baseline_water": "the scene already contains substantial pre-event coastal or permanent water, which can mimic flood-like spectral change",
     "late_observation": "post-event imagery was acquired late, so peak impact may no longer be fully visible",
+    "no_flood_expansion": "no meaningful flooded-area expansion was detected beyond the pre-event water baseline",
     "possible_underestimation": "the measured footprint may underestimate the real extent of the event",
     "weak_water_signal": "the water signal is weak and must be interpreted cautiously",
     "burn_signal_weak": "the burn signal is weak or partly contradictory",
@@ -41,7 +44,9 @@ CAVEAT_TEXT = {
 }
 
 CAVEAT_LIST_TEXT = {
+    "coastal_baseline_water": "substantial pre-event coastal or permanent water in the scene",
     "late_observation": "late image acquisition",
+    "no_flood_expansion": "no meaningful flooded-area expansion beyond the pre-event baseline",
     "possible_underestimation": "possible underestimation of the event extent",
     "weak_water_signal": "a weak water signal that must be interpreted cautiously",
     "burn_signal_weak": "a weak or partly contradictory burn signal",
@@ -78,6 +83,7 @@ CLAIM_TEXT = {
     "extent_supported_flooding": "The flood assessment is supported mainly by water expansion and newly flooded area, although the spectral water signal is less decisive.",
     "residual_flood_signal": "The system detects a residual flood footprint, suggesting that flood impact remains visible even though the image may have missed peak conditions.",
     "limited_water_shift_signal": "The flood assessment is driven mainly by a limited spectral water shift rather than by a strong spatial flood footprint.",
+    "mixed_flood_signal": "The flood indicators point to a possible flood footprint, but the spectral water signal conflicts with the spatial extent evidence.",
     "inconclusive_water_signal": "The available water-related evidence remains inconclusive.",
     "coherent_fire_damage": "The wildfire assessment is supported by consistent vegetation-loss and burned-area evidence.",
     "spectral_extent_fire_damage": "The wildfire assessment is supported by burn extent together with spectral burn-severity evidence.",
@@ -153,6 +159,7 @@ def interpretation_sentence(interpretation_mode: str) -> str:
 def confidence_rationale(assessment: dict, evidence: dict) -> str:
     claim = assessment["claim_label"]
     confidence = assessment["fusion_confidence"]
+    support_level = assessment.get("support_level", "unknown")
     caveat_items = evidence["caveat_items"]
     evidence_items = evidence["evidence_items"]
 
@@ -163,7 +170,7 @@ def confidence_rationale(assessment: dict, evidence: dict) -> str:
         )
 
     if confidence == "high":
-        if "strong_multisignal" in claim or len(evidence_items) >= 3:
+        if support_level == "strong" or "strong_multisignal" in claim or len(evidence_items) >= 3:
             return (
                 "Confidence is high because multiple independent EO indicators agree and no "
                 "major caveat substantially weakens the interpretation."
@@ -174,6 +181,11 @@ def confidence_rationale(assessment: dict, evidence: dict) -> str:
         )
 
     if confidence == "medium":
+        if support_level == "moderate" and not caveat_items:
+            return (
+                "Confidence is moderate because the evidence is coherent across multiple signals, "
+                "but not strong enough to be treated as a high-support case."
+            )
         if caveat_items:
             return (
                 "Confidence is moderate because the main indicators support the assessment, "
@@ -385,6 +397,7 @@ def build_report_text(payload: dict) -> str:
     symbolic = [
         f"- Conclusion status: {assessment.get('conclusion_status', 'hazard_assessed')}",
         f"- Severity label: {assessment['severity']}",
+        f"- Support level: {assessment.get('support_level', 'not_available')}",
         f"- Claim label: {assessment['claim_label']}",
         f"- Primary caveat: {evidence['primary_caveat']}",
         f"- Clarification status: {clarification['clarification_status']}",

@@ -1,7 +1,7 @@
 
 {
     "functor": "semantic_explanation",
-    "predicate": "semantic_explanation(evros,event_frame(event_id(evros),event_name(\"Evros\"),hazard_type(wildfire),country(greece,\"Greece\"),region(eastern_macedonia_and_thrace,\"Eastern Macedonia and Thrace\")),assessment_frame(severity(moderate),claim_label(coherent_fire_damage),fusion_confidence(medium),concern_level(moderate),interpretation_mode(cautious),case_profile(monitoring_case),exposure_class(low)),evidence_frame(primary_caveat(coarse_timeline),evidence_items([vegetation_loss_pct,burned_area_pct]),caveat_items([coarse_timeline]),strongest_evidence(none)),clarification_frame(clarification_status(no_clarification),primary_limitation(no_additional_limitation),alternative_claim(no_alternative_claim)),user_assessment_frame(user_assessment(none),user_assessment_alignment(not_provided)),provenance_frame(source_agent(forest_agent),rule_label(rule_moderate_fire_vegetation_extent)),headline_frame(event_name(\"Evros\"),region_name(\"Eastern Macedonia and Thrace\"),country_name(\"Greece\"),severity(moderate),hazard_type(wildfire),fusion_confidence(medium)),debug_text(short_headline(\"Evros | moderate wildfire | medium\"),short_summary(\"claim=coherent_fire_damage; concern=moderate; profile=monitoring_case; caveat=coarse_timeline; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\")),explanation_trace(forest_agent,rule_moderate_fire_vegetation_extent,coherent_fire_damage,[vegetation_loss_pct,burned_area_pct],[coarse_timeline],clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim)))",
+    "predicate": "semantic_explanation(evros,event_frame(event_id(evros),event_name(\"Evros\"),hazard_type(wildfire),country(greece,\"Greece\"),region(eastern_macedonia_and_thrace,\"Eastern Macedonia and Thrace\")),assessment_frame(severity(moderate),support_level(moderate),conclusion_status(hazard_assessed),claim_label(coherent_fire_damage),fusion_confidence(low),concern_level(moderate),interpretation_mode(tentative),case_profile(monitoring_case),exposure_class(low)),evidence_frame(primary_caveat(coarse_timeline),evidence_items([vegetation_loss_pct,burned_area_pct]),caveat_items([coarse_timeline]),strongest_evidence(burned_area_pct)),clarification_frame(clarification_status(clarification_provided),primary_limitation(coarse_timeline),alternative_claim(no_alternative_claim)),user_assessment_frame(user_assessment(none),user_assessment_alignment(not_provided)),provenance_frame(source_agent(forest_agent),rule_label(rule_moderate_fire_vegetation_extent)),headline_frame(event_name(\"Evros\"),region_name(\"Eastern Macedonia and Thrace\"),country_name(\"Greece\"),severity(moderate),support_level(moderate),conclusion_status(hazard_assessed),hazard_type(wildfire),fusion_confidence(low)),debug_text(short_headline(\"Evros | moderate wildfire | low\"),short_summary(\"claim=coherent_fire_damage; concern=moderate; profile=monitoring_case; caveat=coarse_timeline; clarification=clarification_provided; strongest_evidence=burned_area_pct; alternative_claim=no_alternative_claim\")),explanation_trace(forest_agent,rule_moderate_fire_vegetation_extent,coherent_fire_damage,[vegetation_loss_pct,burned_area_pct],[coarse_timeline],clarification_trace(clarification_provided,coarse_timeline,burned_area_pct,no_alternative_claim)))",
     "terms": [
         {
             "functor": "evros",
@@ -64,7 +64,7 @@
         },
         {
             "functor": "assessment_frame",
-            "predicate": "assessment_frame(severity(moderate),claim_label(coherent_fire_damage),fusion_confidence(medium),concern_level(moderate),interpretation_mode(cautious),case_profile(monitoring_case),exposure_class(low))",
+            "predicate": "assessment_frame(severity(moderate),support_level(moderate),conclusion_status(hazard_assessed),claim_label(coherent_fire_damage),fusion_confidence(low),concern_level(moderate),interpretation_mode(tentative),case_profile(monitoring_case),exposure_class(low))",
             "terms": [
                 {
                     "functor": "severity",
@@ -73,6 +73,26 @@
                         {
                             "functor": "moderate",
                             "predicate": "moderate"
+                        }
+                    ]
+                },
+                {
+                    "functor": "support_level",
+                    "predicate": "support_level(moderate)",
+                    "terms": [
+                        {
+                            "functor": "moderate",
+                            "predicate": "moderate"
+                        }
+                    ]
+                },
+                {
+                    "functor": "conclusion_status",
+                    "predicate": "conclusion_status(hazard_assessed)",
+                    "terms": [
+                        {
+                            "functor": "hazard_assessed",
+                            "predicate": "hazard_assessed"
                         }
                     ]
                 },
@@ -88,11 +108,11 @@
                 },
                 {
                     "functor": "fusion_confidence",
-                    "predicate": "fusion_confidence(medium)",
+                    "predicate": "fusion_confidence(low)",
                     "terms": [
                         {
-                            "functor": "medium",
-                            "predicate": "medium"
+                            "functor": "low",
+                            "predicate": "low"
                         }
                     ]
                 },
@@ -108,11 +128,11 @@
                 },
                 {
                     "functor": "interpretation_mode",
-                    "predicate": "interpretation_mode(cautious)",
+                    "predicate": "interpretation_mode(tentative)",
                     "terms": [
                         {
-                            "functor": "cautious",
-                            "predicate": "cautious"
+                            "functor": "tentative",
+                            "predicate": "tentative"
                         }
                     ]
                 },
@@ -140,7 +160,7 @@
         },
         {
             "functor": "evidence_frame",
-            "predicate": "evidence_frame(primary_caveat(coarse_timeline),evidence_items([vegetation_loss_pct,burned_area_pct]),caveat_items([coarse_timeline]),strongest_evidence(none))",
+            "predicate": "evidence_frame(primary_caveat(coarse_timeline),evidence_items([vegetation_loss_pct,burned_area_pct]),caveat_items([coarse_timeline]),strongest_evidence(burned_area_pct))",
             "terms": [
                 {
                     "functor": "primary_caveat",
@@ -182,11 +202,11 @@
                 },
                 {
                     "functor": "strongest_evidence",
-                    "predicate": "strongest_evidence(none)",
+                    "predicate": "strongest_evidence(burned_area_pct)",
                     "terms": [
                         {
-                            "functor": "none",
-                            "predicate": "none"
+                            "functor": "burned_area_pct",
+                            "predicate": "burned_area_pct"
                         }
                     ]
                 }
@@ -194,25 +214,25 @@
         },
         {
             "functor": "clarification_frame",
-            "predicate": "clarification_frame(clarification_status(no_clarification),primary_limitation(no_additional_limitation),alternative_claim(no_alternative_claim))",
+            "predicate": "clarification_frame(clarification_status(clarification_provided),primary_limitation(coarse_timeline),alternative_claim(no_alternative_claim))",
             "terms": [
                 {
                     "functor": "clarification_status",
-                    "predicate": "clarification_status(no_clarification)",
+                    "predicate": "clarification_status(clarification_provided)",
                     "terms": [
                         {
-                            "functor": "no_clarification",
-                            "predicate": "no_clarification"
+                            "functor": "clarification_provided",
+                            "predicate": "clarification_provided"
                         }
                     ]
                 },
                 {
                     "functor": "primary_limitation",
-                    "predicate": "primary_limitation(no_additional_limitation)",
+                    "predicate": "primary_limitation(coarse_timeline)",
                     "terms": [
                         {
-                            "functor": "no_additional_limitation",
-                            "predicate": "no_additional_limitation"
+                            "functor": "coarse_timeline",
+                            "predicate": "coarse_timeline"
                         }
                     ]
                 },
@@ -282,7 +302,7 @@
         },
         {
             "functor": "headline_frame",
-            "predicate": "headline_frame(event_name(\"Evros\"),region_name(\"Eastern Macedonia and Thrace\"),country_name(\"Greece\"),severity(moderate),hazard_type(wildfire),fusion_confidence(medium))",
+            "predicate": "headline_frame(event_name(\"Evros\"),region_name(\"Eastern Macedonia and Thrace\"),country_name(\"Greece\"),severity(moderate),support_level(moderate),conclusion_status(hazard_assessed),hazard_type(wildfire),fusion_confidence(low))",
             "terms": [
                 {
                     "functor": "event_name",
@@ -316,6 +336,26 @@
                     ]
                 },
                 {
+                    "functor": "support_level",
+                    "predicate": "support_level(moderate)",
+                    "terms": [
+                        {
+                            "functor": "moderate",
+                            "predicate": "moderate"
+                        }
+                    ]
+                },
+                {
+                    "functor": "conclusion_status",
+                    "predicate": "conclusion_status(hazard_assessed)",
+                    "terms": [
+                        {
+                            "functor": "hazard_assessed",
+                            "predicate": "hazard_assessed"
+                        }
+                    ]
+                },
+                {
                     "functor": "hazard_type",
                     "predicate": "hazard_type(wildfire)",
                     "terms": [
@@ -327,11 +367,11 @@
                 },
                 {
                     "functor": "fusion_confidence",
-                    "predicate": "fusion_confidence(medium)",
+                    "predicate": "fusion_confidence(low)",
                     "terms": [
                         {
-                            "functor": "medium",
-                            "predicate": "medium"
+                            "functor": "low",
+                            "predicate": "low"
                         }
                     ]
                 }
@@ -339,27 +379,27 @@
         },
         {
             "functor": "debug_text",
-            "predicate": "debug_text(short_headline(\"Evros | moderate wildfire | medium\"),short_summary(\"claim=coherent_fire_damage; concern=moderate; profile=monitoring_case; caveat=coarse_timeline; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\"))",
+            "predicate": "debug_text(short_headline(\"Evros | moderate wildfire | low\"),short_summary(\"claim=coherent_fire_damage; concern=moderate; profile=monitoring_case; caveat=coarse_timeline; clarification=clarification_provided; strongest_evidence=burned_area_pct; alternative_claim=no_alternative_claim\"))",
             "terms": [
                 {
                     "functor": "short_headline",
-                    "predicate": "short_headline(\"Evros | moderate wildfire | medium\")",
+                    "predicate": "short_headline(\"Evros | moderate wildfire | low\")",
                     "terms": [
-                        "Evros | moderate wildfire | medium"
+                        "Evros | moderate wildfire | low"
                     ]
                 },
                 {
                     "functor": "short_summary",
-                    "predicate": "short_summary(\"claim=coherent_fire_damage; concern=moderate; profile=monitoring_case; caveat=coarse_timeline; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim\")",
+                    "predicate": "short_summary(\"claim=coherent_fire_damage; concern=moderate; profile=monitoring_case; caveat=coarse_timeline; clarification=clarification_provided; strongest_evidence=burned_area_pct; alternative_claim=no_alternative_claim\")",
                     "terms": [
-                        "claim=coherent_fire_damage; concern=moderate; profile=monitoring_case; caveat=coarse_timeline; clarification=no_clarification; strongest_evidence=none; alternative_claim=no_alternative_claim"
+                        "claim=coherent_fire_damage; concern=moderate; profile=monitoring_case; caveat=coarse_timeline; clarification=clarification_provided; strongest_evidence=burned_area_pct; alternative_claim=no_alternative_claim"
                     ]
                 }
             ]
         },
         {
             "functor": "explanation_trace",
-            "predicate": "explanation_trace(forest_agent,rule_moderate_fire_vegetation_extent,coherent_fire_damage,[vegetation_loss_pct,burned_area_pct],[coarse_timeline],clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim))",
+            "predicate": "explanation_trace(forest_agent,rule_moderate_fire_vegetation_extent,coherent_fire_damage,[vegetation_loss_pct,burned_area_pct],[coarse_timeline],clarification_trace(clarification_provided,coarse_timeline,burned_area_pct,no_alternative_claim))",
             "terms": [
                 {
                     "functor": "forest_agent",
@@ -391,19 +431,19 @@
                 ],
                 {
                     "functor": "clarification_trace",
-                    "predicate": "clarification_trace(no_clarification,no_additional_limitation,none,no_alternative_claim)",
+                    "predicate": "clarification_trace(clarification_provided,coarse_timeline,burned_area_pct,no_alternative_claim)",
                     "terms": [
                         {
-                            "functor": "no_clarification",
-                            "predicate": "no_clarification"
+                            "functor": "clarification_provided",
+                            "predicate": "clarification_provided"
                         },
                         {
-                            "functor": "no_additional_limitation",
-                            "predicate": "no_additional_limitation"
+                            "functor": "coarse_timeline",
+                            "predicate": "coarse_timeline"
                         },
                         {
-                            "functor": "none",
-                            "predicate": "none"
+                            "functor": "burned_area_pct",
+                            "predicate": "burned_area_pct"
                         },
                         {
                             "functor": "no_alternative_claim",
