@@ -135,6 +135,10 @@ def confidence_phrase(confidence: str) -> str:
     }.get(confidence, f"{humanize(confidence)} confidence")
 
 
+def severity_phrase(severity: str, hazard_type: str) -> str:
+    return f"{humanize(severity)} {humanize(hazard_type)} event"
+
+
 def interpretation_sentence(interpretation_mode: str) -> str:
     return INTERPRETATION_TEXT.get(
         interpretation_mode,
@@ -263,13 +267,13 @@ def user_assessment_sentence(payload: dict) -> str | None:
         return (
             f"A user-provided severity of {humanize(provided)} was supplied, but the system could not reach "
             f"a reliable {humanize(hazard_type)} severity conclusion. "
-            f"{CLAIM_TEXT.get(claim_label, 'The available evidence remains inconclusive.')}"
+            f"The available reasoning path did not provide enough coherent support to confirm that expectation."
             f"{caveat_clause}"
         )
 
     return (
         f"A user-provided severity of {humanize(provided)} was supplied, but the system inferred "
-        f"a {humanize(inferred)} event. {CLAIM_TEXT.get(payload['assessment']['claim_label'], 'The available symbolic evidence supports the inferred severity rather than the user-provided one.')}"
+        f"a {severity_phrase(inferred, hazard_type)}. The symbolic evidence supported the inferred severity rather than the user-provided one."
         f"{caveat_clause}"
     )
 
@@ -288,12 +292,12 @@ def build_report_text(payload: dict) -> str:
         what_happened = inconclusive_what_happened(event)
     else:
         summary = (
-            f"{event['event_name']} is assessed as a {assessment['severity']} {event['hazard_type']} "
-            f"event with {confidence_phrase(assessment['fusion_confidence'])}, based on the available observational evidence."
+            f"{event['event_name']} is assessed as a {severity_phrase(assessment['severity'], event['hazard_type'])} "
+            f"with {confidence_phrase(assessment['fusion_confidence'])}."
         )
         what_happened = (
             f"The event is located in {event['region']['name']}, {event['country']['name']}. "
-            f"The system interprets it as a {humanize(assessment['severity'])} {humanize(event['hazard_type'])} event."
+            f"The system classifies it as a {severity_phrase(assessment['severity'], event['hazard_type'])}."
         )
     concern_expl = CONCERN_TEXT.get(assessment["concern_level"], "")
     profile_expl = CASE_PROFILE_TEXT.get(assessment["case_profile"], "")

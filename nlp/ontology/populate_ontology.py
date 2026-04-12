@@ -4,8 +4,9 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import types
 
-from owlready2 import destroy_entity, get_ontology
+from owlready2 import DataProperty, destroy_entity, get_ontology
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -41,6 +42,14 @@ def get_class(ns, class_name: str):
     return cls
 
 
+def ensure_data_property(ns, property_name: str):
+    prop = getattr(ns, property_name, None)
+    if prop is None:
+        with ns.ontology:
+            prop = types.new_class(property_name, (DataProperty,))
+    return prop
+
+
 def ensure_individual(onto, ns, local_name: str, class_name: str):
     entity = get_entity(onto, local_name)
     if entity is None:
@@ -55,9 +64,8 @@ def ensure_generated_individual(onto, ns, local_name: str, class_name: str):
 
 def set_single_data_property(individual, property_name: str, value: str) -> None:
     """Treat the target data property as single-valued for this project."""
-    values = getattr(individual, property_name)
-    values.clear()
-    values.append(value)
+    prop = ensure_data_property(individual.namespace, property_name)
+    prop[individual] = [value]
 
 
 def set_object_properties(individual, property_name: str, targets: list) -> None:
@@ -226,6 +234,11 @@ def populate_event(onto, ns, payload: dict) -> None:
     set_single_data_property(assessment_individual, "hasClaimLabel", assessment["claim_label"])
     set_single_data_property(assessment_individual, "hasCaseProfile", assessment["case_profile"])
     set_single_data_property(assessment_individual, "hasInterpretationMode", assessment["interpretation_mode"])
+    set_single_data_property(
+        assessment_individual,
+        "hasConclusionStatus",
+        assessment.get("conclusion_status", "hazard_assessed"),
+    )
     set_object_properties(assessment_individual, "hasHazard", [get_entity(onto, hazard_local)])
     set_object_properties(
         assessment_individual,
