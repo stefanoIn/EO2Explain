@@ -12,6 +12,8 @@
 \usepackage{hyperref}
 \usepackage{subcaption}
 \usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
 
 \lstset{
     basicstyle=\ttfamily\small,
@@ -94,31 +96,51 @@ The dataset used in this project consists of the following events:
 \item Flood in Pakistan
 \end{itemize}
 
-The data were organized using the following structure:
+Rather than treating the dataset as a generic file collection, the project organizes it conceptually as six paired before/after observation cases split into two hazard families. Each case is represented by a pre-event image, a post-event image, and the EO indicators derived from their comparison.
 
-\begin{verbatim}
-data/raw/wildfires/
-   Greece/
-      before_wildfire/
-      after_wildfire/
-   Turkey/
-      before_wildfire/
-      after_wildfire/
-   SerraDaEstrela/
-      before_wildfire/
-      after_wildfire/
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm and 0.9cm,
+    family/.style={draw, rounded corners=8pt, thick, fill=gray!10, minimum width=5.6cm, minimum height=0.9cm, align=center, font=\bfseries},
+    eventbox/.style={draw, rounded corners=6pt, fill=blue!4, minimum width=5.6cm, minimum height=0.85cm, align=center},
+    phase/.style={draw, rounded corners=4pt, fill=white, minimum width=2.45cm, minimum height=0.7cm, align=center, font=\small},
+]
 
-data/raw/floods/
-   Emilia/
-      before_flooding/
-      after_flooding/
-   Ahr_valley/
-      before_flooding/
-      after_flooding/
-   Pakistan/
-      before_flooding/
-      after_flooding/
-\end{verbatim}
+\node[family] (wildfires) {Wildfire Cases};
+\node[family, right=2.2cm of wildfires] (floods) {Flood Cases};
+
+\node[eventbox, below=0.8cm of wildfires] (greece) {Greece};
+\node[eventbox, below=0.35cm of greece] (turkey) {Turkey};
+\node[eventbox, below=0.35cm of turkey] (serra) {Serra da Estrela};
+
+\node[eventbox, below=0.8cm of floods] (emilia) {Emilia-Romagna};
+\node[eventbox, below=0.35cm of emilia] (ahr) {Ahr Valley};
+\node[eventbox, below=0.35cm of ahr] (pakistan) {Pakistan};
+
+\node[phase, below left=0.18cm and 0.02cm of greece] (wb1) {Before image};
+\node[phase, below right=0.18cm and 0.02cm of greece] (wa1) {After image};
+\node[phase, below left=0.18cm and 0.02cm of emilia] (fb1) {Before image};
+\node[phase, below right=0.18cm and 0.02cm of emilia] (fa1) {After image};
+
+\draw[-] (wildfires.south) -- (greece.north);
+\draw[-] (wildfires.south) -- (turkey.north);
+\draw[-] (wildfires.south) -- (serra.north);
+\draw[-] (floods.south) -- (emilia.north);
+\draw[-] (floods.south) -- (ahr.north);
+\draw[-] (floods.south) -- (pakistan.north);
+
+\draw[-] (greece.south west) -- (wb1.north);
+\draw[-] (greece.south east) -- (wa1.north);
+\draw[-] (emilia.south west) -- (fb1.north);
+\draw[-] (emilia.south east) -- (fa1.north);
+
+\node[below=0.55cm of wb1, align=center, font=\small] (noteleft) {Each case is processed as a\\before/after EO comparison pair};
+\node[below=0.55cm of fb1, align=center, font=\small] (noteright) {Indicators are then derived\\from the paired observations};
+\end{tikzpicture}
+\caption{Conceptual organization of the EO2Explain dataset. The dataset is structured as two hazard families, each containing event-specific before/after observation pairs used for change-based indicator extraction.}
+\label{fig:dataset_conceptual_structure}
+\end{figure}
 
 \subsection{Sentinel-2 Data and Bands}
 
