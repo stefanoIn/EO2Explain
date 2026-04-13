@@ -72,6 +72,8 @@ class JobResult:
     raw_payload_path: Path
     figure_path: Path | None
     ontology_path: Path | None
+    ontology_validation_path: Path | None
+    ontology_query_path: Path | None
     ontology_warning: str | None
     report_text: str
 
@@ -397,8 +399,10 @@ def transform_payload(raw_payload_path: Path) -> tuple[dict[str, object], Path]:
     return transformed, transformed_path
 
 
-def maybe_populate_ontology(job_dir: Path) -> tuple[Path | None, str | None]:
+def maybe_populate_ontology(job_dir: Path) -> tuple[Path | None, Path | None, Path | None, str | None]:
     ontology_path = job_dir / "outputs" / "ontology" / "eo2explain_populated.rdf"
+    validation_path = job_dir / "outputs" / "ontology" / "ontology_validation.txt"
+    query_path = job_dir / "outputs" / "ontology" / "ontology_query_summary.json"
     ontology_path.parent.mkdir(parents=True, exist_ok=True)
     result = subprocess.run(
         [
@@ -417,8 +421,50 @@ def maybe_populate_ontology(job_dir: Path) -> tuple[Path | None, str | None]:
     )
     if result.returncode != 0:
         warning = result.stderr.strip() or result.stdout.strip() or "Ontology population failed."
-        return None, warning
-    return ontology_path, None
+        return None, None, None, warning
+
+    validation_result = subprocess.run(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "nlp/ontology/validate_ontology.py"),
+            "--ontology",
+            str(ontology_path),
+        ],
+        cwd=PROJECT_ROOT,
+        text=True,
+        capture_output=True,
+    )
+    validation_output = validation_result.stdout.strip() or validation_result.stderr.strip() or ""
+    if validation_output:
+        write_text(validation_path, validation_output)
+    if validation_result.returncode != 0:
+        raise PipelineError(
+            f"Ontology validation failed: {validation_output or 'Unknown ontology validation error.'}"
+        )
+
+    query_result = subprocess.run(
+        [
+            sys.executable,
+            str(PROJECT_ROOT / "nlp/ontology/query_ontology.py"),
+            "--ontology",
+            str(ontology_path),
+            "--output",
+            str(query_path),
+        ],
+        cwd=PROJECT_ROOT,
+        text=True,
+        capture_output=True,
+    )
+    if query_result.returncode != 0:
+        warning = query_result.stderr.strip() or query_result.stdout.strip() or "Ontology query summary failed."
+        return ontology_path, validation_path if validation_path.exists() else None, None, warning
+
+    return (
+        ontology_path,
+        validation_path if validation_path.exists() else None,
+        query_path if query_path.exists() else None,
+        None,
+    )
 
 
 def run_job(form: dict[str, str], files: dict[str, object]) -> JobResult:
@@ -479,15 +525,15 @@ def run_job(form: dict[str, str], files: dict[str, object]) -> JobResult:
     raw_payload_path = run_mas(job_dir)
     transformed_payload, transformed_path = transform_payload(raw_payload_path)
 
+    ontology_path, ontology_validation_path, ontology_query_path, ontology_warning = maybe_populate_ontology(job_dir)
+    if ontology_warning:
+        write_text(job_dir / "logs" / "ontology_warning.txt", ontology_warning)
+
     reports_dir = job_dir / "outputs" / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
     report_text = build_report_text(transformed_payload)
     report_path = reports_dir / f"{event_id}.txt"
     report_path.write_text(report_text, encoding="utf-8")
-
-    ontology_path, ontology_warning = maybe_populate_ontology(job_dir)
-    if ontology_warning:
-        write_text(job_dir / "logs" / "ontology_warning.txt", ontology_warning)
 
     return JobResult(
         job_id=job_id,
@@ -498,6 +544,8 @@ def run_job(form: dict[str, str], files: dict[str, object]) -> JobResult:
         raw_payload_path=raw_payload_path,
         figure_path=figure_path,
         ontology_path=ontology_path,
+        ontology_validation_path=ontology_validation_path,
+        ontology_query_path=ontology_query_path,
         ontology_warning=ontology_warning,
         report_text=report_text,
     )

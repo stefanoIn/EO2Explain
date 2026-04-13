@@ -46,6 +46,17 @@
     .custom.trace_line("WATER AGENT", Msg6);
     .send(Requester, tell, clarification_result(E, ClaimLabel, PrimaryLimitation, StrongestEvidence, AlternativeClaim, clarification_provided)).
 
+// Threshold rationale:
+// These flood cutoffs are prototype decision thresholds, not universal EO
+// standards. They were chosen to be:
+// 1. consistent with common EO intuition about weak vs. stronger NDWI/water
+//    responses,
+// 2. separable on the small case-study set used in this project, and
+// 3. interpretable enough to support symbolic categories such as strong,
+//    moderate, weak, conflicting, and inconclusive evidence.
+// In other words, they are literature-informed heuristic cutoffs that were
+// tuned for controlled demonstration and explanation quality rather than for
+// operational deployment.
 water_expansion_signal(E) :-
     water_increase_pct(E, WaterIncrease) &
     WaterIncrease >= 8.
@@ -80,6 +91,10 @@ weak_surface_water_trace(E) :-
     newly_flooded_area_pct(E, NewlyFlooded) &
     NewlyFlooded < 5.
 
+// Coastal baseline thresholds are intentionally looser than the main flood
+// thresholds because they are only used to detect coastal false positives.
+// They were introduced after observing that some coastal wildfire scenes can
+// produce small NDWI changes without a real flood footprint.
 // [MODIFIED] Coastal baseline filtering is restricted to NDWI-only noise.
 coastal_area(E) :-
     water_area_before_pct(E, BeforeWaterArea) &

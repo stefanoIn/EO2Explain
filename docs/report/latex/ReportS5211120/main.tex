@@ -38,7 +38,7 @@
 \subsection{Full specification of your proposal}
 \label{subsec:specification}
 
-The project consists in the usage of a symbolic multi-agent system for monitoring environmental changes using satellite-derived Earth Observation (EO) indicators. The project integrates techniques from Symbolic and Distributed Artificial Intelligence (S\&DAI) and Natural Language Processing (NLP), with the goal of demonstrating how symbolic reasoning and language technologies can be combined to interpret EO data in a transparent and structured way.
+The project consists of the use of a symbolic multi-agent system for monitoring environmental changes using satellite-derived Earth Observation (EO) indicators. The project integrates techniques from Symbolic and Distributed Artificial Intelligence (S\&DAI) and Natural Language Processing (NLP), with the goal of demonstrating how symbolic reasoning and language technologies can be combined to interpret EO data in a transparent and structured way.
 
 The workflow of the project is divided into three conceptual levels.
 
@@ -69,6 +69,29 @@ The project presented in this report explores the integration of satellite-deriv
 
 The overall objective is to build a prototype system capable of transforming Earth Observation evidence into structured interpretations that remain transparent and explainable.
 
+\section{Post-Proposal Extensions}
+
+The initial project proposal defined a three-layer architecture combining Earth Observation (EO) processing, symbolic multi-agent reasoning, and Natural Language Processing for explanation generation. During implementation, the system was extended beyond this original scope in several important ways.
+
+First, the reasoning layer was refined to include an explicit intermediate abstraction based on \texttt{support\_level}. Rather than mapping EO indicators directly to severity and confidence, the agents now classify evidence as \texttt{strong}, \texttt{moderate}, \texttt{weak}, \texttt{conflicting}, or \texttt{insufficient}. This improves interpretability by separating evidence quality from final decision labels.
+
+Second, the multi-agent architecture was extended with a conditional clarification loop. Instead of producing only a single-pass classification, specialist agents can now be re-invoked to provide structured clarification when the coordinator detects uncertainty or caveat-heavy conditions. This transforms the system from a linear pipeline into a two-stage reasoning process.
+
+Third, the explanation output was formalized into a structured semantic payload produced by the \texttt{explanation\_agent}. This payload explicitly captures event metadata, assessment details, evidence, caveats, clarification results, and provenance information. It acts as a bridge between symbolic reasoning and downstream processing.
+
+Fourth, the ontology was upgraded from a passive modeling artifact to an active post-reasoning semantic layer. After population, the ontology is now used to:
+\begin{itemize}
+\item validate structural consistency of generated knowledge graphs
+\item enforce constraints such as one assessment per event and consistent confidence assignments
+\item support structured queries such as identifying severe floods, low-confidence cases, or clarification-heavy cases
+\end{itemize}
+
+Finally, the NLP component was restructured as a deterministic Natural Language Generation (NLG) pipeline. Instead of simple template filling, the system now performs explicit content selection, document planning, lexicalization, and surface realization over the semantic payload.
+
+These extensions do not change the original proposal but significantly strengthen the final system in terms of explainability, structure, and semantic rigor.
+
+Overall, these extensions transform the system from a simple EO-to-text pipeline into a structured reasoning framework in which evidence interpretation, uncertainty handling, semantic representation, and explanation generation are explicitly modeled and traceable.
+
 \section{Project Architecture}
 
 The system is organized into three conceptual layers.
@@ -78,6 +101,43 @@ The first layer is the \textbf{EO layer}, responsible for extracting environment
 The second layer is a \textbf{symbolic multi-agent system} implemented in Jason. In this layer, agents maintain belief bases containing EO indicators and apply logical rules to infer environmental events. Three agent types are considered: a ForestAgent responsible for vegetation-related reasoning, a WaterAgent responsible for water-related reasoning, and a CoordinatorAgent responsible for collecting the conclusions produced by the other agents.
 
 The third layer is the \textbf{Natural Language Processing layer}. This module receives the semantic explanation payload produced by the MAS, normalizes it into a cleaner JSON representation, populates the ontology, and generates report-ready textual outputs. In this way, the Python layer acts as a post-reasoning semantic and reporting layer rather than as the place where hazard reasoning itself is performed. A small Flask-based UI is built on top of the same Python pipeline so that a user can upload Sentinel-2 bands, set optional contextual assumptions, and inspect the resulting semantic report and MAS trace.
+
+Figure~\ref{fig:mas_communication_flow} summarizes how the Jason agents cooperate during a complete analysis cycle. The CoordinatorAgent acts as the orchestration hub: it dispatches event-assessment requests to the hazard-specialized agents, conditionally triggers clarification when uncertainty is high, forwards the integrated symbolic case to the ExplanationAgent, and finally hands the exported semantic payload to the downstream Python layer.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    x=1cm,
+    y=1cm,
+    agent/.style={draw, rounded corners=8pt, thick, fill=blue!6, minimum width=4.1cm, minimum height=1cm, align=center, font=\bfseries},
+    layer/.style={draw, rounded corners=8pt, thick, fill=green!8, minimum width=5.4cm, minimum height=1.1cm, align=center},
+    flow/.style={->, thick},
+    loop/.style={<->, thick}
+]
+\node[agent] (coord) at (0,0) {CoordinatorAgent};
+\node[agent] (water) at (-4.4,-2.4) {WaterAgent};
+\node[agent] (forest) at (4.4,-2.4) {ForestAgent};
+\node[agent] (expl) at (0,-4.8) {ExplanationAgent};
+\node[layer] (python) at (0,-7.2) {Python semantic layer\\transformer, ontology, NLG};
+
+\draw[loop] (coord) -- node[midway, above left, font=\scriptsize, align=center]
+{assess\_event\\clarify\_assessment} (water);
+\draw[loop] (coord) -- node[midway, above right, font=\scriptsize, align=center]
+{assess\_event\\clarify\_assessment} (forest);
+
+\draw[flow] (water) -- node[midway, left, font=\scriptsize, align=center]
+{hazard\_assessment\\clarification\_result} (coord);
+\draw[flow] (forest) -- node[midway, right, font=\scriptsize, align=center]
+{hazard\_assessment\\clarification\_result} (coord);
+
+\draw[flow] (coord) -- node[midway, right, font=\scriptsize]
+{build\_explanation} (expl);
+\draw[flow] (expl) -- node[midway, right, font=\scriptsize, align=center]
+{semantic payload\\JSON export} (python);
+\end{tikzpicture}
+\caption{Communication flow in the multi-agent layer. The coordinator dispatches specialist assessments, optionally requests clarification, and then forwards the integrated case to the explanation agent before downstream semantic processing.}
+\label{fig:mas_communication_flow}
+\end{figure}
 
 \section{EO Data Processing}
 
@@ -100,44 +160,20 @@ Rather than treating the dataset as a generic file collection, the project organ
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[
-    node distance=0.8cm and 0.9cm,
-    family/.style={draw, rounded corners=8pt, thick, fill=gray!10, minimum width=5.6cm, minimum height=0.9cm, align=center, font=\bfseries},
-    eventbox/.style={draw, rounded corners=6pt, fill=blue!4, minimum width=5.6cm, minimum height=0.85cm, align=center},
-    phase/.style={draw, rounded corners=4pt, fill=white, minimum width=2.45cm, minimum height=0.7cm, align=center, font=\small},
-]
-
-\node[family] (wildfires) {Wildfire Cases};
-\node[family, right=2.2cm of wildfires] (floods) {Flood Cases};
-
-\node[eventbox, below=0.8cm of wildfires] (greece) {Greece};
-\node[eventbox, below=0.35cm of greece] (turkey) {Turkey};
-\node[eventbox, below=0.35cm of turkey] (serra) {Serra da Estrela};
-
-\node[eventbox, below=0.8cm of floods] (emilia) {Emilia-Romagna};
-\node[eventbox, below=0.35cm of emilia] (ahr) {Ahr Valley};
-\node[eventbox, below=0.35cm of ahr] (pakistan) {Pakistan};
-
-\node[phase, below left=0.18cm and 0.02cm of greece] (wb1) {Before image};
-\node[phase, below right=0.18cm and 0.02cm of greece] (wa1) {After image};
-\node[phase, below left=0.18cm and 0.02cm of emilia] (fb1) {Before image};
-\node[phase, below right=0.18cm and 0.02cm of emilia] (fa1) {After image};
-
-\draw[-] (wildfires.south) -- (greece.north);
-\draw[-] (wildfires.south) -- (turkey.north);
-\draw[-] (wildfires.south) -- (serra.north);
-\draw[-] (floods.south) -- (emilia.north);
-\draw[-] (floods.south) -- (ahr.north);
-\draw[-] (floods.south) -- (pakistan.north);
-
-\draw[-] (greece.south west) -- (wb1.north);
-\draw[-] (greece.south east) -- (wa1.north);
-\draw[-] (emilia.south west) -- (fb1.north);
-\draw[-] (emilia.south east) -- (fa1.north);
-
-\node[below=0.55cm of wb1, align=center, font=\small] (noteleft) {Each case is processed as a\\before/after EO comparison pair};
-\node[below=0.55cm of fb1, align=center, font=\small] (noteright) {Indicators are then derived\\from the paired observations};
-\end{tikzpicture}
+\renewcommand{\arraystretch}{1.35}
+\setlength{\tabcolsep}{10pt}
+\begin{tabular}{>{\centering\arraybackslash}m{0.42\textwidth} >{\centering\arraybackslash}m{0.42\textwidth}}
+\toprule
+\textbf{Wildfire Cases} & \textbf{Flood Cases} \\
+\midrule
+Greece & Emilia-Romagna \\
+Turkey & Ahr Valley \\
+Serra da Estrela & Pakistan \\
+\midrule
+Before image $\rightarrow$ indicator extraction $\rightarrow$ After image &
+Before image $\rightarrow$ indicator extraction $\rightarrow$ After image \\
+\bottomrule
+\end{tabular}
 \caption{Conceptual organization of the EO2Explain dataset. The dataset is structured as two hazard families, each containing event-specific before/after observation pairs used for change-based indicator extraction.}
 \label{fig:dataset_conceptual_structure}
 \end{figure}
@@ -481,8 +517,9 @@ flood_severity_path(E, mild, residual_flood_signal,
 As in the wildfire case, the output of the hazard agent is not a single label but a structured symbolic assessment:
 
 \begin{lstlisting}
-hazard_assessment(E, Hazard, Severity, ConclusionStatus, ConfidenceLevel,
-    ClaimLabel, PrimaryCaveat, EvidenceList, CaveatList, RuleLabel)
+hazard_assessment(E, Hazard, Severity, SupportLevel, ConclusionStatus,
+    ConfidenceLevel, ClaimLabel, PrimaryCaveat, EvidenceList,
+    CaveatList, RuleLabel)
 \end{lstlisting}
 
 \subsubsection{Specialist Clarification Stage}
@@ -558,18 +595,20 @@ The coordinator also stores the conclusion status returned by the specialist and
 
 \subsection{Threshold Design and Limitations}
 
-The thresholds used in the hazard agents should be understood as interpretable prototype cutoffs rather than as operational EO standards. In the current implementation, they were selected to produce distinguishable symbolic categories within the small case-study dataset and to support meaningful differences between strong, moderate, weak, conflicting, and inconclusive reasoning paths.
+The thresholds used in the hazard agents should be understood as interpretable prototype cutoffs rather than as operational EO standards. In the current implementation, they were not introduced as arbitrary constants. Instead, they were chosen as literature-informed heuristic ranges and then tuned against the small case-study dataset used in this project so that the symbolic layer could separate strong, moderate, weak, conflicting, residual, and inconclusive patterns in a readable way.
 
 More precisely, the thresholds are intended to:
 
 \begin{itemize}
-\item reflect typical relative ranges observed in the EO indicators computed in this project
+\item reflect typical relative ranges discussed for EO-derived water, vegetation, and burn indicators, without claiming to be universal remote-sensing thresholds
+\item align the symbolic rules with qualitative EO interpretation found in the scientific literature, for example that stronger flood or burn evidence should require larger and more coherent changes across multiple indicators
+\item remain separable on the small case-study set used in this prototype, so that the rule base can distinguish strong multisignal cases from weaker or residual ones
 \item separate strong multisignal cases from coherent but weaker cases
 \item isolate residual, weak, or contradictory situations that should trigger caveats or clarification
 \item keep the reasoning layer transparent and easy to inspect
 \end{itemize}
 
-This design choice improves interpretability, but it also introduces clear limitations. The current reasoning layer remains dependent on manually defined cutoffs, is sensitive to indicator noise and case-specific edge conditions, and has not been calibrated on a large benchmark dataset. These limitations are acceptable within the goals of the project, which focus on symbolic reasoning, explainability, and controlled demonstration rather than on operational large-scale deployment.
+This design choice improves interpretability, but it also introduces clear limitations. The current reasoning layer remains dependent on manually defined cutoffs, is sensitive to indicator noise and case-specific edge conditions, and has not been calibrated on a large benchmark dataset. The thresholds should therefore be interpreted as scientifically motivated symbolic design choices rather than as validated operational standards. These limitations are acceptable within the goals of the project, which focus on symbolic reasoning, explainability, and controlled demonstration rather than on operational large-scale deployment.
 
 \subsection{Explanation Generation and Traceability}
 
@@ -683,13 +722,29 @@ For each analyzed event, the population script creates or updates ontology indiv
 \item the explanation trace
 \end{itemize}
 
-In addition, the script also creates or reuses shared semantic individuals for hazards, severity levels, confidence levels, exposure levels, concern levels, caveats, evidence items, agents, rules, and claim labels. The populated ontology also stores the MAS-derived \texttt{conclusion\_status} as an assessment data property. This allows the ontology to capture both event-specific structures and reusable controlled vocabulary terms while remaining aligned with the current symbolic reasoning model.
+In addition, the script also creates or reuses shared semantic individuals for hazards, severity levels, confidence levels, exposure levels, concern levels, caveats, evidence items, agents, rules, and claim labels. The populated ontology also stores the MAS-derived \texttt{conclusion\_status} and \texttt{support\_level} as assessment data properties. This allows the ontology to capture both event-specific structures and reusable controlled vocabulary terms while remaining aligned with the current symbolic reasoning model.
 
-The resulting ontology therefore represents not only the final decision, but also how that decision was constructed. An event is linked to an assessment; the assessment is linked to its evidence bundle, clarification, and provenance; and the explanation trace acts as a structured summary layer that connects the semantic components used later by the reporting system.
+The resulting ontology therefore represents not only the final decision, but also how that decision was constructed. An event is linked to an assessment; the assessment is linked to its evidence bundle, clarification, and provenance; and the explanation trace acts as a structured summary layer that connects the semantic components later used by the validation, querying, and reporting stages. In this sense, the ontology functions as an active semantic layer after population rather than as a passive representation artifact.
+
+The ontology is not only exported as a passive artifact. After population, the Python layer now uses it in two concrete ways:
+
+\begin{itemize}
+\item \textbf{semantic validation}: a post-population checker verifies structural constraints such as one assessment per event, exactly one severity/support/conclusion-status value per assessment, and basic consistency conditions such as the exclusion of high confidence for explicitly inconclusive cases
+\item \textbf{structured querying}: a lightweight query stage derives summaries such as all severe floods, all low-confidence cases, all clarification cases, and all weak/conflicting support cases
+\end{itemize}
+
+This makes the ontology an active post-MAS semantic layer rather than a decorative export.
 
 \subsection{Report Generation}
 
-The third step is report generation. A dedicated Python generator reads the transformed semantic JSON and converts it into readable English text. In practical terms, the final report is therefore generated from the explanation package originally created by the \texttt{explanation\_agent}, after that package has been normalized by the transformer. This module does not simply dump symbolic labels. Instead, it maps internal labels to domain-appropriate wording, expands evidence and caveat labels into readable phrases, and organizes the final report into coherent sections.
+The third step is report generation. A dedicated Python generator reads the transformed semantic JSON and converts it into readable English text. In practical terms, the final report is therefore generated from the explanation package originally created by the \texttt{explanation\_agent}, after that package has been normalized by the transformer. This module is better described as a \textbf{deterministic NLG pipeline} than as a flat template filler. It does not simply dump symbolic labels. Instead, it performs four explicit stages:
+
+\begin{enumerate}
+\item \textbf{content selection}: choose which semantic elements should be verbalized, based on fields such as severity, support level, conclusion status, caveats, clarification, and optional user-assessment alignment
+\item \textbf{document planning}: organize the selected content into a fixed rhetorical structure, including summary, assessment, supporting evidence, caveats, clarification, provenance, and symbolic details
+\item \textbf{lexicalization}: map symbolic labels such as evidence items, caveats, and claim labels into controlled domain phrases
+\item \textbf{surface realization}: assemble the final report text deterministically from the planned sections and lexicalized phrases
+\end{enumerate}
 
 The generated reports explicitly describe:
 
@@ -705,7 +760,7 @@ The generated reports explicitly describe:
 \item which agent and rule produced the assessment
 \end{itemize}
 
-This is important because the reporting layer is not producing free text from scratch. It is verbalizing a structured semantic object that has already been made explicit by the MAS, packaged by the \texttt{explanation\_agent}, and normalized by the transformer. The final English report is therefore grounded in a traceable symbolic source rather than in an opaque language-generation step.
+This is important because the reporting layer is not producing free text from scratch. It is verbalizing a structured semantic object that has already been made explicit by the MAS, packaged by the \texttt{explanation\_agent}, normalized by the transformer, and checked by the ontology layer. The final English report is therefore grounded in a traceable symbolic source rather than in an opaque language-generation step. The result is a conservative but faithful NLG layer: simple in generation technique, but explicit in content selection, document structure, lexical choice, and traceability.
 
 \subsection{Example Generated Report}
 
@@ -780,19 +835,15 @@ This separation makes the system easier to extend. The same semantic payload can
 
 \section{Prototype UI}
 
-In the current implementation, the Python layer also exposes a lightweight web interface built with Flask. The purpose of this UI is not to replace the symbolic pipeline, but to orchestrate it for a single uploaded event and to make the intermediate outputs inspectable.
+In the current implementation, the Python layer also exposes a lightweight web interface built with Flask. The purpose of this UI is not to replace the symbolic pipeline, but to orchestrate it for a single uploaded event and to make the intermediate outputs inspectable. From a systems perspective, the interface should therefore be understood as an interaction and orchestration layer over the existing EO $\rightarrow$ MAS $\rightarrow$ ontology/report workflow rather than as an additional reasoning module.
 
-The UI allows the user to:
+The interaction begins with the specification of event metadata and hazard type. The user can provide the event name, geographic context, temporal-quality assumptions, and an optional \texttt{user\_assessment} value. The interface then exposes the hazard-specific Sentinel-2 single-band GeoTIFF upload controls required by the EO scripts. In this way, the UI does not hide the structure of the input data: it reflects the distinction between flood and wildfire processing paths already present in the backend.
 
-\begin{itemize}
-\item choose whether the event should be processed as flood or wildfire
-\item provide event metadata such as name, location, and temporal-quality assumptions
-\item upload the hazard-specific Sentinel-2 single-band GeoTIFFs required by the EO scripts
-\item optionally provide a \texttt{user\_assessment} severity expectation
-\item inspect the raw report, semantic JSON outputs, and MAS execution trace
-\end{itemize}
+Once an analysis is launched, the UI creates a per-job working directory and materializes the required symbolic inputs for that specific run. It then executes the same backend stages described in the previous sections: EO preprocessing, Jason-based symbolic reasoning, semantic transformation of the explanation payload, ontology population, ontology validation, ontology querying, and deterministic report generation. The reasoning itself remains fully located in Jason, while the UI simply coordinates execution and collects the resulting artifacts.
 
-From an architectural point of view, the UI simply prepares per-job beliefs, launches the EO scripts, runs the MAS, executes the ontology and reporting steps, and then displays the outputs. The reasoning itself remains in Jason. The UI therefore acts as an interaction layer over the EO $\rightarrow$ MAS $\rightarrow$ ontology/report pipeline rather than as an additional reasoning component.
+This interface is also useful from an explainability point of view. The result page does not return only the final natural-language report. It also exposes the raw MAS JSON, the transformed semantic JSON, the populated ontology, ontology validation outputs, ontology query summaries, and the agent communication trace produced during the MAS run. As a consequence, the user can inspect the system at several levels of abstraction: EO-derived evidence, symbolic assessment, semantic formalization, and final explanation all remain visible within the same execution environment.
+
+The UI therefore contributes primarily to reproducibility and inspectability rather than to reasoning. It makes the full pipeline accessible for single-event experimentation while preserving the separation of concerns of the overall architecture: EO scripts derive indicators, the MAS performs symbolic interpretation, the ontology formalizes and checks the resulting knowledge graph, and the deterministic NLG pipeline verbalizes the final semantic representation.
 
 \newpage
 

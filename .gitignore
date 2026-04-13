@@ -6,3 +6,37 @@ docs/reasoning_layer.md
 docs/nlp_layer.md
 .DS_Store
 README.md
+
+# Python
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# EO data 
+*.tif
+*.tiff
+
+# Outputs
+outputs/
+results/
+data/
+*.csv
+
+# Images 
+*.png
+*.jpg
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ontology
+nlp/ontology/eo2explain_populated.rdf
+
+# Optional: transformed data
+*.json
+
+# Optional: generated reports
+*.txt

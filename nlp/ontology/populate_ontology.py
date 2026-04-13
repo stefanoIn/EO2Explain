@@ -99,6 +99,14 @@ def concern_individual(concern: str) -> str:
     return f"{concern}_concern"
 
 
+def support_individual(support: str) -> str:
+    return f"{support}_support"
+
+
+def conclusion_status_individual(status: str) -> str:
+    return f"{status}_status"
+
+
 def claim_individual(claim: str) -> str:
     return f"{claim}_claim"
 
@@ -142,6 +150,28 @@ def populate_controlled_terms(onto, ns, payload: dict) -> None:
     ensure_individual(onto, ns, confidence_individual(assessment["fusion_confidence"]), "ConfidenceLevel")
     ensure_individual(onto, ns, exposure_individual(assessment["exposure_class"]), "ExposureLevel")
     ensure_individual(onto, ns, concern_individual(assessment["concern_level"]), "ConcernLevel")
+    support = ensure_individual(
+        onto,
+        ns,
+        support_individual(assessment.get("support_level", "not_available")),
+        "SupportLevel",
+    )
+    set_single_data_property(
+        support,
+        "hasName",
+        assessment.get("support_level", "not_available"),
+    )
+    conclusion_status = ensure_individual(
+        onto,
+        ns,
+        conclusion_status_individual(assessment.get("conclusion_status", "hazard_assessed")),
+        "ConclusionStatus",
+    )
+    set_single_data_property(
+        conclusion_status,
+        "hasName",
+        assessment.get("conclusion_status", "hazard_assessed"),
+    )
 
     claim = ensure_individual(onto, ns, claim_individual(assessment["claim_label"]), "ClaimLabel")
     set_single_data_property(claim, "hasName", assessment["claim_label"])
@@ -272,6 +302,23 @@ def populate_event(onto, ns, payload: dict) -> None:
     )
     set_object_properties(
         assessment_individual,
+        "hasSupportCategory",
+        [get_entity(onto, support_individual(assessment.get("support_level", "not_available")))],
+    )
+    set_object_properties(
+        assessment_individual,
+        "hasConclusionStatusEntity",
+        [
+            get_entity(
+                onto,
+                conclusion_status_individual(
+                    assessment.get("conclusion_status", "hazard_assessed")
+                ),
+            )
+        ],
+    )
+    set_object_properties(
+        assessment_individual,
         "hasEvidenceBundle",
         [ensure_generated_individual(onto, ns, bundle_local, "EvidenceBundle")],
     )
@@ -296,6 +343,21 @@ def populate_event(onto, ns, payload: dict) -> None:
     if meaningful_name(evidence.get("strongest_evidence")):
         strongest_targets.append(get_entity(onto, evidence["strongest_evidence"]))
     set_object_properties(bundle_individual, "hasStrongestEvidence", strongest_targets)
+    set_single_data_property(
+        bundle_individual,
+        "hasStrongestEvidenceLabel",
+        evidence.get("strongest_evidence", "none"),
+    )
+    set_single_data_property(
+        bundle_individual,
+        "hasPrimaryCaveatLabel",
+        evidence.get("primary_caveat", "no_major_caveat"),
+    )
+    set_single_data_property(
+        bundle_individual,
+        "hasCaveatLabel",
+        "|".join(evidence["caveat_items"]) if evidence["caveat_items"] else "no_major_caveat",
+    )
     set_object_properties(
         bundle_individual,
         "hasCaveat",
@@ -316,6 +378,11 @@ def populate_event(onto, ns, payload: dict) -> None:
         clarification_individual,
         "hasAlternativeClaimLabel",
         clarification["alternative_claim"],
+    )
+    set_single_data_property(
+        clarification_individual,
+        "hasPrimaryLimitationLabel",
+        clarification["primary_limitation"],
     )
     primary_limitation_targets = []
     if meaningful_name(clarification.get("primary_limitation")):

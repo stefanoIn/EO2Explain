@@ -46,6 +46,17 @@
     .custom.trace_line("FOREST AGENT", Msg6);
     .send(Requester, tell, clarification_result(E, ClaimLabel, PrimaryLimitation, StrongestEvidence, AlternativeClaim, clarification_provided)).
 
+// Threshold rationale:
+// These wildfire cutoffs are prototype symbolic thresholds, not claims of
+// universal EO validity. They were selected to:
+// 1. reflect plausible relative ranges for NDVI, burned-area, and dNBR
+//    responses,
+// 2. create distinguishable support categories on the small case-study set,
+//    and
+// 3. preserve interpretable rule paths that can be explained downstream.
+// They should therefore be read as literature-informed heuristic cutoffs that
+// were tuned for a controlled EO+MAS demonstration rather than for an
+// operational fire-monitoring product.
 vegetation_damage_signal(E) :-
     vegetation_loss_pct(E, VegetationLoss) &
     VegetationLoss >= 12.

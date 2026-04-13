@@ -60,6 +60,8 @@
         {% if transformed_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='transformed') }}">Transformed JSON</a>{% endif %}
         {% if semantic_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='semantic') }}">Raw MAS JSON</a>{% endif %}
         {% if ontology_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='ontology') }}">Ontology RDF</a>{% endif %}
+        {% if ontology_validation_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='ontology_validation') }}">Ontology Validation</a>{% endif %}
+        {% if ontology_query_path %}<a href="{{ url_for('artifact', job_id=job_id, artifact='ontology_query') }}">Ontology Query Summary</a>{% endif %}
         {% if agent_trace %}<a href="{{ url_for('artifact', job_id=job_id, artifact='agent_trace') }}">Agent Trace</a>{% endif %}
         {% if mas_stdout %}<a href="{{ url_for('artifact', job_id=job_id, artifact='mas_stdout') }}">MAS stdout</a>{% endif %}
         {% if mas_stderr %}<a href="{{ url_for('artifact', job_id=job_id, artifact='mas_stderr') }}">MAS stderr</a>{% endif %}
@@ -75,6 +77,31 @@
       </details>
       {% endif %}
     </section>
+
+    {% if ontology_validation_text or ontology_query_summary %}
+    <section class="panel ontology-status-panel">
+      <div class="panel-heading">
+        <h2>Ontology Status</h2>
+        <p class="panel-sub">Semantic validation and query artifacts generated from the populated ontology.</p>
+      </div>
+      <div class="summary-grid">
+        {% if ontology_validation_text %}
+        <article class="summary-card">
+          <h3>Validation</h3>
+          <p><strong>{{ ontology_validation_text }}</strong></p>
+        </article>
+        {% endif %}
+        {% if ontology_query_summary %}
+        <article class="summary-card">
+          <h3>Query Summary</h3>
+          <p><strong>Events:</strong> {{ ontology_query_summary.counts.events }}</p>
+          <p><strong>Inconclusive:</strong> {{ ontology_query_summary.counts.inconclusive_cases }}</p>
+          <p><strong>Clarifications:</strong> {{ ontology_query_summary.counts.clarification_cases }}</p>
+        </article>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
 
     {% if transformed_payload %}
     <section class="panel analysis-summary-panel">

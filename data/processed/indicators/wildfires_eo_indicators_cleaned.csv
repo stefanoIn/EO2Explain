@@ -1,4 +1,0 @@
-event,event_type,mean_ndvi_before,mean_ndvi_after,ndvi_drop,mean_dnbr,vegetation_loss_pct,burned_area_pct
-evros,wildfire,0.4516,0.3257,0.1259,0.0453,21.06,13.85
-serra_de_estrela,wildfire,0.4751,0.3944,0.0807,0.1419,16.36,17.48
-antalya,wildfire,0.3559,0.2871,0.0688,-0.0763,14.15,3.68

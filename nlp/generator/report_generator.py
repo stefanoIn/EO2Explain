@@ -211,6 +211,13 @@ def is_inconclusive_assessment(assessment: dict) -> bool:
     return assessment.get("conclusion_status", "hazard_assessed") == "inconclusive"
 
 
+def is_residual_flood_assessment(event: dict, assessment: dict) -> bool:
+    return (
+        event.get("hazard_type") == "flood"
+        and assessment.get("claim_label") == "residual_flood_signal"
+    )
+
+
 def inconclusive_summary(event: dict, assessment: dict) -> str:
     return (
         f"{event['event_name']} could not be assigned a reliable {event['hazard_type']} severity "
@@ -225,6 +232,30 @@ def inconclusive_what_happened(event: dict) -> str:
         f"The system did not find enough coherent {humanize(event['hazard_type'])}-related evidence "
         "to reach a firm conclusion."
     )
+
+
+def residual_flood_summary(event: dict, assessment: dict) -> str:
+    return (
+        f"{event['event_name']} is assessed as a flood event with only residual impact visible at "
+        f"acquisition time, with {confidence_phrase(assessment['fusion_confidence'])}."
+    )
+
+
+def residual_flood_what_happened(event: dict) -> str:
+    return (
+        f"The event is located in {event['region']['name']}, {event['country']['name']}. "
+        "The system detects a flood footprint that appears residual rather than peak-stage at the "
+        "time of observation."
+    )
+
+
+def observation_scope_sentence(event: dict, assessment: dict) -> str:
+    if is_residual_flood_assessment(event, assessment):
+        return (
+            "This classification reflects the conditions observed at acquisition time and may "
+            "underestimate the true event magnitude if peak flooding had already receded."
+        )
+    return ""
 
 
 def inconclusive_evidence_text(event: dict, evidence: dict, assessment: dict) -> str:
@@ -339,7 +370,8 @@ def user_assessment_sentence(payload: dict) -> str | None:
     )
 
 
-def build_report_text(payload: dict) -> str:
+def select_report_content(payload: dict) -> dict:
+    """Content selection stage: choose which semantic elements should appear."""
     event = payload["event"]
     assessment = payload["assessment"]
     evidence = payload["evidence"]
@@ -348,9 +380,35 @@ def build_report_text(payload: dict) -> str:
     user_assessment_text = user_assessment_sentence(payload)
     inconclusive = is_inconclusive_assessment(assessment)
 
+    return {
+        "payload": payload,
+        "event": event,
+        "assessment": assessment,
+        "evidence": evidence,
+        "provenance": provenance,
+        "clarification": clarification,
+        "user_assessment_text": user_assessment_text,
+        "inconclusive": inconclusive,
+    }
+
+
+def lexicalize_report_content(content: dict) -> dict:
+    """Lexicalization stage: map symbolic content to report-ready phrases."""
+    event = content["event"]
+    assessment = content["assessment"]
+    evidence = content["evidence"]
+    provenance = content["provenance"]
+    clarification = content["clarification"]
+    payload = content["payload"]
+    user_assessment_text = content["user_assessment_text"]
+    inconclusive = content["inconclusive"]
+
     if inconclusive:
         summary = inconclusive_summary(event, assessment)
         what_happened = inconclusive_what_happened(event)
+    elif is_residual_flood_assessment(event, assessment):
+        summary = residual_flood_summary(event, assessment)
+        what_happened = residual_flood_what_happened(event)
     else:
         summary = (
             f"{event['event_name']} is assessed as a {severity_phrase(assessment['severity'], event['hazard_type'])} "
@@ -379,6 +437,7 @@ def build_report_text(payload: dict) -> str:
             f"profile is classified as a {humanize(assessment['case_profile'])}.",
             CONFIDENCE_TEXT.get(assessment["fusion_confidence"], ""),
             confidence_rationale(assessment, evidence),
+            observation_scope_sentence(event, assessment),
             interpretation_sentence(assessment["interpretation_mode"]),
             concern_expl,
             profile_expl,
@@ -405,49 +464,65 @@ def build_report_text(payload: dict) -> str:
         f"- Rule label: {provenance['rule_label']}",
     ]
 
+    return {
+        "title": f"EO2Explain Event Report: {event['event_name']}",
+        "location": f"Location: {event['region']['name']}, {event['country']['name']}",
+        "hazard": f"Hazard Type: {title_case(event['hazard_type'])}",
+        "summary": summary,
+        "what_happened": what_happened,
+        "assessment": assessment_text,
+        "user_assessment": user_assessment_text,
+        "supporting_evidence": evidence_text,
+        "caveats": caveats_text,
+        "clarification": clarification_text,
+        "provenance": provenance_text,
+        "symbolic_details": "\n".join(symbolic),
+    }
+
+
+def plan_report_document(content: dict) -> list[tuple[str, str]]:
+    """Document planning stage: decide section order and conditional inclusion."""
     sections = [
-        f"EO2Explain Event Report: {event['event_name']}",
-        f"Location: {event['region']['name']}, {event['country']['name']}",
-        f"Hazard Type: {title_case(event['hazard_type'])}",
-        "",
-        "Summary",
-        summary,
-        "",
-        "What Happened",
-        what_happened,
-        "",
-        "Assessment",
-        assessment_text,
+        ("Summary", content["summary"]),
+        ("What Happened", content["what_happened"]),
+        ("Assessment", content["assessment"]),
+    ]
+
+    if content["user_assessment"]:
+        sections.append(("User Assessment", content["user_assessment"]))
+
+    sections.extend(
+        [
+            ("Supporting Evidence", content["supporting_evidence"]),
+            ("Caveats And Limitations", content["caveats"]),
+            ("Clarification", content["clarification"]),
+            ("Provenance", content["provenance"]),
+            ("Symbolic Details", content["symbolic_details"]),
+        ]
+    )
+    return sections
+
+
+def surface_realize_report(lexicalized: dict, sections: list[tuple[str, str]]) -> str:
+    """Surface realization stage: assemble the final text deterministically."""
+    lines = [
+        lexicalized["title"],
+        lexicalized["location"],
+        lexicalized["hazard"],
         "",
     ]
 
-    if user_assessment_text:
-        sections.extend(
-            [
-                "User Assessment",
-                user_assessment_text,
-                "",
-            ]
-        )
+    for heading, body in sections:
+        lines.extend([heading, body, ""])
 
-    sections.extend([
-        "Supporting Evidence",
-        evidence_text,
-        "",
-        "Caveats And Limitations",
-        caveats_text,
-        "",
-        "Clarification",
-        clarification_text,
-        "",
-        "Provenance",
-        provenance_text,
-        "",
-        "Symbolic Details",
-        "\n".join(symbolic),
-    ])
+    return "\n".join(lines).rstrip() + "\n"
 
-    return "\n".join(sections) + "\n"
+
+def build_report_text(payload: dict) -> str:
+    selected = select_report_content(payload)
+    lexicalized = lexicalize_report_content(selected)
+    sections = plan_report_document(lexicalized)
+    return surface_realize_report(lexicalized, sections)
 
 
 def main() -> None:

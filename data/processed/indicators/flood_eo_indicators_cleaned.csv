@@ -1,4 +1,0 @@
-event,event_type,mean_ndwi_before,mean_ndwi_after,ndwi_change,water_increase_pct,newly_flooded_area_pct
-ahr_valley,flood,-0.5759,-0.7076,-0.1316,0.16,0.16
-emilia,flood,-0.5065,-0.3007,0.2057,22.73,22.90
-pakistan,flood,-0.2072,0.0037,0.2109,40.52,42.70

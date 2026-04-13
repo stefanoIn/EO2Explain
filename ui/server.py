@@ -43,6 +43,18 @@ def create_app() -> Flask:
         transformed = sorted((job_dir / "outputs" / "transformed").glob("*.json"))
         semantic = sorted((job_dir / "outputs" / "semantic_explanations").glob("*.json"))
         ontology = sorted((job_dir / "outputs" / "ontology").glob("*.rdf"))
+        ontology_validation = sorted((job_dir / "outputs" / "ontology").glob("ontology_validation.txt"))
+        ontology_query = sorted((job_dir / "outputs" / "ontology").glob("ontology_query_summary.json"))
+        ontology_validation_text = (
+            ontology_validation[0].read_text(encoding="utf-8").strip()
+            if ontology_validation
+            else None
+        )
+        ontology_query_summary = (
+            json.loads(ontology_query[0].read_text(encoding="utf-8"))
+            if ontology_query
+            else None
+        )
 
         if not reports:
             abort(404)
@@ -80,6 +92,10 @@ def create_app() -> Flask:
             transformed_path=transformed[0] if transformed else None,
             semantic_path=semantic[0] if semantic else None,
             ontology_path=ontology[0] if ontology else None,
+            ontology_validation_path=ontology_validation[0] if ontology_validation else None,
+            ontology_query_path=ontology_query[0] if ontology_query else None,
+            ontology_validation_text=ontology_validation_text,
+            ontology_query_summary=ontology_query_summary,
             ontology_warning=ontology_warning,
             ontology_warning_summary=ontology_warning_summary,
             agent_trace=agent_trace,
@@ -97,6 +113,8 @@ def create_app() -> Flask:
             "semantic": next((job_dir / "outputs" / "semantic_explanations").glob("*.json"), None),
             "figure": next((job_dir / "outputs" / "figures").glob("*.png"), None),
             "ontology": next((job_dir / "outputs" / "ontology").glob("*.rdf"), None),
+            "ontology_validation": job_dir / "outputs" / "ontology" / "ontology_validation.txt",
+            "ontology_query": job_dir / "outputs" / "ontology" / "ontology_query_summary.json",
             "agent_trace": job_dir / "logs" / "agent_trace.log",
             "mas_stdout": job_dir / "logs" / "mas_stdout.log",
             "mas_stderr": job_dir / "logs" / "mas_stderr.log",
