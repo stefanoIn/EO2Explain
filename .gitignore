@@ -14,10 +14,6 @@ __pycache__/
 # Jupyter
 .ipynb_checkpoints/
 
-# EO data 
-*.tif
-*.tiff
-
 # Outputs
 outputs/
 results/

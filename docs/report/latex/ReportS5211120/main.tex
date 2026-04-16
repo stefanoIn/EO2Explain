@@ -102,43 +102,6 @@ The second layer is a \textbf{symbolic multi-agent system} implemented in Jason.
 
 The third layer is the \textbf{Natural Language Processing layer}. This module receives the semantic explanation payload produced by the MAS, normalizes it into a cleaner JSON representation, populates the ontology, and generates report-ready textual outputs. In this way, the Python layer acts as a post-reasoning semantic and reporting layer rather than as the place where hazard reasoning itself is performed. A small Flask-based UI is built on top of the same Python pipeline so that a user can upload Sentinel-2 bands, set optional contextual assumptions, and inspect the resulting semantic report and MAS trace.
 
-Figure~\ref{fig:mas_communication_flow} summarizes how the Jason agents cooperate during a complete analysis cycle. The CoordinatorAgent acts as the orchestration hub: it dispatches event-assessment requests to the hazard-specialized agents, conditionally triggers clarification when uncertainty is high, forwards the integrated symbolic case to the ExplanationAgent, and finally hands the exported semantic payload to the downstream Python layer.
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-    x=1cm,
-    y=1cm,
-    agent/.style={draw, rounded corners=8pt, thick, fill=blue!6, minimum width=4.1cm, minimum height=1cm, align=center, font=\bfseries},
-    layer/.style={draw, rounded corners=8pt, thick, fill=green!8, minimum width=5.4cm, minimum height=1.1cm, align=center},
-    flow/.style={->, thick},
-    loop/.style={<->, thick}
-]
-\node[agent] (coord) at (0,0) {CoordinatorAgent};
-\node[agent] (water) at (-4.4,-2.4) {WaterAgent};
-\node[agent] (forest) at (4.4,-2.4) {ForestAgent};
-\node[agent] (expl) at (0,-4.8) {ExplanationAgent};
-\node[layer] (python) at (0,-7.2) {Python semantic layer\\transformer, ontology, NLG};
-
-\draw[loop] (coord) -- node[midway, above left, font=\scriptsize, align=center]
-{assess\_event\\clarify\_assessment} (water);
-\draw[loop] (coord) -- node[midway, above right, font=\scriptsize, align=center]
-{assess\_event\\clarify\_assessment} (forest);
-
-\draw[flow] (water) -- node[midway, left, font=\scriptsize, align=center]
-{hazard\_assessment\\clarification\_result} (coord);
-\draw[flow] (forest) -- node[midway, right, font=\scriptsize, align=center]
-{hazard\_assessment\\clarification\_result} (coord);
-
-\draw[flow] (coord) -- node[midway, right, font=\scriptsize]
-{build\_explanation} (expl);
-\draw[flow] (expl) -- node[midway, right, font=\scriptsize, align=center]
-{semantic payload\\JSON export} (python);
-\end{tikzpicture}
-\caption{Communication flow in the multi-agent layer. The coordinator dispatches specialist assessments, optionally requests clarification, and then forwards the integrated case to the explanation agent before downstream semantic processing.}
-\label{fig:mas_communication_flow}
-\end{figure}
-
 \section{EO Data Processing}
 
 The EO layer is based on a small dataset of representative environmental events derived from Sentinel-2 imagery. In the current implementation, six events were selected: three wildfire events and three flood events. For each event, one image acquired before the event and one image acquired after the event were used in order to compute change-based indicators.
@@ -347,6 +310,47 @@ The wildfire events show different levels of vegetation loss and burn severity. 
 \section{Reasoning Layer}
 
 After the EO preprocessing stage, the system enters the reasoning layer implemented in Jason. In this layer, numerical EO outputs are no longer treated as isolated measurements. They are transformed into symbolic beliefs, combined with contextual metadata, and interpreted through explicit reasoning rules. This is the core layer that makes the overall system explainable: every classification is linked to a visible belief structure, a reasoning path, and a traceable final explanation.
+
+Figure~\ref{fig:mas_communication_flow} summarizes how the Jason agents cooperate during a complete analysis cycle. The CoordinatorAgent acts as the orchestration hub: it dispatches event-assessment requests to the hazard-specialized agents, conditionally triggers clarification when uncertainty is high, forwards the integrated symbolic case to the ExplanationAgent, and finally hands the exported semantic payload to the downstream Python layer.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    x=1cm,
+    y=1cm,
+    agent/.style={draw, rounded corners=10pt, very thick, fill=blue!8, minimum width=4.2cm, minimum height=1.05cm, align=center, font=\bfseries},
+    layer/.style={draw, rounded corners=10pt, very thick, fill=green!10, minimum width=5.8cm, minimum height=1.2cm, align=center, font=\bfseries},
+    msg/.style={fill=white, inner sep=2pt, rounded corners=3pt, font=\scriptsize, align=center},
+    flow/.style={->, thick}
+]
+\node[agent] (coord) at (0,0) {CoordinatorAgent};
+\node[agent] (water) at (-5.2,-2.8) {WaterAgent};
+\node[agent] (forest) at (5.2,-2.8) {ForestAgent};
+\node[agent] (expl) at (0,-5.3) {ExplanationAgent};
+\node[layer] (python) at (0,-7.8) {Python semantic layer\\transformer, ontology, NLG};
+
+\draw[flow] (coord.south west) -- (water.north east)
+    node[pos=0.28, above left, msg] {assess\_event}
+    node[pos=0.74, below right, msg] {clarify\_assessment};
+\draw[flow] (water.north east) -- (coord.south west)
+    node[pos=0.30, below right, msg] {hazard\_assessment}
+    node[pos=0.73, above left, msg] {clarification\_result};
+
+\draw[flow] (coord.south east) -- (forest.north west)
+    node[pos=0.28, above right, msg] {assess\_event}
+    node[pos=0.74, below left, msg] {clarify\_assessment};
+\draw[flow] (forest.north west) -- (coord.south east)
+    node[pos=0.30, below left, msg] {hazard\_assessment}
+    node[pos=0.73, above right, msg] {clarification\_result};
+
+\draw[flow] (coord.south) -- (expl.north)
+    node[midway, right, msg] {build\_explanation};
+\draw[flow] (expl.south) -- (python.north)
+    node[midway, right, msg] {semantic payload\\JSON export};
+\end{tikzpicture}
+\caption{Communication flow in the multi-agent layer. The coordinator dispatches specialist assessments, optionally requests clarification, and then forwards the integrated case to the explanation agent before downstream semantic processing.}
+\label{fig:mas_communication_flow}
+\end{figure}
 
 \subsection{Belief Base}
 
