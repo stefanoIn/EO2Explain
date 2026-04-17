@@ -20,6 +20,9 @@ SEMANTIC_DIR = PROJECT_ROOT / "outputs/semantic_explanations"
 TRANSFORMED_DIR = PROJECT_ROOT / "outputs/transformed"
 REPORTS_DIR = PROJECT_ROOT / "outputs/reports"
 ONTOLOGY_PATH = PROJECT_ROOT / "nlp/ontology/eo2explain_populated.rdf"
+SUPPRESSED_OUTPUT_SNIPPETS = (
+    "SQLite3 version 3.40.0 and 3.41.2 have huge performance regressions",
+)
 
 
 def rel(path: Path) -> str:
@@ -38,13 +41,31 @@ def count_json_files(directory: Path) -> int:
     return len(list(directory.glob("*.json")))
 
 
+def filter_output(text: str | None) -> str:
+    if not text:
+        return ""
+    kept_lines: list[str] = []
+    for line in text.splitlines():
+        if any(snippet in line for snippet in SUPPRESSED_OUTPUT_SNIPPETS):
+            continue
+        kept_lines.append(line)
+    if not kept_lines:
+        return ""
+    filtered = "\n".join(kept_lines)
+    if text.endswith("\n"):
+        filtered += "\n"
+    return filtered
+
+
 def run_step(command: list[str], cwd: Path) -> None:
     print(f"    command: {' '.join(command)}")
     completed = subprocess.run(command, cwd=cwd, text=True, capture_output=True)
-    if completed.stdout:
-        print(completed.stdout, end="" if completed.stdout.endswith("\n") else "\n")
-    if completed.stderr:
-        print(completed.stderr, end="" if completed.stderr.endswith("\n") else "\n", file=sys.stderr)
+    stdout = filter_output(completed.stdout)
+    stderr = filter_output(completed.stderr)
+    if stdout:
+        print(stdout, end="" if stdout.endswith("\n") else "\n")
+    if stderr:
+        print(stderr, end="" if stderr.endswith("\n") else "\n", file=sys.stderr)
     if completed.returncode != 0:
         raise SystemExit(completed.returncode)
 
@@ -104,17 +125,19 @@ def run_mas() -> None:
             ],
         )
         completed = subprocess.run(command, cwd=cwd, text=True, capture_output=True)
-        if completed.stdout:
-            print(completed.stdout, end="" if completed.stdout.endswith("\n") else "\n")
-        if completed.stderr:
-            print(completed.stderr, end="" if completed.stderr.endswith("\n") else "\n", file=sys.stderr)
+        stdout = filter_output(completed.stdout)
+        stderr = filter_output(completed.stderr)
+        if stdout:
+            print(stdout, end="" if stdout.endswith("\n") else "\n")
+        if stderr:
+            print(stderr, end="" if stderr.endswith("\n") else "\n", file=sys.stderr)
         if completed.returncode == 0:
             after_count = count_json_files(SEMANTIC_DIR)
             print(f"    MAS completed. Semantic payload files available: {after_count} (was {before_count}).")
             return
         failure_detail = f"{' '.join(command)} (exit code {completed.returncode})"
-        if completed.stderr:
-            failure_detail = f"{failure_detail}\n{completed.stderr.strip()}"
+        if stderr:
+            failure_detail = f"{failure_detail}\n{stderr.strip()}"
         failures.append(failure_detail)
         print("    MAS runner failed, trying the next available option.")
 
