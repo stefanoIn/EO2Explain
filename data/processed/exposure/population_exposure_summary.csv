@@ -1,0 +1,7 @@
+event,country,population_raster,total_population,area_km2,population_density_km2,valid_pixels,crop_path,population_exposure_class
+ahr_valley,germany,ahr_valley_pop_crop.tif,38365.01,177.0092,216.74,9159,data/processed/exposure/cropped_to_events/ahr_valley_pop_crop.tif,medium
+antalya,turkey,antalya_pop_crop.tif,465543.15,5868.3958,79.33,106724,data/processed/exposure/cropped_to_events/antalya_pop_crop.tif,low
+emilia,italy,emilia_pop_crop.tif,15909.53,132.3286,120.23,11262,data/processed/exposure/cropped_to_events/emilia_pop_crop.tif,medium
+evros,greece,evros_pop_crop.tif,167135.48,4572.4145,36.55,117438,data/processed/exposure/cropped_to_events/evros_pop_crop.tif,low
+serra_de_estrela,portugal,serra_de_estrela_pop_crop.tif,69997.87,1320.437,53.01,68839,data/processed/exposure/cropped_to_events/serra_de_estrela_pop_crop.tif,low
+sindh,pakistan,sindh_pop_crop.tif,3828128.98,6122.3091,625.28,260953,data/processed/exposure/cropped_to_events/sindh_pop_crop.tif,high

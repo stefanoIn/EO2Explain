@@ -6,18 +6,24 @@
 mean_ndwi_before(ahr_valley, -0.5759).
 mean_ndwi_after(ahr_valley, -0.7076).
 ndwi_change(ahr_valley, -0.1316).
+water_area_before_pct(ahr_valley, 0.01).
+water_area_after_pct(ahr_valley, 0.17).
 water_increase_pct(ahr_valley, 0.16).
 newly_flooded_area_pct(ahr_valley, 0.16).
 
 mean_ndwi_before(emilia, -0.5065).
 mean_ndwi_after(emilia, -0.3007).
 ndwi_change(emilia, 0.2058).
+water_area_before_pct(emilia, 1.06).
+water_area_after_pct(emilia, 23.78).
 water_increase_pct(emilia, 22.73).
 newly_flooded_area_pct(emilia, 22.90).
 
 mean_ndwi_before(sindh, -0.2072).
 mean_ndwi_after(sindh, 0.0037).
 ndwi_change(sindh, 0.2109).
+water_area_before_pct(sindh, 4.97).
+water_area_after_pct(sindh, 45.49).
 water_increase_pct(sindh, 40.52).
 newly_flooded_area_pct(sindh, 42.70).
 

@@ -17,7 +17,6 @@ __pycache__/
 # Outputs
 outputs/
 results/
-*.csv
 
 # Images 
 *.png
