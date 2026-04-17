@@ -76,6 +76,15 @@ def available_mas_commands() -> list[tuple[list[str], Path]]:
     is_windows = os.name == "nt"
 
     if is_windows:
+        gradlew = mas_dir / "gradlew.bat"
+        if gradlew.exists():
+            commands.append((["cmd", "/c", str(gradlew), "run", "--console=plain"], mas_dir))
+    else:
+        gradlew = mas_dir / "gradlew"
+        if gradlew.exists():
+            commands.append(([str(gradlew), "run", "--console=plain"], mas_dir))
+
+    if is_windows:
         for executable in ("jason.bat", "jason.cmd", "jason.exe", "jason"):
             jason = shutil.which(executable)
             if jason:
@@ -85,15 +94,6 @@ def available_mas_commands() -> list[tuple[list[str], Path]]:
         jason = shutil.which("jason")
         if jason:
             commands.append(([jason, "eo.mas2j"], mas_dir))
-
-    if is_windows:
-        gradlew = mas_dir / "gradlew.bat"
-        if gradlew.exists():
-            commands.append((["cmd", "/c", str(gradlew), "run", "--console=plain"], mas_dir))
-    else:
-        gradlew = mas_dir / "gradlew"
-        if gradlew.exists():
-            commands.append(([str(gradlew), "run", "--console=plain"], mas_dir))
 
     gradle = shutil.which("gradle")
     if gradle:

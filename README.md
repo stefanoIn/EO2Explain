@@ -17,7 +17,6 @@ The default project run starts from the precomputed indicator and exposure CSV f
 
 - Python `3.10+`
 - Java JDK `17+`
-- Jason CLI available in `PATH`
 
 Python packages required by the default run:
 
@@ -41,14 +40,17 @@ The reasoning layer is a Jason multi-agent system with custom Java internal acti
 
 - `io.github.jason-lang:jason-interpreter:3.3.0`
 
-In practice, the easiest supported path is to have the Jason CLI installed and callable from the shell used to launch the project.
+The repository now includes a Gradle wrapper for the MAS project:
+
+- `mas/gradlew`
+- `mas/gradlew.bat`
+
+This is the primary MAS launch path used by `scripts/run_project.py`. A Jason CLI installation in `PATH` is still supported as a fallback, but it is no longer required for the default project run.
 
 ### Platform notes
 
 - macOS/Linux: run from a normal shell
-- Windows: run from `Git Bash`
-
-Windows support should be understood as Git-Bash-based execution of the MAS launcher, not as guaranteed native `cmd.exe` or PowerShell support.
+- Windows: the wrapper uses `gradlew.bat` through `cmd /c`, so the same project entrypoint can be used without a Git-Bash-only requirement
 
 ## Single-Command Run
 
@@ -58,8 +60,6 @@ For hand-in and reproducibility, the project can be executed from a single entry
 cd EO2Explain
 python3 scripts/run_project.py
 ```
-
-On Windows, the same command should be launched from `Git Bash`. If the local Python installation is exposed as `python` rather than `python3`, the command can be adapted accordingly.
 
 This default path starts from the precomputed EO indicator and exposure CSV files already stored in `data/processed/`. It then:
 

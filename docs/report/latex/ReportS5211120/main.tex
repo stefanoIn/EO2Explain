@@ -851,9 +851,9 @@ The UI therefore contributes primarily to reproducibility and inspectability rat
 
 \subsection{Execution Requirements and Running Instructions}
 
-From a practical point of view, the implemented prototype can be executed through a single wrapper script rather than by launching each stage manually. The default execution path starts from the precomputed EO indicator and exposure summaries already stored in the repository, which means that the core symbolic and NLP pipeline can be reproduced without rerunning the full EO extraction stage. In this default configuration, the required runtime components are Python 3.10 or later, a Java JDK installation, and a Jason CLI installation available from the shell.
+From a practical point of view, the implemented prototype can be executed through a single wrapper script rather than by launching each stage manually. The default execution path starts from the precomputed EO indicator and exposure summaries already stored in the repository, which means that the core symbolic and NLP pipeline can be reproduced without rerunning the full EO extraction stage. In this default configuration, the required runtime components are Python 3.10 or later and a Java JDK installation.
 
-The Python environment used for the default run must include \texttt{owlready2}, \texttt{flask}, and \texttt{markupsafe}. If full EO recomputation is required, the environment must additionally provide the geospatial and scientific packages used by the EO scripts, namely \texttt{numpy}, \texttt{rasterio}, \texttt{matplotlib}, \texttt{pyproj}, and \texttt{shapely}. The MAS itself depends on Jason Interpreter 3.3.0, as reflected in the Gradle configuration of the Jason project.
+The Python environment used for the default run must include \texttt{owlready2}, \texttt{flask}, and \texttt{markupsafe}. If full EO recomputation is required, the environment must additionally provide the geospatial and scientific packages used by the EO scripts, namely \texttt{numpy}, \texttt{rasterio}, \texttt{matplotlib}, \texttt{pyproj}, and \texttt{shapely}. The MAS itself depends on Jason Interpreter 3.3.0, as reflected in the Gradle configuration of the Jason project. The repository includes both \texttt{gradlew} and \texttt{gradlew.bat}, so the single-entry wrapper can use the Gradle wrapper as the primary cross-platform launcher for the MAS.
 
 The full pipeline can then be launched with:
 
@@ -869,7 +869,7 @@ cd EO2Explain
 python3 scripts/run_project.py --with-eo
 \end{lstlisting}
 
-On Windows, the same command should be executed from Git Bash rather than assumed to work natively from \texttt{cmd.exe} or PowerShell, because the MAS launcher is currently validated through a Git-Bash-based execution path.
+On Windows, the same wrapper command can be executed through the bundled Gradle wrapper path rather than depending on a separate Git-Bash-only MAS launcher.
 
 \newpage
 
