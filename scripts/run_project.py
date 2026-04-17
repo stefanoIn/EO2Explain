@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 import subprocess
 import sys
@@ -39,24 +40,43 @@ def count_json_files(directory: Path) -> int:
 
 def run_step(command: list[str], cwd: Path) -> None:
     print(f"    command: {' '.join(command)}")
-    completed = subprocess.run(command, cwd=cwd)
+    completed = subprocess.run(command, cwd=cwd, text=True, capture_output=True)
+    if completed.stdout:
+        print(completed.stdout, end="" if completed.stdout.endswith("\n") else "\n")
+    if completed.stderr:
+        print(completed.stderr, end="" if completed.stderr.endswith("\n") else "\n", file=sys.stderr)
     if completed.returncode != 0:
         raise SystemExit(completed.returncode)
 
 
 def available_mas_commands() -> list[tuple[list[str], Path]]:
     commands: list[tuple[list[str], Path]] = []
-    jason = shutil.which("jason")
-    if jason:
-        commands.append(([jason, "eo.mas2j"], PROJECT_ROOT / "mas"))
+    mas_dir = PROJECT_ROOT / "mas"
+    is_windows = os.name == "nt"
 
-    gradlew = PROJECT_ROOT / "mas" / "gradlew"
-    if gradlew.exists():
-        commands.append(([str(gradlew), "run", "--console=plain"], PROJECT_ROOT / "mas"))
+    if is_windows:
+        for executable in ("jason.bat", "jason.cmd", "jason.exe", "jason"):
+            jason = shutil.which(executable)
+            if jason:
+                commands.append(([jason, "eo.mas2j"], mas_dir))
+                break
+    else:
+        jason = shutil.which("jason")
+        if jason:
+            commands.append(([jason, "eo.mas2j"], mas_dir))
+
+    if is_windows:
+        gradlew = mas_dir / "gradlew.bat"
+        if gradlew.exists():
+            commands.append((["cmd", "/c", str(gradlew), "run", "--console=plain"], mas_dir))
+    else:
+        gradlew = mas_dir / "gradlew"
+        if gradlew.exists():
+            commands.append(([str(gradlew), "run", "--console=plain"], mas_dir))
 
     gradle = shutil.which("gradle")
     if gradle:
-        commands.append(([gradle, "run", "--console=plain"], PROJECT_ROOT / "mas"))
+        commands.append(([gradle, "run", "--console=plain"], mas_dir))
 
     return commands
 
@@ -83,12 +103,19 @@ def run_mas() -> None:
                 f"runner: {' '.join(command)}",
             ],
         )
-        completed = subprocess.run(command, cwd=cwd)
+        completed = subprocess.run(command, cwd=cwd, text=True, capture_output=True)
+        if completed.stdout:
+            print(completed.stdout, end="" if completed.stdout.endswith("\n") else "\n")
+        if completed.stderr:
+            print(completed.stderr, end="" if completed.stderr.endswith("\n") else "\n", file=sys.stderr)
         if completed.returncode == 0:
             after_count = count_json_files(SEMANTIC_DIR)
             print(f"    MAS completed. Semantic payload files available: {after_count} (was {before_count}).")
             return
-        failures.append(f"{' '.join(command)} (exit code {completed.returncode})")
+        failure_detail = f"{' '.join(command)} (exit code {completed.returncode})"
+        if completed.stderr:
+            failure_detail = f"{failure_detail}\n{completed.stderr.strip()}"
+        failures.append(failure_detail)
         print("    MAS runner failed, trying the next available option.")
 
     raise SystemExit(
