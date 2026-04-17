@@ -20,6 +20,7 @@ SEMANTIC_DIR = PROJECT_ROOT / "outputs/semantic_explanations"
 TRANSFORMED_DIR = PROJECT_ROOT / "outputs/transformed"
 REPORTS_DIR = PROJECT_ROOT / "outputs/reports"
 ONTOLOGY_PATH = PROJECT_ROOT / "nlp/ontology/eo2explain_populated.rdf"
+ONTOLOGY_QUERY_SUMMARY_PATH = PROJECT_ROOT / "outputs/ontology_query_summary.json"
 SUPPRESSED_OUTPUT_SNIPPETS = (
     "SQLite3 version 3.40.0 and 3.41.2 have huge performance regressions",
 )
@@ -55,6 +56,25 @@ def filter_output(text: str | None) -> str:
     if text.endswith("\n"):
         filtered += "\n"
     return filtered
+
+
+def require_existing_inputs(paths: list[Path]) -> None:
+    missing = [rel(path) for path in paths if not path.exists()]
+    if missing:
+        raise SystemExit(
+            "Missing required precomputed inputs:\n- "
+            + "\n- ".join(missing)
+            + "\nRun with --with-eo to regenerate them from raw EO inputs."
+        )
+
+
+def clean_outputs() -> None:
+    for directory in (SEMANTIC_DIR, TRANSFORMED_DIR, REPORTS_DIR):
+        if directory.exists():
+            shutil.rmtree(directory)
+    for file_path in (ONTOLOGY_PATH, ONTOLOGY_QUERY_SUMMARY_PATH):
+        if file_path.exists():
+            file_path.unlink()
 
 
 def run_step(command: list[str], cwd: Path) -> None:
@@ -133,7 +153,9 @@ def run_mas() -> None:
             print(stderr, end="" if stderr.endswith("\n") else "\n", file=sys.stderr)
         if completed.returncode == 0:
             after_count = count_json_files(SEMANTIC_DIR)
-            print(f"    MAS completed. Semantic payload files available: {after_count} (was {before_count}).")
+            print(f"    MAS completed successfully. Semantic payload files present: {after_count}.")
+            if after_count == before_count and after_count > 0:
+                print("    Existing semantic files may have been overwritten.")
             return
         failure_detail = f"{' '.join(command)} (exit code {completed.returncode})"
         if stderr:
@@ -158,11 +180,29 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Recompute EO indicators and exposure before generating beliefs.",
     )
+    parser.add_argument(
+        "--clean",
+        action="store_true",
+        help="Remove generated semantic, transformed, report, and ontology outputs before running.",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+
+    if args.clean:
+        print_stage(
+            "Clean previous generated outputs",
+            [
+                f"removing {rel(SEMANTIC_DIR)}",
+                f"removing {rel(TRANSFORMED_DIR)}",
+                f"removing {rel(REPORTS_DIR)}",
+                f"removing {rel(ONTOLOGY_PATH)}",
+                f"removing {rel(ONTOLOGY_QUERY_SUMMARY_PATH)}",
+            ],
+        )
+        clean_outputs()
 
     if args.with_eo:
         print_stage(
@@ -179,6 +219,8 @@ def main() -> int:
             [sys.executable, "scripts/run_eo_processing.py"],
             PROJECT_ROOT,
         )
+    else:
+        require_existing_inputs([FLOOD_CSV, WILDFIRE_CSV, POPULATION_CSV])
 
     print_stage(
         "Generate Jason belief files from processed indicators",
@@ -216,6 +258,7 @@ def main() -> int:
     print(f"Transformed payloads: {rel(TRANSFORMED_DIR)}")
     print(f"Semantic payloads: {rel(SEMANTIC_DIR)}")
     print(f"Populated ontology: {rel(ONTOLOGY_PATH)}")
+    print(f"Ontology query summary: {rel(ONTOLOGY_QUERY_SUMMARY_PATH)}")
     return 0
 
 

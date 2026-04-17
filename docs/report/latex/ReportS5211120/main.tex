@@ -869,11 +869,15 @@ cd EO2Explain
 python3 scripts/run_project.py --with-eo
 \end{lstlisting}
 
+If previously generated outputs should be removed before a new run, the same wrapper also supports:
+
+\begin{lstlisting}
+cd EO2Explain
+python3 scripts/run_project.py --clean
+\end{lstlisting}
+
 On Windows, the same wrapper command can be executed through the bundled Gradle wrapper path rather than depending on a separate Git-Bash-only MAS launcher.
 
 \newpage
-
-\bibliographystyle{splncs04}
-\bibliography{bibliography}
 
 \end{document}

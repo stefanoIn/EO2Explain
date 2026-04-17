@@ -84,6 +84,13 @@ python3 scripts/run_project.py --with-eo
 
 This optional mode requires the raw EO inputs.
 
+If old generated artifacts should be removed before the run, add:
+
+```bash
+cd EO2Explain
+python3 scripts/run_project.py --clean
+```
+
 ## Run The MAS Only
 
 ```bash
