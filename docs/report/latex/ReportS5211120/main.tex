@@ -906,6 +906,14 @@ python3 scripts/run_project.py --clean
 
 On Windows, the same wrapper command can be executed through the bundled Gradle wrapper path rather than depending on a separate Git-Bash-only MAS launcher.
 
+\section{Conclusion}
+
+This project presented EO2Explain as a prototype framework for interpreting Earth Observation events through the integration of EO processing, symbolic multi-agent reasoning, ontology-based semantic formalization, and deterministic natural language generation. The main contribution of the work is not only the detection of floods and wildfires from Sentinel-2-derived indicators, but the construction of an end-to-end pipeline in which each stage remains explicit, inspectable, and explainable. Numerical EO measurements are transformed into symbolic beliefs, those beliefs are interpreted by hazard-specialized agents, the resulting assessments are formalized in an ontology, and the final outcome is verbalized as a readable report grounded in a traceable reasoning path.
+
+The implemented system also demonstrates how symbolic AI can provide a useful interpretability layer over EO evidence. Instead of treating hazard assessment as a direct mapping from pixel-level indicators to opaque labels, the project makes visible which signals were detected, which rule patterns were activated, which caveats reduced confidence, and when clarification was required. This is particularly important in cases where the acquisition timing does not perfectly overlap with the real event peak, since the framework can distinguish between strong multisignal evidence, residual observations, and explicitly inconclusive situations.
+
+At the same time, the project remains a controlled prototype rather than an operational hazard-monitoring system. The dataset is intentionally small, the thresholds are literature-informed heuristic cutoffs, and the EO cases were selected to support an interpretable demonstration rather than statistical generalization. Future work could therefore extend the system along several directions, including larger and more diverse event collections, better-calibrated reasoning thresholds, richer contextual layers, and more advanced ontology-backed querying and explanation strategies. Within the scope of this project, however, EO2Explain successfully shows that symbolic multi-agent reasoning and structured NLG can be combined to produce Earth Observation interpretations that are not only informative, but also transparent and semantically grounded.
+
 \newpage
 
 \end{document}
