@@ -12,11 +12,6 @@
 \usepackage{hyperref}
 \usepackage{subcaption}
 \usepackage{listings}
-\usepackage{tikz}
-\usepackage{pgf-umlsd}
-\usetikzlibrary{calc}
-\usetikzlibrary{positioning, fit, arrows.meta}
-\usepgflibrary{arrows}
 
 \lstset{
     basicstyle=\ttfamily\small,
@@ -25,6 +20,11 @@
 }
 
 \setcounter{secnumdepth}{3}
+\newcommand{\diagrammaxwidth}{\textwidth}
+\newcommand{\diagrammaxheight}{0.72\textheight}
+\newcommand{\fitdiagram}[1]{%
+    \includegraphics[width=\diagrammaxwidth,height=\diagrammaxheight,keepaspectratio]{#1}%
+}
 
 \title{A Multi-Agent System for Monitoring Enviromental Changes Using Earth Observation Data}
 \author{Stefano Infusini\\
@@ -103,6 +103,15 @@ The first layer is the \textbf{EO layer}, responsible for extracting environment
 The second layer is a \textbf{symbolic multi-agent system} implemented in Jason. In this layer, agents maintain belief bases containing EO indicators and apply logical rules to infer environmental events. Three agent types are considered: a ForestAgent responsible for vegetation-related reasoning, a WaterAgent responsible for water-related reasoning, and a CoordinatorAgent responsible for collecting the conclusions produced by the other agents.
 
 The third layer is the \textbf{Natural Language Processing layer}. This module receives the semantic explanation payload produced by the MAS, normalizes it into a cleaner JSON representation, populates the ontology, and generates report-ready textual outputs. In this way, the Python layer acts as a post-reasoning semantic and reporting layer rather than as the place where hazard reasoning itself is performed. A small Flask-based UI is built on top of the same Python pipeline so that a user can upload Sentinel-2 bands, set optional contextual assumptions, and inspect the resulting semantic report and MAS trace.
+
+Figure~\ref{fig:system_overview_diagram} provides a compact interaction view of the overall pipeline, from the initial EO belief loading stage to symbolic reasoning, explanation packaging, and final NLP post-processing. This figure is useful as a bridge between the conceptual three-layer architecture and the more detailed reasoning diagrams discussed later.
+
+\begin{figure}[H]
+    \centering
+    \fitdiagram{figures/diagram.pdf}
+    \caption{System-level interaction view of the EO2Explain pipeline. The diagram shows how EO beliefs are dispatched to the coordinator, how the WaterAgent produces a first-pass symbolic assessment with optional clarification, how the ExplanationAgent packages the semantic explanation, and how the NLP layer transforms that payload into a final report.}
+    \label{fig:system_overview_diagram}
+\end{figure}
 
 \section{EO Data Processing}
 
@@ -341,107 +350,13 @@ The wildfire events show different levels of vegetation loss and burn severity. 
 
 After the EO preprocessing stage, the system enters the reasoning layer implemented in Jason. In this layer, numerical EO outputs are no longer treated as isolated measurements. They are transformed into symbolic beliefs, combined with contextual metadata, and interpreted through explicit reasoning rules. This is the core layer that makes the overall system explainable: every classification is linked to a visible belief structure, a reasoning path, and a traceable final explanation.
 
-Figure~\ref{fig:mas_communication_flow} summarizes how the Jason agents cooperate during a complete analysis cycle. The CoordinatorAgent acts as the orchestration hub: it dispatches event-assessment requests to the hazard-specialized agents, conditionally triggers clarification when uncertainty is high, forwards the integrated symbolic case to the ExplanationAgent, and finally hands the exported semantic payload to the downstream Python layer.
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-    x=1cm,
-    y=1cm,
-    >=Latex,
-    agent/.style={
-        draw=black!65,
-        rounded corners=10pt,
-        very thick,
-        fill=white,
-        minimum width=3.9cm,
-        minimum height=1.0cm,
-        align=center,
-        font=\bfseries
-    },
-    layer/.style={
-        draw=black!65,
-        rounded corners=10pt,
-        very thick,
-        fill=white,
-        minimum width=5.2cm,
-        minimum height=1.15cm,
-        align=center,
-        font=\bfseries
-    },
-    msg/.style={
-        fill=white,
-        inner sep=1.5pt,
-        font=\scriptsize,
-        align=center
-    },
-    flow/.style={->, thick, draw=black!70}
-]
-
-\node[agent] (coord) at (0,0) {CoordinatorAgent};
-\node[agent] (water) at (-4.8,-2.5) {WaterAgent};
-\node[agent] (forest) at (-4.8, -3.5) {ForestAgent};
-\node[agent] (expl) at (0,-5.3) {ExplanationAgent};
-\node[layer] (python) at (0,-7.9) {Python semantic layer\\transformer, ontology, NLG};
-
-\draw[flow] (coord.south west) -- (water.north east)
-    node[pos=0.24, above left, msg] {assess\_event}
-    node[pos=0.74, below right, msg] {clarify\_assessment};
-
-\draw[flow] (water.north east) -- (coord.south west)
-    node[pos=0.34, below right, msg] {hazard\_assessment}
-    node[pos=0.80, above left, msg] {clarification\_result};
-
-\draw[flow] (coord.south east) -- (forest.north west)
-    node[pos=0.24, above right, msg] {assess\_event}
-    node[pos=0.74, below left, msg] {clarify\_assessment};
-
-\draw[flow] (forest.north west) -- (coord.south east)
-    node[pos=0.34, below left, msg] {hazard\_assessment}
-    node[pos=0.80, above right, msg] {clarification\_result};
-
-\draw[flow] (coord.south) -- (expl.north)
-    node[midway, right, msg] {build\_explanation};
-
-\draw[flow] (expl.south) -- (python.north)
-    node[midway, right, msg] {semantic payload\\JSON export};
-
-\end{tikzpicture}
-\caption{Communication flow in the multi-agent layer. The coordinator dispatches specialist assessments, optionally requests clarification, and then forwards the integrated case to the explanation agent before downstream semantic processing.}
-\label{fig:mas_communication_flow}
-\end{figure}
-
-The same coordination logic can also be read as a temporal interaction sequence. Figure~\ref{fig:mas_sequence_diagram} shows the order in which the coordinator gathers hazard assessments, opens an optional clarification round for uncertain cases, requests explanation construction, and then hands the exported semantic payload to the downstream Python layer.
+Figure~\ref{fig:sequence_diagram} summarizes the temporal communication flow of the symbolic multi-agent system in a compact form. The CoordinatorAgent acts as the orchestration point: it dispatches event beliefs to a hazard-specialized agent, receives the resulting assessment, optionally requests clarification when the first pass remains uncertain, and then forwards the integrated symbolic output to the ExplanationAgent. The figure also keeps the downstream NLP handoff visible so that the reasoning layer can be understood in relation to the post-processing stage.
 
 \begin{figure}[H]
-\centering
-\resizebox{\textwidth}{!}{
-\begin{sequencediagram}
-    \newthread{coord}{}{CoordinatorAgent}
-    \newinst{water}{}{WaterAgent}
-    \newinst{forest}{}{ForestAgent}
-    \newinst{expl}{}{ExplanationAgent}
-    \newinst{py}{}{Python Layer}
-
-    \begin{call}{coord}{assess\_event(E)}{water}{hazard\_assessment}
-    \end{call}
-    \begin{call}{coord}{assess\_event(E)}{forest}{hazard\_assessment}
-    \end{call}
-
-    \begin{sdloop}{If uncertainty or caveats require refinement}
-        \begin{call}{coord}{clarify\_assessment(E,\dots)}{water}{clarification\_result}
-        \end{call}
-        \begin{call}{coord}{clarify\_assessment(E,\dots)}{forest}{clarification\_result}
-        \end{call}
-    \end{sdloop}
-
-    \begin{call}{coord}{build\_explanation(E)}{expl}{semantic\_explanation}
-    \end{call}
-    \begin{call}{expl}{export\_semantic\_payload()}{py}{JSON / ontology / report}
-    \end{call}
-\end{sequencediagram}
-}
-\caption{Sequence view of the EO2Explain multi-agent workflow. The coordinator collects specialist assessments, optionally requests clarification, and then triggers explanation export for downstream semantic processing.}
-\label{fig:mas_sequence_diagram}
+    \centering
+    \fitdiagram{figures/diagram.pdf}
+    \caption{System-level interaction view of the reasoning and reporting flow. The coordinator dispatches the event to the WaterAgent, may request clarification, then sends the integrated symbolic output to the ExplanationAgent and finally exposes the semantic payload to the NLP layer for report generation.}
+    \label{fig:sequence_diagram}
 \end{figure}
 
 \subsection{Belief Base}
@@ -581,6 +496,15 @@ This layer is important because it separates \emph{evidence interpretation} from
 \subsubsection{Flood Reasoning in \texttt{water\_agent}}
 
 The flood agent uses an analogous reasoning structure. It starts from \texttt{water\_increase\_pct/2}, \texttt{newly\_flooded\_area\_pct/2}, and \texttt{ndwi\_change/2}, and converts them into symbolic flood evidence.
+
+Figure~\ref{fig:water_agent_diagram} details the internal communication and reasoning flow of the \texttt{water\_agent}. Unlike the previous higher-level diagrams, this figure expands the internal symbolic stages explicitly, from indicator-level signals to evidence-pattern construction, support-level assignment, severity-path selection, caveat derivation, and clarification handling.
+
+\begin{figure}[H]
+    \centering
+    \fitdiagram{figures/waterdiagram.pdf}
+    \caption{Detailed communication and reasoning flow for the \texttt{water\_agent}. The diagram shows how EO and context beliefs are turned into indicator-level signals, higher-level evidence patterns, support-level assignments, severity paths, caveat profiles, and optional clarification outputs before returning a structured \texttt{hazard\_assessment(...)} to the coordinator.}
+    \label{fig:water_agent_diagram}
+\end{figure}
 
 \begin{lstlisting}
 water_expansion_signal(E) :-
