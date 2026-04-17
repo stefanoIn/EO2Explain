@@ -849,6 +849,28 @@ This interface is also useful from an explainability point of view. The result p
 
 The UI therefore contributes primarily to reproducibility and inspectability rather than to reasoning. It makes the full pipeline accessible for single-event experimentation while preserving the separation of concerns of the overall architecture: EO scripts derive indicators, the MAS performs symbolic interpretation, the ontology formalizes and checks the resulting knowledge graph, and the deterministic NLG pipeline verbalizes the final semantic representation.
 
+\subsection{Execution Requirements and Running Instructions}
+
+From a practical point of view, the implemented prototype can be executed through a single wrapper script rather than by launching each stage manually. The default execution path starts from the precomputed EO indicator and exposure summaries already stored in the repository, which means that the core symbolic and NLP pipeline can be reproduced without rerunning the full EO extraction stage. In this default configuration, the required runtime components are Python 3.10 or later, a Java JDK installation, and a Jason CLI installation available from the shell.
+
+The Python environment used for the default run must include \texttt{owlready2}, \texttt{flask}, and \texttt{markupsafe}. If full EO recomputation is required, the environment must additionally provide the geospatial and scientific packages used by the EO scripts, namely \texttt{numpy}, \texttt{rasterio}, \texttt{matplotlib}, \texttt{pyproj}, and \texttt{shapely}. The MAS itself depends on Jason Interpreter 3.3.0, as reflected in the Gradle configuration of the Jason project.
+
+The full pipeline can then be launched with:
+
+\begin{lstlisting}
+cd EO2Explain
+python3 scripts/run_project.py
+\end{lstlisting}
+
+This command generates the Jason belief files from the processed indicator CSVs, runs the MAS, transforms the exported semantic payloads, populates and validates the ontology, executes the ontology queries, and writes the final reports. If the raw EO TIFF inputs are also available and the EO indicators should be recomputed from scratch, the same wrapper can be called with:
+
+\begin{lstlisting}
+cd EO2Explain
+python3 scripts/run_project.py --with-eo
+\end{lstlisting}
+
+On Windows, the same command should be executed from Git Bash rather than assumed to work natively from \texttt{cmd.exe} or PowerShell, because the MAS launcher is currently validated through a Git-Bash-based execution path.
+
 \newpage
 
 \bibliographystyle{splncs04}
