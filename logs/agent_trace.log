@@ -498,3 +498,103 @@
 [COORDINATOR AGENT] --> Exported semantic explanation for serra_de_estrela to ../outputs/semantic_explanations/serra_de_estrela.json.
 [COORDINATOR AGENT] --> Exported semantic explanation for evros to ../outputs/semantic_explanations/evros.json.
 [COORDINATOR AGENT] --> Exported semantic explanation for antalya to ../outputs/semantic_explanations/antalya.json.
+[EXPLANATION AGENT] --> Started explanation packager.
+[FOREST AGENT] --> Started wildfire specialist.
+[WATER AGENT] --> Started water specialist.
+[COORDINATOR AGENT] --> Started coordinator workflow.
+[COORDINATOR AGENT] --> Requesting assessment for ahr_valley from water_agent.
+[COORDINATOR AGENT] --> Requesting assessment for sindh from water_agent.
+[COORDINATOR AGENT] --> Requesting assessment for emilia from water_agent.
+[COORDINATOR AGENT] --> Requesting assessment for evros from forest_agent.
+[COORDINATOR AGENT] --> Requesting assessment for antalya from forest_agent.
+[COORDINATOR AGENT] --> Requesting assessment for serra_de_estrela from forest_agent.
+[COORDINATOR AGENT] --> All assessment requests dispatched.
+[WATER AGENT] --> First-pass assessment for ahr_valley: support=weak, severity=mild, status=hazard_assessed, confidence=medium, claim=residual_flood_signal.
+[WATER AGENT] --> First-pass assessment for sindh: support=strong, severity=severe, status=hazard_assessed, confidence=high, claim=strong_multisignal_flooding.
+[WATER AGENT] --> First-pass assessment for emilia: support=strong, severity=severe, status=hazard_assessed, confidence=high, claim=strong_multisignal_flooding.
+[COORDINATOR AGENT] --> Received first-pass assessment for ahr_valley from water_agent with support=weak, severity=mild, status=hazard_assessed, confidence=medium.
+[COORDINATOR AGENT] --> Received first-pass assessment for sindh from water_agent with support=strong, severity=severe, status=hazard_assessed, confidence=high.
+[COORDINATOR AGENT] --> Requesting clarification for ahr_valley from water_agent because caveat=residual_observation_window.
+[FOREST AGENT] --> First-pass assessment for evros: support=moderate, severity=moderate, status=hazard_assessed, confidence=low, claim=coherent_fire_damage.
+[COORDINATOR AGENT] --> Received first-pass assessment for emilia from water_agent with support=strong, severity=severe, status=hazard_assessed, confidence=high.
+[FOREST AGENT] --> First-pass assessment for antalya: support=conflicting, severity=mild, status=hazard_assessed, confidence=low, claim=mixed_fire_damage.
+[FOREST AGENT] --> First-pass assessment for serra_de_estrela: support=moderate, severity=moderate, status=hazard_assessed, confidence=medium, claim=spectral_extent_fire_damage.
+[WATER AGENT] --> Clarification for ahr_valley: limitation=residual_observation_window, strongest_evidence=newly_flooded_area_pct.
+[COORDINATOR AGENT] --> Received clarification for ahr_valley from water_agent with limitation=residual_observation_window.
+[COORDINATOR AGENT] --> Received first-pass assessment for evros from forest_agent with support=moderate, severity=moderate, status=hazard_assessed, confidence=low.
+[COORDINATOR AGENT] --> Received first-pass assessment for antalya from forest_agent with support=conflicting, severity=mild, status=hazard_assessed, confidence=low.
+[COORDINATOR AGENT] --> Received first-pass assessment for serra_de_estrela from forest_agent with support=moderate, severity=moderate, status=hazard_assessed, confidence=medium.
+[COORDINATOR AGENT] --> Fused final case for sindh with support=strong, concern=critical, profile=critical_concern_case.
+[COORDINATOR AGENT] --> Fused final case for emilia with support=strong, concern=high, profile=high_priority_event.
+[EXPLANATION AGENT] --> Packaging explanation for sindh with headline Sindh | severe flood | strong support | high confidence.
+[COORDINATOR AGENT] --> Requesting clarification for evros from forest_agent because caveat=coarse_timeline.
+[EXPLANATION AGENT] --> Packaging explanation for emilia with headline Emilia-Romagna | severe flood | strong support | high confidence.
+[COORDINATOR AGENT] --> Requesting clarification for antalya from forest_agent because caveat=burn_signal_weak.
+[FOREST AGENT] --> Clarification for evros: limitation=coarse_timeline, strongest_evidence=burned_area_pct.
+[FOREST AGENT] --> Clarification for antalya: limitation=burn_signal_weak, strongest_evidence=vegetation_loss_pct.
+[COORDINATOR AGENT] --> Fused final case for ahr_valley with support=weak, concern=guarded, profile=guarded_monitoring_case.
+[COORDINATOR AGENT] --> Fused final case for serra_de_estrela with support=moderate, concern=moderate, profile=monitoring_case.
+[COORDINATOR AGENT] --> Received clarification for evros from forest_agent with limitation=coarse_timeline.
+[COORDINATOR AGENT] --> Received clarification for antalya from forest_agent with limitation=burn_signal_weak.
+[EXPLANATION AGENT] --> Packaging explanation for ahr_valley with headline Ahr Valley | mild flood | weak support | medium confidence.
+[EXPLANATION AGENT] --> Packaging explanation for serra_de_estrela with headline Serra da Estrela | moderate wildfire | moderate support | medium confidence.
+[COORDINATOR AGENT] --> Fused final case for evros with support=moderate, concern=moderate, profile=monitoring_case.
+[COORDINATOR AGENT] --> Fused final case for antalya with support=conflicting, concern=watch, profile=watch_case.
+[COORDINATOR AGENT] --> Exported semantic explanation for sindh to ../outputs/semantic_explanations/sindh.json.
+[COORDINATOR AGENT] --> Exported semantic explanation for emilia to ../outputs/semantic_explanations/emilia.json.
+[EXPLANATION AGENT] --> Packaging explanation for evros with headline Evros | moderate wildfire | moderate support | low confidence.
+[COORDINATOR AGENT] --> Exported semantic explanation for ahr_valley to ../outputs/semantic_explanations/ahr_valley.json.
+[EXPLANATION AGENT] --> Packaging explanation for antalya with headline Antalya | mild wildfire | conflicting support | low confidence.
+[COORDINATOR AGENT] --> Exported semantic explanation for serra_de_estrela to ../outputs/semantic_explanations/serra_de_estrela.json.
+[COORDINATOR AGENT] --> Exported semantic explanation for evros to ../outputs/semantic_explanations/evros.json.
+[COORDINATOR AGENT] --> Exported semantic explanation for antalya to ../outputs/semantic_explanations/antalya.json.
+[WATER AGENT] --> Started water specialist.
+[COORDINATOR AGENT] --> Started coordinator workflow.
+[EXPLANATION AGENT] --> Started explanation packager.
+[FOREST AGENT] --> Started wildfire specialist.
+[COORDINATOR AGENT] --> Requesting assessment for ahr_valley from water_agent.
+[COORDINATOR AGENT] --> Requesting assessment for sindh from water_agent.
+[COORDINATOR AGENT] --> Requesting assessment for emilia from water_agent.
+[COORDINATOR AGENT] --> Requesting assessment for evros from forest_agent.
+[COORDINATOR AGENT] --> Requesting assessment for antalya from forest_agent.
+[COORDINATOR AGENT] --> Requesting assessment for serra_de_estrela from forest_agent.
+[COORDINATOR AGENT] --> All assessment requests dispatched.
+[WATER AGENT] --> First-pass assessment for ahr_valley: support=weak, severity=mild, status=hazard_assessed, confidence=medium, claim=residual_flood_signal.
+[WATER AGENT] --> First-pass assessment for sindh: support=strong, severity=severe, status=hazard_assessed, confidence=high, claim=strong_multisignal_flooding.
+[WATER AGENT] --> First-pass assessment for emilia: support=strong, severity=severe, status=hazard_assessed, confidence=high, claim=strong_multisignal_flooding.
+[COORDINATOR AGENT] --> Received first-pass assessment for ahr_valley from water_agent with support=weak, severity=mild, status=hazard_assessed, confidence=medium.
+[COORDINATOR AGENT] --> Received first-pass assessment for sindh from water_agent with support=strong, severity=severe, status=hazard_assessed, confidence=high.
+[COORDINATOR AGENT] --> Received first-pass assessment for emilia from water_agent with support=strong, severity=severe, status=hazard_assessed, confidence=high.
+[FOREST AGENT] --> First-pass assessment for evros: support=moderate, severity=moderate, status=hazard_assessed, confidence=low, claim=coherent_fire_damage.
+[COORDINATOR AGENT] --> Requesting clarification for ahr_valley from water_agent because caveat=residual_observation_window.
+[FOREST AGENT] --> First-pass assessment for antalya: support=conflicting, severity=mild, status=hazard_assessed, confidence=low, claim=mixed_fire_damage.
+[FOREST AGENT] --> First-pass assessment for serra_de_estrela: support=moderate, severity=moderate, status=hazard_assessed, confidence=medium, claim=spectral_extent_fire_damage.
+[WATER AGENT] --> Clarification for ahr_valley: limitation=residual_observation_window, strongest_evidence=newly_flooded_area_pct.
+[COORDINATOR AGENT] --> Fused final case for sindh with support=strong, concern=critical, profile=critical_concern_case.
+[COORDINATOR AGENT] --> Fused final case for emilia with support=strong, concern=high, profile=high_priority_event.
+[COORDINATOR AGENT] --> Received first-pass assessment for evros from forest_agent with support=moderate, severity=moderate, status=hazard_assessed, confidence=low.
+[COORDINATOR AGENT] --> Received first-pass assessment for antalya from forest_agent with support=conflicting, severity=mild, status=hazard_assessed, confidence=low.
+[COORDINATOR AGENT] --> Received first-pass assessment for serra_de_estrela from forest_agent with support=moderate, severity=moderate, status=hazard_assessed, confidence=medium.
+[EXPLANATION AGENT] --> Packaging explanation for sindh with headline Sindh | severe flood | strong support | high confidence.
+[EXPLANATION AGENT] --> Packaging explanation for emilia with headline Emilia-Romagna | severe flood | strong support | high confidence.
+[COORDINATOR AGENT] --> Received clarification for ahr_valley from water_agent with limitation=residual_observation_window.
+[COORDINATOR AGENT] --> Requesting clarification for evros from forest_agent because caveat=coarse_timeline.
+[COORDINATOR AGENT] --> Requesting clarification for antalya from forest_agent because caveat=burn_signal_weak.
+[COORDINATOR AGENT] --> Fused final case for serra_de_estrela with support=moderate, concern=moderate, profile=monitoring_case.
+[COORDINATOR AGENT] --> Fused final case for ahr_valley with support=weak, concern=guarded, profile=guarded_monitoring_case.
+[FOREST AGENT] --> Clarification for evros: limitation=coarse_timeline, strongest_evidence=burned_area_pct.
+[FOREST AGENT] --> Clarification for antalya: limitation=burn_signal_weak, strongest_evidence=vegetation_loss_pct.
+[COORDINATOR AGENT] --> Exported semantic explanation for sindh to ../outputs/semantic_explanations/sindh.json.
+[COORDINATOR AGENT] --> Exported semantic explanation for emilia to ../outputs/semantic_explanations/emilia.json.
+[COORDINATOR AGENT] --> Received clarification for evros from forest_agent with limitation=coarse_timeline.
+[COORDINATOR AGENT] --> Received clarification for antalya from forest_agent with limitation=burn_signal_weak.
+[EXPLANATION AGENT] --> Packaging explanation for serra_de_estrela with headline Serra da Estrela | moderate wildfire | moderate support | medium confidence.
+[EXPLANATION AGENT] --> Packaging explanation for ahr_valley with headline Ahr Valley | mild flood | weak support | medium confidence.
+[COORDINATOR AGENT] --> Fused final case for evros with support=moderate, concern=moderate, profile=monitoring_case.
+[COORDINATOR AGENT] --> Fused final case for antalya with support=conflicting, concern=watch, profile=watch_case.
+[COORDINATOR AGENT] --> Exported semantic explanation for serra_de_estrela to ../outputs/semantic_explanations/serra_de_estrela.json.
+[COORDINATOR AGENT] --> Exported semantic explanation for ahr_valley to ../outputs/semantic_explanations/ahr_valley.json.
+[EXPLANATION AGENT] --> Packaging explanation for evros with headline Evros | moderate wildfire | moderate support | low confidence.
+[EXPLANATION AGENT] --> Packaging explanation for antalya with headline Antalya | mild wildfire | conflicting support | low confidence.
+[COORDINATOR AGENT] --> Exported semantic explanation for evros to ../outputs/semantic_explanations/evros.json.
+[COORDINATOR AGENT] --> Exported semantic explanation for antalya to ../outputs/semantic_explanations/antalya.json.

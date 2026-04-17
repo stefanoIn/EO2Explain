@@ -28,6 +28,8 @@ Thumbs.db
 # ontology
 nlp/ontology/eo2explain_populated.rdf
 
+outputs/ui_jobs/
+
 # Optional: transformed data
 *.json
 
