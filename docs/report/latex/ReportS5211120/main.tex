@@ -13,7 +13,10 @@
 \usepackage{subcaption}
 \usepackage{listings}
 \usepackage{tikz}
-\usetikzlibrary{positioning}
+\usepackage{pgf-umlsd}
+\usetikzlibrary{calc}
+\usetikzlibrary{positioning, fit, arrows.meta}
+\usepgflibrary{arrows}
 
 \lstset{
     basicstyle=\ttfamily\small,
@@ -23,7 +26,7 @@
 
 \setcounter{secnumdepth}{3}
 
-\title{Interpreting Earth Observation Events using Symbolic Multi-Agent Systems and Natural Language Generation}
+\title{A Multi-Agent System for Monitoring Enviromental Changes Using Earth Observation Data}
 \author{Stefano Infusini\\
 {\em s5211120@studenti.unige.it}}
 \date{}
@@ -56,18 +59,17 @@ This project is a creative proposal.
 \subsection{The range of points/difficulty of your proposal}
 \label{subsec:points}
 
-The project is classified as hard since it requires the integration of EO processing, symbolic multi-agent reasoning, and natural language generation.
-
-\pagebreak
+The project is classified as hard.
 
 \section{Introduction}
 \label{sec:intro}
+Earth Observation data provide a powerful tool for monitoring environmental changes such as floods and wildfires. In recent years, sub-symbolic Artificial Intelligence methods, especially machine learning and deep learning approaches, have become widely used in the EO field because of their strong predictive and pattern-recognition capabilities. These methods are particularly effective for processing large volumes of satellite imagery and detecting complex spatial patterns that may be difficult to capture with manual analysis alone.
 
-Earth Observation data provide a powerful tool for monitoring environmental changes such as floods and wildfires. Satellite imagery can reveal variations in vegetation health, burned areas, and water extent across large geographic regions. However, interpreting these data in a transparent and explainable way remains challenging.
+However, in delicate application areas such as hazard detection, computational performance is not the only requirement. Assessments of floods, wildfires, and other environmental risks often involve uncertainty, incomplete observations, temporal limitations, and case-specific caveats. In such contexts, explainability and transparency become as important as predictive capability, because the decision-making process must remain understandable, traceable, and open to inspection. A system that produces a strong classification but cannot clearly justify how that conclusion was reached may be less suitable in settings where reliability, accountability, and interpretation matter.
 
-The project presented in this report explores the integration of satellite-derived environmental indicators with symbolic multi-agent reasoning and Natural Language Processing techniques. Instead of treating EO indicators only as numerical outputs, the system interprets them through logical reasoning performed by specialized agents and communicates the conclusions through natural language explanations.
+The project presented in this report explores the integration of satellite-derived environmental indicators with symbolic multi-agent reasoning and Natural Language Processing techniques. Instead of treating EO indicators only as numerical outputs, the system interprets them through explicit logical reasoning performed by specialized agents and communicates the conclusions through natural language explanations. In this way, the project does not reject the importance of sub-symbolic AI in EO, but focuses on a complementary perspective in which the reasoning path, the handling of caveats, and the interpretability of the final assessment are central design goals.
 
-The overall objective is to build a prototype system capable of transforming Earth Observation evidence into structured interpretations that remain transparent and explainable.
+The overall objective is to build a prototype system capable of transforming Earth Observation evidence into structured interpretations that remain transparent, explainable, and semantically traceable.
 
 \section{Post-Proposal Extensions}
 
@@ -156,7 +158,7 @@ These bands allow the computation of spectral indices commonly used for vegetati
 
 \subsection{Processing Workflow}
 
-The EO preprocessing stage is implemented through Python scripts rather than notebooks:
+The EO preprocessing stage is implemented through Python scripts:
 
 \begin{itemize}
 \item \texttt{eo\_processing/flood/flood\_indicators.py}
@@ -187,7 +189,6 @@ Table~\ref{tab:acquisition_event_timing} summarizes the temporal relation betwee
 
 \begin{table}[H]
 \centering
-\caption{Acquisition dates and real event chronology for the six EO2Explain case studies.}
 \label{tab:acquisition_event_timing}
 \resizebox{\textwidth}{!}{
 \begin{tabular}{p{2.5cm}p{2cm}p{2cm}p{3.2cm}p{3.2cm}p{4.3cm}}
@@ -203,6 +204,7 @@ Serra da Estrela & 2022-08-02 & 2022-08-22 & 6--17 August 2022 & 6--14 August 20
 \bottomrule
 \end{tabular}
 }
+\caption{Acquisition dates and real event chronology for the six case studies.}
 \end{table}
 
 This timing table explains several later interpretation choices. The Ahr Valley case is temporally offset from the flood peak and therefore appears as a residual flood footprint rather than as a peak-stage flood scene. By contrast, Sindh and Evros are observed close to their dominant active phases, which helps explain why their EO signals are stronger and more spatially extensive. Emilia-Romagna and Serra da Estrela occupy an intermediate position: the after acquisitions do not fully coincide with the most acute phase, but they remain close enough to preserve a substantial impact signature.
@@ -340,44 +342,106 @@ The wildfire events show different levels of vegetation loss and burn severity. 
 After the EO preprocessing stage, the system enters the reasoning layer implemented in Jason. In this layer, numerical EO outputs are no longer treated as isolated measurements. They are transformed into symbolic beliefs, combined with contextual metadata, and interpreted through explicit reasoning rules. This is the core layer that makes the overall system explainable: every classification is linked to a visible belief structure, a reasoning path, and a traceable final explanation.
 
 Figure~\ref{fig:mas_communication_flow} summarizes how the Jason agents cooperate during a complete analysis cycle. The CoordinatorAgent acts as the orchestration hub: it dispatches event-assessment requests to the hazard-specialized agents, conditionally triggers clarification when uncertainty is high, forwards the integrated symbolic case to the ExplanationAgent, and finally hands the exported semantic payload to the downstream Python layer.
-
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
     x=1cm,
     y=1cm,
-    agent/.style={draw, rounded corners=10pt, very thick, fill=blue!8, minimum width=4.2cm, minimum height=1.05cm, align=center, font=\bfseries},
-    layer/.style={draw, rounded corners=10pt, very thick, fill=green!10, minimum width=5.8cm, minimum height=1.2cm, align=center, font=\bfseries},
-    msg/.style={fill=white, inner sep=2pt, rounded corners=3pt, font=\scriptsize, align=center},
-    flow/.style={->, thick}
+    >=Latex,
+    agent/.style={
+        draw=black!65,
+        rounded corners=10pt,
+        very thick,
+        fill=white,
+        minimum width=3.9cm,
+        minimum height=1.0cm,
+        align=center,
+        font=\bfseries
+    },
+    layer/.style={
+        draw=black!65,
+        rounded corners=10pt,
+        very thick,
+        fill=white,
+        minimum width=5.2cm,
+        minimum height=1.15cm,
+        align=center,
+        font=\bfseries
+    },
+    msg/.style={
+        fill=white,
+        inner sep=1.5pt,
+        font=\scriptsize,
+        align=center
+    },
+    flow/.style={->, thick, draw=black!70}
 ]
+
 \node[agent] (coord) at (0,0) {CoordinatorAgent};
-\node[agent] (water) at (-5.2,-2.8) {WaterAgent};
-\node[agent] (forest) at (5.2,-2.8) {ForestAgent};
+\node[agent] (water) at (-4.8,-2.5) {WaterAgent};
+\node[agent] (forest) at (-4.8, -3.5) {ForestAgent};
 \node[agent] (expl) at (0,-5.3) {ExplanationAgent};
-\node[layer] (python) at (0,-7.8) {Python semantic layer\\transformer, ontology, NLG};
+\node[layer] (python) at (0,-7.9) {Python semantic layer\\transformer, ontology, NLG};
 
 \draw[flow] (coord.south west) -- (water.north east)
-    node[pos=0.28, above left, msg] {assess\_event}
+    node[pos=0.24, above left, msg] {assess\_event}
     node[pos=0.74, below right, msg] {clarify\_assessment};
+
 \draw[flow] (water.north east) -- (coord.south west)
-    node[pos=0.30, below right, msg] {hazard\_assessment}
-    node[pos=0.73, above left, msg] {clarification\_result};
+    node[pos=0.34, below right, msg] {hazard\_assessment}
+    node[pos=0.80, above left, msg] {clarification\_result};
 
 \draw[flow] (coord.south east) -- (forest.north west)
-    node[pos=0.28, above right, msg] {assess\_event}
+    node[pos=0.24, above right, msg] {assess\_event}
     node[pos=0.74, below left, msg] {clarify\_assessment};
+
 \draw[flow] (forest.north west) -- (coord.south east)
-    node[pos=0.30, below left, msg] {hazard\_assessment}
-    node[pos=0.73, above right, msg] {clarification\_result};
+    node[pos=0.34, below left, msg] {hazard\_assessment}
+    node[pos=0.80, above right, msg] {clarification\_result};
 
 \draw[flow] (coord.south) -- (expl.north)
     node[midway, right, msg] {build\_explanation};
+
 \draw[flow] (expl.south) -- (python.north)
     node[midway, right, msg] {semantic payload\\JSON export};
+
 \end{tikzpicture}
 \caption{Communication flow in the multi-agent layer. The coordinator dispatches specialist assessments, optionally requests clarification, and then forwards the integrated case to the explanation agent before downstream semantic processing.}
 \label{fig:mas_communication_flow}
+\end{figure}
+
+The same coordination logic can also be read as a temporal interaction sequence. Figure~\ref{fig:mas_sequence_diagram} shows the order in which the coordinator gathers hazard assessments, opens an optional clarification round for uncertain cases, requests explanation construction, and then hands the exported semantic payload to the downstream Python layer.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+    \newthread{coord}{}{CoordinatorAgent}
+    \newinst{water}{}{WaterAgent}
+    \newinst{forest}{}{ForestAgent}
+    \newinst{expl}{}{ExplanationAgent}
+    \newinst{py}{}{Python Layer}
+
+    \begin{call}{coord}{assess\_event(E)}{water}{hazard\_assessment}
+    \end{call}
+    \begin{call}{coord}{assess\_event(E)}{forest}{hazard\_assessment}
+    \end{call}
+
+    \begin{sdloop}{If uncertainty or caveats require refinement}
+        \begin{call}{coord}{clarify\_assessment(E,\dots)}{water}{clarification\_result}
+        \end{call}
+        \begin{call}{coord}{clarify\_assessment(E,\dots)}{forest}{clarification\_result}
+        \end{call}
+    \end{sdloop}
+
+    \begin{call}{coord}{build\_explanation(E)}{expl}{semantic\_explanation}
+    \end{call}
+    \begin{call}{expl}{export\_semantic\_payload()}{py}{JSON / ontology / report}
+    \end{call}
+\end{sequencediagram}
+}
+\caption{Sequence view of the EO2Explain multi-agent workflow. The coordinator collects specialist assessments, optionally requests clarification, and then triggers explanation export for downstream semantic processing.}
+\label{fig:mas_sequence_diagram}
 \end{figure}
 
 \subsection{Belief Base}
@@ -440,7 +504,7 @@ burned_area_pct(evros, 13.85).
 
 \subsubsection{Context Beliefs}
 
-The belief base also contains contextual information used during fusion. In particular, each event is associated with a population exposure class derived from WorldPop data \cite{worldpop2025}. These contextual beliefs are not hazard claims by themselves, but they are used by the coordinator to combine hazard evidence with exposure and derive the final integrated concern profile.
+The belief base also contains contextual information used during fusion. In particular, each event is associated with a population exposure class derived from WorldPop data. These contextual beliefs are not hazard claims by themselves, but they are used by the coordinator to combine hazard evidence with exposure and derive the final integrated concern profile.
 
 \begin{lstlisting}
 population_exposure_class(sindh, high).
