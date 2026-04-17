@@ -111,24 +111,10 @@ java.util.logging.SimpleFormatter.format=%5$s%n
 
 
 def build_mas_command(log_conf_path: Path) -> list[str]:
-    gradle_path = shutil.which(GRADLE_BIN)
-    if gradle_path:
-        mas_args = "@@".join(
-            [
-                "eo.mas2j",
-                "--no-net",
-                "--no-mbean",
-                "--no-mindinspector",
-                "--log-conf",
-                str(log_conf_path),
-            ]
-        )
-        return [gradle_path, "run", "--console=plain", f"-PmasArgs={mas_args}"]
-
-    jason_path = shutil.which(JASON_BIN)
-    if jason_path:
-        return [
-            jason_path,
+    mas_dir = log_conf_path.parent.parent / "mas"
+    is_windows = os.name == "nt"
+    mas_args = "@@".join(
+        [
             "eo.mas2j",
             "--no-net",
             "--no-mbean",
@@ -136,10 +122,51 @@ def build_mas_command(log_conf_path: Path) -> list[str]:
             "--log-conf",
             str(log_conf_path),
         ]
+    )
+
+    if is_windows:
+        gradlew = mas_dir / "gradlew.bat"
+        if gradlew.exists():
+            return ["cmd", "/c", str(gradlew), "run", "--console=plain", f"-PmasArgs={mas_args}"]
+    else:
+        gradlew = mas_dir / "gradlew"
+        if gradlew.exists():
+            return [str(gradlew), "run", "--console=plain", f"-PmasArgs={mas_args}"]
+
+    gradle_path = shutil.which(GRADLE_BIN)
+    if gradle_path:
+        return [gradle_path, "run", "--console=plain", f"-PmasArgs={mas_args}"]
+
+    if is_windows:
+        for executable in ("jason.bat", "jason.cmd", "jason.exe", JASON_BIN):
+            jason_path = shutil.which(executable)
+            if jason_path:
+                return [
+                    jason_path,
+                    "eo.mas2j",
+                    "--no-net",
+                    "--no-mbean",
+                    "--no-mindinspector",
+                    "--log-conf",
+                    str(log_conf_path),
+                ]
+    else:
+        jason_path = shutil.which(JASON_BIN)
+        if jason_path:
+            return [
+                jason_path,
+                "eo.mas2j",
+                "--no-net",
+                "--no-mbean",
+                "--no-mindinspector",
+                "--log-conf",
+                str(log_conf_path),
+            ]
 
     raise PipelineError(
-        "MAS execution failed: neither 'gradle' nor 'jason' was found in PATH. "
-        "Install one of them or set EO2EXPLAIN_GRADLE_BIN / EO2EXPLAIN_JASON_BIN."
+        "MAS execution failed: no usable MAS runner was found. "
+        "The UI looks first for the bundled Gradle wrapper in the job workspace, "
+        "then for Gradle or Jason in PATH."
     )
 
 
@@ -236,9 +263,15 @@ def prepare_mas_workspace(job_dir: Path) -> Path:
     shutil.copytree(source_mas / "java", target_mas / "java", dirs_exist_ok=True)
     if (source_mas / "config").exists():
         shutil.copytree(source_mas / "config", target_mas / "config", dirs_exist_ok=True)
+    if (source_mas / "gradle").exists():
+        shutil.copytree(source_mas / "gradle", target_mas / "gradle", dirs_exist_ok=True)
     shutil.copy2(source_mas / "eo.mas2j", target_mas / "eo.mas2j")
     shutil.copy2(source_mas / "build.gradle", target_mas / "build.gradle")
     shutil.copy2(source_mas / "settings.gradle", target_mas / "settings.gradle")
+    if (source_mas / "gradlew").exists():
+        shutil.copy2(source_mas / "gradlew", target_mas / "gradlew")
+    if (source_mas / "gradlew.bat").exists():
+        shutil.copy2(source_mas / "gradlew.bat", target_mas / "gradlew.bat")
     beliefs_dir = target_mas / "beliefs"
     beliefs_dir.mkdir(parents=True, exist_ok=True)
     return beliefs_dir
