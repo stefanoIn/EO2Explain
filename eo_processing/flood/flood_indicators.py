@@ -24,6 +24,26 @@ def load_pyplot():
     return plt
 
 
+def add_matching_colorbar(fig, ax, image, label: str) -> None:
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="4.5%", pad=0.14)
+    colorbar = fig.colorbar(image, cax=cax)
+    colorbar.ax.yaxis.set_ticks_position("right")
+    colorbar.ax.yaxis.set_label_position("right")
+    colorbar.ax.tick_params(
+        axis="y",
+        which="both",
+        left=False,
+        right=True,
+        labelleft=False,
+        labelright=True,
+        pad=2,
+    )
+    colorbar.set_label(label)
+
+
 def summary_path(path: Path) -> str:
     return str(Path("../..") / path.relative_to(PROJECT_ROOT))
 
@@ -134,9 +154,6 @@ def plot_flood_report_figure(arrays: dict[str, np.ndarray | dict], event_name: s
     plt = load_pyplot()
     ndwi_before = arrays["ndwi_before"]
     ndwi_after = arrays["ndwi_after"]
-    water_before = arrays["water_before"]
-    water_after = arrays["water_after"]
-    new_flood = arrays["new_flood"]
 
     ndwi_change = np.where(
         np.isfinite(ndwi_before) & np.isfinite(ndwi_after),
@@ -151,42 +168,49 @@ def plot_flood_report_figure(arrays: dict[str, np.ndarray | dict], event_name: s
     else:
         vmax_change = 0.2
 
-    fig, axes = plt.subplots(2, 3, figsize=(15, 9), constrained_layout=True)
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 3.5))
     axes = axes.ravel()
 
     im0 = axes[0].imshow(ndwi_before, cmap="Blues", vmin=-1, vmax=1)
     axes[0].set_title(f"{event_name} - NDWI before")
     axes[0].axis("off")
-    fig.colorbar(im0, ax=axes[0], fraction=0.046, pad=0.04).set_label("NDWI")
+    add_matching_colorbar(fig, axes[0], im0, "NDWI")
 
     im1 = axes[1].imshow(ndwi_after, cmap="Blues", vmin=-1, vmax=1)
     axes[1].set_title(f"{event_name} - NDWI after")
     axes[1].axis("off")
-    fig.colorbar(im1, ax=axes[1], fraction=0.046, pad=0.04).set_label("NDWI")
+    add_matching_colorbar(fig, axes[1], im1, "NDWI")
 
-    axes[2].imshow(new_flood, cmap="gray", vmin=0, vmax=1)
-    axes[2].set_title(f"{event_name} - Newly flooded area")
+    im2 = axes[2].imshow(ndwi_change, cmap="RdBu", vmin=-vmax_change, vmax=vmax_change)
+    axes[2].set_title(f"{event_name} - NDWI change")
     axes[2].axis("off")
-
-    axes[3].imshow(water_before, cmap="gray", vmin=0, vmax=1)
-    axes[3].set_title(f"{event_name} - Water mask before")
-    axes[3].axis("off")
-
-    axes[4].imshow(water_after, cmap="gray", vmin=0, vmax=1)
-    axes[4].set_title(f"{event_name} - Water mask after")
-    axes[4].axis("off")
-
-    im5 = axes[5].imshow(ndwi_change, cmap="RdBu", vmin=-vmax_change, vmax=vmax_change)
-    axes[5].set_title(f"{event_name} - NDWI change")
-    axes[5].axis("off")
-    fig.colorbar(im5, ax=axes[5], fraction=0.046, pad=0.04).set_label(r"$\Delta$NDWI")
+    add_matching_colorbar(fig, axes[2], im2, r"$\Delta$NDWI")
 
     fig.suptitle(
-        f"{event_name}: flood detection from Sentinel-2 NDWI and derived masks",
+        f"{event_name}: flood detection from Sentinel-2 NDWI",
         fontsize=14,
-        y=1.02,
+        y=1.04,
     )
+    fig.subplots_adjust(wspace=0.20, left=0.04, right=0.99, top=0.92, bottom=0.08)
     return fig
+
+
+def build_figure_path(event_name: str, figure_out: str | None, figure_dir: str | None) -> Path:
+    if figure_out:
+        return Path(figure_out)
+    filename = f"{event_name}_flood_report_figure.png"
+    if figure_dir:
+        return Path(figure_dir) / filename
+    return Path(filename)
+
+
+def save_flood_figure(arrays: dict[str, np.ndarray | dict], event_name: str, figure_path: Path) -> None:
+    plt = load_pyplot()
+    figure_path.parent.mkdir(parents=True, exist_ok=True)
+    figure = plot_flood_report_figure(arrays, event_name)
+    figure.savefig(figure_path, dpi=300, bbox_inches="tight")
+    plt.close(figure)
+    print(f"Saved figure to: {figure_path}")
 
 
 def main() -> None:
@@ -213,6 +237,16 @@ def main() -> None:
         default=None,
         help="Optional output path for the rendered figure.",
     )
+    parser.add_argument(
+        "--figure-dir",
+        default=None,
+        help="Optional output directory used when rendering figures for multiple events.",
+    )
+    parser.add_argument(
+        "--figure-all",
+        action="store_true",
+        help="Render report figures for all events in the root directory.",
+    )
     args = parser.parse_args()
 
     root_dir = Path(args.root_dir)
@@ -222,17 +256,16 @@ def main() -> None:
     write_summary_csv(rows, output_csv)
     print(f"Saved summary to: {output_csv}")
 
+    if args.figure_all:
+        for event_name, arrays in arrays_by_event.items():
+            figure_path = build_figure_path(event_name, None, args.figure_dir)
+            save_flood_figure(arrays, event_name, figure_path)
+
     if args.figure_event:
         if args.figure_event not in arrays_by_event:
             raise SystemExit(f"Unknown event for figure rendering: {args.figure_event}")
-        plt = load_pyplot()
-        figure_path = Path(args.figure_out) if args.figure_out else Path(
-            f"{args.figure_event}_flood_report_figure.png"
-        )
-        figure = plot_flood_report_figure(arrays_by_event[args.figure_event], args.figure_event)
-        figure.savefig(figure_path, dpi=300, bbox_inches="tight")
-        plt.close(figure)
-        print(f"Saved figure to: {figure_path}")
+        figure_path = build_figure_path(args.figure_event, args.figure_out, args.figure_dir)
+        save_flood_figure(arrays_by_event[args.figure_event], args.figure_event, figure_path)
 
 
 if __name__ == "__main__":

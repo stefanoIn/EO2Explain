@@ -16,18 +16,16 @@ def main() -> int:
         [
             sys.executable,
             "eo_processing/flood/flood_indicators.py",
-            "--figure-event",
-            "Emilia",
-            "--figure-out",
-            "eo_processing/flood/Emilia_flood_report_figure.png",
+            "--figure-all",
+            "--figure-dir",
+            "outputs/figures/flood",
         ],
         [
             sys.executable,
             "eo_processing/wildfire/wildfire_indicators.py",
-            "--figure-event",
-            "Turkey",
-            "--figure-out",
-            "eo_processing/wildfire/Turkey_wildfire_report_figure.png",
+            "--figure-all",
+            "--figure-dir",
+            "outputs/figures/wildfire",
         ],
     ]
 

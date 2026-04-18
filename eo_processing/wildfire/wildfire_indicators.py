@@ -25,6 +25,26 @@ def load_pyplot():
     return plt
 
 
+def add_matching_colorbar(fig, ax, image, label: str) -> None:
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="4.5%", pad=0.14)
+    colorbar = fig.colorbar(image, cax=cax)
+    colorbar.ax.yaxis.set_ticks_position("right")
+    colorbar.ax.yaxis.set_label_position("right")
+    colorbar.ax.tick_params(
+        axis="y",
+        which="both",
+        left=False,
+        right=True,
+        labelleft=False,
+        labelright=True,
+        pad=2,
+    )
+    colorbar.set_label(label)
+
+
 def summary_path(path: Path) -> str:
     return str(Path("../..") / path.relative_to(PROJECT_ROOT))
 
@@ -202,16 +222,8 @@ def plot_wildfire_report_figure(arrays: dict[str, np.ndarray | dict], event_name
     plt = load_pyplot()
     ndvi_before = arrays["ndvi_before"]
     ndvi_after = arrays["ndvi_after"]
-    nbr_before = arrays["nbr_before"]
-    nbr_after = arrays["nbr_after"]
     dnbr = arrays["dnbr"]
     burned = arrays["burned"]
-
-    ndvi_change = np.where(
-        np.isfinite(ndvi_before) & np.isfinite(ndvi_after),
-        ndvi_after - ndvi_before,
-        np.nan,
-    )
 
     finite_dnbr = dnbr[np.isfinite(dnbr)]
     if finite_dnbr.size > 0:
@@ -220,51 +232,53 @@ def plot_wildfire_report_figure(arrays: dict[str, np.ndarray | dict], event_name
     else:
         vmax_dnbr = 1.0
 
-    finite_ndvi_change = ndvi_change[np.isfinite(ndvi_change)]
-    if finite_ndvi_change.size > 0:
-        vmax_ndvi_change = np.nanpercentile(np.abs(finite_ndvi_change), 98)
-        vmax_ndvi_change = max(vmax_ndvi_change, 0.05)
-    else:
-        vmax_ndvi_change = 0.2
-
-    fig, axes = plt.subplots(2, 3, figsize=(15, 9), constrained_layout=True)
+    fig, axes = plt.subplots(2, 2, figsize=(10, 6.0))
     axes = axes.ravel()
 
     im0 = axes[0].imshow(ndvi_before, cmap="RdYlGn", vmin=-1, vmax=1)
     axes[0].set_title(f"{event_name} - NDVI before")
     axes[0].axis("off")
-    fig.colorbar(im0, ax=axes[0], fraction=0.046, pad=0.04).set_label("NDVI")
+    add_matching_colorbar(fig, axes[0], im0, "NDVI")
 
     im1 = axes[1].imshow(ndvi_after, cmap="RdYlGn", vmin=-1, vmax=1)
     axes[1].set_title(f"{event_name} - NDVI after")
     axes[1].axis("off")
-    fig.colorbar(im1, ax=axes[1], fraction=0.046, pad=0.04).set_label("NDVI")
+    add_matching_colorbar(fig, axes[1], im1, "NDVI")
 
     im2 = axes[2].imshow(dnbr, cmap="hot", vmin=0, vmax=vmax_dnbr)
     axes[2].set_title(f"{event_name} - dNBR")
     axes[2].axis("off")
-    fig.colorbar(im2, ax=axes[2], fraction=0.046, pad=0.04).set_label("dNBR")
+    add_matching_colorbar(fig, axes[2], im2, "dNBR")
 
-    im3 = axes[3].imshow(nbr_before, cmap="viridis", vmin=-1, vmax=1)
-    axes[3].set_title(f"{event_name} - NBR before")
+    axes[3].imshow(burned, cmap="gray", vmin=0, vmax=1)
+    axes[3].set_title(f"{event_name} - Burn mask")
     axes[3].axis("off")
-    fig.colorbar(im3, ax=axes[3], fraction=0.046, pad=0.04).set_label("NBR")
-
-    im4 = axes[4].imshow(nbr_after, cmap="viridis", vmin=-1, vmax=1)
-    axes[4].set_title(f"{event_name} - NBR after")
-    axes[4].axis("off")
-    fig.colorbar(im4, ax=axes[4], fraction=0.046, pad=0.04).set_label("NBR")
-
-    axes[5].imshow(burned, cmap="gray", vmin=0, vmax=1)
-    axes[5].set_title(f"{event_name} - Burn mask")
-    axes[5].axis("off")
 
     fig.suptitle(
-        f"{event_name}: wildfire detection from Sentinel-2 vegetation and burn indices",
+        f"{event_name}: wildfire detection from Sentinel-2 vegetation and burn indicators",
         fontsize=14,
         y=1.02,
     )
+    fig.subplots_adjust(wspace=0.20, hspace=0.08, left=0.05, right=0.98, top=0.90, bottom=0.08)
     return fig
+
+
+def build_figure_path(event_name: str, figure_out: str | None, figure_dir: str | None) -> Path:
+    if figure_out:
+        return Path(figure_out)
+    filename = f"{event_name}_wildfire_report_figure.png"
+    if figure_dir:
+        return Path(figure_dir) / filename
+    return Path(filename)
+
+
+def save_wildfire_figure(arrays: dict[str, np.ndarray | dict], event_name: str, figure_path: Path) -> None:
+    plt = load_pyplot()
+    figure_path.parent.mkdir(parents=True, exist_ok=True)
+    figure = plot_wildfire_report_figure(arrays, event_name)
+    figure.savefig(figure_path, dpi=300, bbox_inches="tight")
+    plt.close(figure)
+    print(f"Saved figure to: {figure_path}")
 
 
 def main() -> None:
@@ -291,6 +305,16 @@ def main() -> None:
         default=None,
         help="Optional output path for the rendered figure.",
     )
+    parser.add_argument(
+        "--figure-dir",
+        default=None,
+        help="Optional output directory used when rendering figures for multiple events.",
+    )
+    parser.add_argument(
+        "--figure-all",
+        action="store_true",
+        help="Render report figures for all events in the root directory.",
+    )
     args = parser.parse_args()
 
     root_dir = Path(args.root_dir)
@@ -300,20 +324,16 @@ def main() -> None:
     write_summary_csv(rows, output_csv)
     print(f"Saved summary to: {output_csv}")
 
+    if args.figure_all:
+        for event_name, arrays in arrays_by_event.items():
+            figure_path = build_figure_path(event_name, None, args.figure_dir)
+            save_wildfire_figure(arrays, event_name, figure_path)
+
     if args.figure_event:
         if args.figure_event not in arrays_by_event:
             raise SystemExit(f"Unknown event for figure rendering: {args.figure_event}")
-        plt = load_pyplot()
-        figure_path = Path(args.figure_out) if args.figure_out else Path(
-            f"{args.figure_event}_wildfire_report_figure.png"
-        )
-        figure = plot_wildfire_report_figure(
-            arrays_by_event[args.figure_event],
-            args.figure_event,
-        )
-        figure.savefig(figure_path, dpi=300, bbox_inches="tight")
-        plt.close(figure)
-        print(f"Saved figure to: {figure_path}")
+        figure_path = build_figure_path(args.figure_event, args.figure_out, args.figure_dir)
+        save_wildfire_figure(arrays_by_event[args.figure_event], args.figure_event, figure_path)
 
 
 if __name__ == "__main__":

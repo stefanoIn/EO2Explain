@@ -9,7 +9,11 @@
 \usepackage{float}
 \usepackage{hyperref}
 \usepackage{subcaption}
+\usepackage{microtype}
 \usepackage{listings}
+
+\let\oldtexttt\texttt
+\renewcommand{\texttt}[1]{{\fontsize{10.5}{12}\selectfont\oldtexttt{#1}}}
 
 \lstset{
     basicstyle=\ttfamily\small,
@@ -80,9 +84,9 @@ As an extension to the original proposal, the project now exposes a user-system 
 
 \section{Introduction}
 \label{sec:intro}
-Earth Observation data provide a powerful tool for monitoring environmental changes such as floods and wildfires. In recent years, sub-symbolic Artificial Intelligence methods, especially machine learning and deep learning approaches, have become widely used in the EO field because of their strong predictive and pattern-recognition capabilities. These methods are particularly effective for processing large volumes of satellite imagery and detecting complex spatial patterns that may be difficult to capture with manual analysis alone.\\
+Earth Observation data provide a powerful tool for monitoring environmental changes such as floods and wildfires. In recent years, sub-symbolic Artificial Intelligence methods, especially machine learning and deep learning approaches, have become widely used in the EO field because of their strong predictive and pattern-recognition capabilities. These methods are particularly effective for processing large volumes of satellite imagery and detecting complex spatial patterns that may be difficult to capture with manual analysis alone.
 
-However, in delicate application areas such as hazard detection, computational performance is not the only requirement. Assessments of floods, wildfires, and other environmental risks often involve uncertainty, incomplete observations, temporal limitations, and case-specific caveats. In such contexts, explainability and transparency become as important as predictive capability, because the decision-making process must remain understandable, traceable, and open to inspection. A system that produces a strong classification but cannot clearly justify how that conclusion was reached may be less suitable in settings where reliability, accountability, and interpretation matter\\
+However, in delicate application areas such as hazard detection, computational performance is not the only requirement. Assessments of floods, wildfires, and other environmental risks often involve uncertainty, incomplete observations, temporal limitations, and case-specific caveats. In such contexts, explainability and transparency become as important as predictive capability, because the decision-making process must remain understandable, traceable, and open to inspection. A system that produces a strong classification but cannot clearly justify how that conclusion was reached may be less suitable in settings where reliability, accountability, and interpretation matter
 
 This project  explores the integration of satellite-derived environmental indicators with symbolic multi-agent reasoning and Natural Language Processing techniques. Instead of treating EO indicators only as numerical outputs, the system interprets them through explicit logical reasoning performed by specialized agents and communicates the conclusions through natural language explanations. In this way, the project does not reject the importance of sub-symbolic AI in EO, but focuses on a complementary perspective in which the reasoning path, the handling of caveats, and the interpretability of the final assessment are central design goals.
 
@@ -90,24 +94,24 @@ The overall objective is to build a prototype system capable of transforming Ear
 
 \section{Architecture Overview}
 
-The EO2Explain system is organized into three conceptual layers, each responsible for a distinct stage of the processing pipeline.\\
+The EO2Explain system is organized into three conceptual layers, each responsible for a distinct stage of the processing pipeline.
 
-The first layer is the \textbf{EO layer}, which extracts environmental indicators from Sentinel-2 satellite imagery. This layer transforms raw spectral data into quantitative measures of environmental change, such as vegetation loss and water increase, providing the numerical evidence for subsequent reasoning.\\
+The first layer is the \textbf{EO layer}, which extracts environmental indicators from Sentinel-2 satellite imagery. This layer transforms raw spectral data into quantitative measures of environmental change, such as vegetation loss and water increase, providing the numerical evidence for subsequent reasoning.
 
-The second layer consists of a \textbf{symbolic multi-agent system} implemented in Jason. Here, EO indicators are represented as symbolic beliefs and processed through logical rules to infer environmental events. The system includes three agent types: a \texttt{ForestAgent} for vegetation-related reasoning, a \texttt{WaterAgent} for water-related reasoning, and a \texttt{CoordinatorAgent} that integrates the conclusions produced by the specialist agents.\\
+The second layer consists of a \textbf{symbolic multi-agent system} implemented in Jason. Here, EO indicators are represented as symbolic beliefs and processed through logical rules to infer environmental events. 
 
-The third layer is the \textbf{Natural Language Processing (NLP) layer}. This module receives the semantic explanation payload produced by the MAS, transforms it into a cleaner JSON representation, populates the ontology, and generates report-ready textual outputs. Rather than performing hazard reasoning itself, the Python layer acts as a post-reasoning semantic and reporting component. A lightweight Flask-based UI is built on top of this pipeline, allowing users to upload Sentinel-2 bands, provide optional contextual assumptions, and inspect both the resulting semantic report and the MAS trace.\\
+The third layer is the \textbf{Natural Language Processing (NLP) layer}. This module receives the semantic explanation payload produced by the MAS, transforms it into a cleaner JSON representation, populates the ontology, and generates report-ready textual outputs. Rather than performing hazard reasoning itself, the Python layer acts as a post-reasoning semantic and reporting component.
 
-Figure~\ref{fig:system_overview_diagram} illustrates the overall architecture of EO2Explain as a three-layer pipeline. It highlights how Sentinel-2 inputs are transformed into EO indicators, how these indicators are converted into Jason belief files for the symbolic multi-agent layer, and how the semantic explanation produced by the MAS is forwarded to the NLP layer for final processing and report generation.\\
+A lightweight Flask-based UI is built on top of this pipeline, allowing users to upload Sentinel-2 bands, provide optional contextual assumptions, and inspect both the resulting semantic report and the MAS trace.
+
 
 \begin{figure}[H]
     \centering
     \fitarchitecturediagram{figures/project_architecture.pdf}
-    \caption{Architecture overview of EO2Explain.}
+    \caption{Architectural overview of EO2Explain.}
     \label{fig:system_overview_diagram}
 \end{figure}
 
-\newpage
 
 \section{EO Layer}
 
@@ -132,20 +136,9 @@ These bands allow the computation of spectral indices commonly used for vegetati
 
 \subsection{Processing Workflow}
 
-The EO preprocessing is implemented through several python scripts that allow the extraction of the indicators in section 5.5. The workflow implemented in these scripts consists of the following steps:
+The EO preprocessing is implemented through Python scripts that extract the indicators described in Section~5.5. Across the flood and wildfire workflows, the processing pipeline consists of loading the required GeoTIFF bands, aligning them when necessary, computing spectral indices, deriving binary masks from threshold-based conditions, computing event-level summary statistics, and exporting the results to CSV tables.
 
-\begin{enumerate}
-\item loading the required GeoTIFF bands
-\item converting raster arrays to floating-point values
-\item creating a valid-pixel mask
-\item computing spectral indices
-\item deriving binary masks
-\item computing summary statistics
-\item exporting the results to CSV tables
-\end{enumerate}
-
-
-GeoTIFF inputs can be retrieved from the Copernicus Data Space Ecosystem~\cite{kovacs2026cdse} by means of a separate Python client developed for this purpose, namely the \href{https://github.com/stefanoIn/CDSE-api}{\texttt{CDSE-api} client}. This client can be used to download TIFF products for new areas of interest, dates, and events, making the EO2Explain pipeline reusable beyond the specific case studies discussed in this report. This download component is external to the reasoning layer, but it is relevant because it provides a practical way to acquire the EO evidence later processed by the Python EO scripts and, consequently, by the MAS.
+In the flood workflow, the script computes NDWI-based indicators and derives water and newly flooded area masks. In the wildfire workflow, the script computes NDVI, NBR, and dNBR, resamples the SWIR band to ensure alignment with the other inputs, and derives vegetation-loss and burned-area indicators.
 
 \subsection{Acquisition Timing and Event Chronology}
 
@@ -227,7 +220,10 @@ Pakistan & -0.2072 & 0.0037 & 40.5222 & 42.7007 \\
 \caption{Flood indicators derived from Sentinel-2 imagery}
 \end{table}
 
-For floods, Emilia-Romagna and Pakistan present strong flood signals with large increases in water-covered areas. In particular, the Pakistan flood shows an extensive expansion of the water in the floodplain. In contrast, the Ahr Valley flood produces a much smaller increase in detected water area because the flooding occurred mainly along a narrow river corridor. For the Ahr Valley case, the post-event image was acquired on 21 July 2021, several days after the flood peak of 14--15 July 2021. As a result, the extracted flood signal is likely weaker than the actual maximum flood extent. Following we present the Emilia-Romagna case.
+For floods, Emilia-Romagna and Pakistan present strong flood signals with large increases in water-covered areas. In particular, the Pakistan flood shows an extensive expansion of the water in the floodplain. In contrast, the Ahr Valley flood produces a much smaller increase in detected water area because the flooding occurred mainly along a narrow river corridor. For the Ahr Valley case, the post-event image was acquired on 21 July 2021, several days after the flood peak of 14--15 July 2021. As a result, the extracted flood signal is likely weaker than the actual maximum flood extent. 
+
+\subsubsection{The Emilia-Romagna case}
+
 
 \begin{figure}[H]
     \centering
@@ -244,17 +240,20 @@ For floods, Emilia-Romagna and Pakistan present strong flood signals with large 
         \caption{After-event true color image for Emilia-Romagna acquired on 23 May 2023.}
         \label{fig:emilia_truecolor_after}
     \end{subfigure}
-    \caption{Side-by-side comparison of Sentinel-2 true color imagery for the Emilia-Romagna flood case before and after the event. The comparison highlights the visible expansion of water-covered areas across the agricultural landscape.}
+    \caption{Side-by-side comparison of Sentinel-2 true color imagery for the 2023 Emilia-Romagna severe flood case before and after the event. The comparison highlights the visible expansion of water-covered areas across the agricultural landscape.}
     \label{fig:emilia_truecolor_comparison}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/Emilia_flood_report_figure.png}
-    \caption{Flood detection results for Emilia-Romagna. The figure shows NDWI before and after the event, the newly flooded area mask, the water masks before and after the event, and the NDWI change map.}
+    \includegraphics[width=1\textwidth]{figures/Emilia_flood_report_figure.png}
+    \caption{Flood detection results for Emilia-Romagna. The figure shows NDWI before and after the event and the NDWI change map.}
     \label{fig:emilia_flood_report}
 \end{figure}
 
+The NDWI-based analysis is consistent with the visual evidence provided by the true color imagery. In particular, the spatial patterns observed in the NDWI maps closely match the areas where water expansion is visible in the post-event image. The increase in NDWI values corresponds to the flooded zones identified in the after-event scene, especially across low-lying agricultural fields. 
+
+This agreement between spectral indicators and visual interpretation supports the reliability of the computed EO features, showing that the NDWI-derived products effectively capture the main flood dynamics in the study area. At the same time, the NDWI change map further emphasizes the transition from pre-event to post-event conditions, highlighting newly inundated regions that are less evident in the raw imagery alone.
 \subsubsection{Wildfire Results}
 
 \begin{table}[H]
@@ -275,7 +274,9 @@ Turkey & 0.3559 & 0.2871 & 0.0688 & -0.0763 & 14.1518 & 3.6802 \\
 
 \end{table}
 
-The wildfire events show different levels of vegetation loss and burn severity. The Greece wildfire presents a strong vegetation loss and a large burned area, while the Serra da Estrela event shows a strong burn signal reflected in the dNBR value. The Turkey wildfire shows a smaller burned area, although vegetation loss is still detectable. Following we present the Turkey case.
+The wildfire events show different levels of vegetation loss and burn severity. The Greece wildfire presents a strong vegetation loss and a large burned area, while the Serra da Estrela event shows a strong burn signal reflected in the dNBR value.
+
+\subsubsection{The Turkey case}
 
 \begin{figure}[H]
     \centering
@@ -292,31 +293,42 @@ The wildfire events show different levels of vegetation loss and burn severity. 
         \caption{After-event true color image for the Turkey wildfire acquired on 30 July 2021.}
         \label{fig:turkey_truecolor_after}
     \end{subfigure}
-    \caption{Side-by-side comparison of Sentinel-2 true color imagery for the Turkey wildfire case before and after the event. The after-event image shows smoke and visibly altered surface conditions associated with the wildfire.}
+    \caption{Side-by-side comparison, clearly showing the fire extent}
     \label{fig:turkey_truecolor_comparison}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/Turkey_wildfire_report_figure.png}
-    \caption{Wildfire detection results for Turkey. The figure shows NDVI before and after the event, dNBR, NBR before and after the event, and the derived burn mask.}
+    \caption{Wildfire detection results for Turkey.}
     \label{fig:turkey_wildfire}
 \end{figure}
+The wildfire indicators derived from the EO processing are consistent with the visual evidence provided by the true color imagery. In the after-event image, areas affected by the wildfire appear darker and less vegetated, reflecting the loss of biomass and surface alteration caused by burning. These patterns are clearly captured by the spectral indices.
 
+In particular, the NDVI maps show a noticeable decrease in vegetation density between the pre-event and post-event acquisitions, while the dNBR highlights the spatial extent and intensity of the burned areas. The derived burn mask further isolates these regions, providing a clear delineation of the affected zones.
+
+This agreement between the spectral indicators and the visual interpretation supports the reliability of the computed EO features, demonstrating that the NDVI and dNBR-based analysis effectively captures the main wildfire impact patterns in the study area.
 \section{Reasoning Layer}
 
-After the EO preprocessing stage, the system enters the reasoning layer implemented in Jason. Here, numerical EO outputs are no longer treated as isolated measurements. They are transformed into symbolic beliefs, combined with contextual metadata, and interpreted through explicit reasoning rules.
+The EO indicators computed in the previous layer are automatically translated into \texttt{.asl} beliefs by the \texttt{generate\_indicator\_beliefs.py} script. The reasoning layer is implemented in Jason, where numerical EO outputs are no longer treated as isolated measurements. Instead, symbolic EO indicator beliefs are combined with contextual metadata and interpreted through explicit reasoning rules.
 
-This is the core layer that makes the overall system explainable. Every classification is linked to a visible belief structure, a reasoning path, and a traceable final explanation.
+This constitutes the core of the system’s explainability: every classification is grounded in a transparent belief structure, a well-defined reasoning path, and a traceable final explanation.
 
-Figure~\ref{fig:sequence_diagram} summarizes the temporal communication flow of the symbolic multi-agent system. The CoordinatorAgent acts as the orchestration point: it dispatches event beliefs to a hazard-specialized agent, receives the resulting assessment, optionally requests clarification when the first pass remains uncertain, and then forwards the integrated symbolic output to the ExplanationAgent.
+The reasoning layer is structured around three types of agents: a central CoordinatorAgent, a set of hazard-specialized agents (in this project, WaterAgents and ForestAgents), and an ExplanationAgent. 
+This limited configuration reflects a design choice rather than a conceptual limitation. Once the atomic structure of the system is defined, the multi-agent system can be readily scaled. In particular, hazard-specialized agents share a common reasoning pattern, which makes them naturally suited for horizontal scaling by simply instantiating additional agents for different hazard types or regions.
 
-The figure also keeps the downstream NLP handoff visible so that the reasoning layer can be understood in relation to the post-processing stage.
+A natural extension of this architecture would involve multiple groups of hazard agents, each coordinated by a dedicated CoordinatorAgent. These coordinators could, in turn, be managed by a higher-level coordinator responsible for dispatching tasks across groups. In such a hierarchical configuration, ExplanationAgents—ideally one per group—would generate the final symbolic reports and return them to their respective coordinators for further integration. A more detailed discussion of the scalability properties and limitations of this architecture is provided in the conclusion section.
+
+Although the system was not developed by strictly following a specific agent-oriented methodology, its design is closer to an organisation-oriented approach, such as Gaia~\cite{wooldridge2000gaia}, as it emphasizes role-based decomposition and clearly defined interaction patterns between agents. The CoordinatorAgent, hazard-specialized agents, and ExplanationAgent correspond to distinct organizational roles, and their communication follows structured protocols.
+
+Figure~\ref{fig:sequence_diagram} illustrates the temporal communication flow within the symbolic multi-agent system, using an example interaction between the CoordinatorAgent and the WaterAgent. The CoordinatorAgent serves as the central orchestration component: it dispatches event beliefs to the appropriate hazard-specialized agent, receives the corresponding assessment, and, if necessary, requests additional clarification when the initial evaluation remains uncertain. The finalized symbolic output is then forwarded to the ExplanationAgent for subsequent processing.
+
 
 \begin{figure}[H]
     \centering
     \fitdiagram{figures/diagram.pdf}
-    \caption{System-level interaction view of the reasoning and reporting flow.}
+    \caption{System-level interaction view of the reasoning and reporting flow. The figure also keeps the downstream NLP handoff visible so that the reasoning
+layer can be understood in relation to the post-processing stage.}
     \label{fig:sequence_diagram}
 \end{figure}
 
@@ -957,8 +969,11 @@ This project presented EO2Explain as a prototype framework for interpreting Eart
 
 The implemented system also demonstrates how symbolic AI can provide a useful interpretability layer over EO evidence. Instead of treating hazard assessment as a direct mapping from pixel-level indicators to opaque labels, the project makes visible which signals were detected, which rule patterns were activated, which caveats reduced confidence, and when clarification was required. This is particularly important in cases where the acquisition timing does not perfectly overlap with the real event peak, since the framework can distinguish between strong multisignal evidence, residual observations, and explicitly inconclusive situations.
 
-At the same time, the project remains a controlled prototype rather than an operational hazard-monitoring system. The dataset is intentionally small, the thresholds are literature-informed heuristic cutoffs, and the EO cases were selected to support an interpretable demonstration rather than statistical generalization. Future work could therefore extend the system along several directions, including larger and more diverse event collections, better-calibrated reasoning thresholds, richer contextual layers, and more advanced ontology-backed querying and explanation strategies. Within the scope of this project, however, EO2Explain successfully shows that symbolic multi-agent reasoning and structured NLG can be combined to produce Earth Observation interpretations that are not only informative, but also transparent and semantically grounded.
+From an architectural perspective, the system is designed to be readily extensible. Its modular agent-based structure separates coordination, hazard-specific reasoning, and explanation generation into distinct roles, allowing new hazard-specialized agents to be introduced without modifying the overall communication workflow. In particular, the shared reasoning template adopted by the WaterAgent and ForestAgent illustrates how additional agents could be integrated by reusing the same interaction pattern while adapting only the domain-specific rules and indicators. This makes the architecture well suited for horizontal scaling across hazard types and, in principle, for more complex multi-coordinator hierarchies.
 
+At the same time, scalability remains primarily architectural rather than fully operational. The current design relies on a central CoordinatorAgent that orchestrates all interactions, which may become a bottleneck in larger deployments. Moreover, the rule-based nature of the hazard agents, while essential for explainability, implies that extending the system to additional domains would require careful rule design and maintenance. These considerations highlight a trade-off between transparency and scalability that would need to be addressed in future developments.
+
+At the same time, the project remains a controlled prototype rather than an operational hazard-monitoring system. The dataset is intentionally small, the thresholds are literature-informed heuristic cutoffs, and the EO cases were selected to support an interpretable demonstration rather than statistical generalization. Future work could therefore extend the system along several directions, including larger and more diverse event collections, better-calibrated reasoning thresholds, richer contextual layers, and more advanced ontology-backed querying and explanation strategies. Within the scope of this project, however, EO2Explain successfully shows that symbolic multi-agent reasoning and structured NLG can be combined to produce Earth Observation interpretations that are not only informative, but also transparent and semantically grounded.
 \newpage
 
 \bibliographystyle{plain}
