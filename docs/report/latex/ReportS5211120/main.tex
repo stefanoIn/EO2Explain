@@ -334,22 +334,19 @@ layer can be understood in relation to the post-processing stage.}
 
 \subsection{Belief Base}
 
-The reasoning layer is grounded in a belief base that contains four main groups of facts:
+The reasoning layer is grounded in a structured belief base that encodes both EO-derived evidence and contextual knowledge. The belief base is organised into four main groups of facts:
 
 \begin{itemize}
-\item \textbf{event metadata}, describing the event identity, location, temporal window, and responsible hazard agent
-\item \textbf{EO indicator beliefs}, containing the satellite-derived measurements computed in the previous layer
-\item \textbf{context beliefs}, such as population exposure classes and observation-quality metadata
-\item \textbf{optional user-input beliefs}, currently used to store an optional user-provided severity expectation for post-hoc comparison with the MAS conclusion
+\item \textbf{Event metadata}, describing the identity, location, temporal context, and hazard type of each event, as well as the mapping to the responsible hazard-specialised agent.
+\item \textbf{EO indicator beliefs}, containing the satellite-derived measurements computed in the previous layer, such as NDWI-based water indicators for floods and NDVI/dNBR-based vegetation and burn indicators for wildfires.
+\item \textbf{Context beliefs}, capturing additional information relevant to interpretation, including population exposure metrics and observation-quality metadata (e.g., acquisition timing and potential underestimation flags).
+\item \textbf{Optional user-input beliefs}, used to store a user-provided severity expectation for post-hoc comparison with the system’s assessment. These beliefs are introduced through the UI layer and do not influence the internal reasoning process.
 \end{itemize}
-
-In the current implementation, the EO indicator beliefs and population exposure beliefs are generated automatically from the processed CSV outputs. The MAS therefore consumes generated \texttt{.asl} belief files rather than hand-copied numerical facts.
 
 \subsubsection{Event Metadata Beliefs}
 
-Each event is represented through a set of symbolic facts that specify geographic context, dates, hazard type, and temporal reliability. These beliefs are not only descriptive: they also support later caveat reasoning.\\ For instance, the beliefs \texttt{timeline\_confidence/2}, \texttt{late\_observation\_flag/2}, and \texttt{possible\_underestimation/2} are used to qualify conclusions when the post-event image may not capture the peak hazard signal.
-
-In other words, event metadata are not just labels attached to a case. They also influence how the later reasoning stages qualify uncertainty and possible underestimation.
+Each event is represented through a set of symbolic facts that specify its geographic context, temporal coverage, hazard type, and reliability of the observation timeline. These beliefs are not purely descriptive; they also support later stages of reasoning, particularly in the qualification of uncertainty. For instance, the beliefs \texttt{timeline\_confidence/2}, \texttt{late\_observation\_flag/2}, and \texttt{possible\_underestimation/2} are used to determine whether the available EO evidence may fail to capture the peak intensity of the hazard. This information is subsequently exploited by hazard-specialised agents to introduce caveats or reduce confidence in the final assessment.
+In this sense, event metadata act as more than simple labels attached to a case: they directly influence how the reasoning process interprets EO indicators and how conclusions are qualified.
 
 \begin{lstlisting}
 event(ahr_valley).
@@ -365,13 +362,13 @@ late_observation_flag(ahr_valley, true).
 possible_underestimation(ahr_valley, true).
 \end{lstlisting}
 
-The same representation is used for wildfire events, with the only difference being the hazard type and the assigned hazard-specialized agent.
+The same representation is adopted for wildfire events, with the hazard type and corresponding hazard-specialised agent varying accordingly.
 
 \subsubsection{EO Indicator Beliefs}
 
-The EO indicators extracted from Sentinel-2 imagery are encoded as logical beliefs. This makes the numerical evidence directly accessible to Jason rules.
+The EO indicators extracted from Sentinel-2 imagery are encoded as logical beliefs, making numerical evidence directly accessible to the Jason reasoning rules. This transformation allows the system to operate on quantitative measurements through symbolic predicates, enabling explicit and traceable reasoning.
 
-Flood events are represented through NDWI-based change indicators:
+Flood events are represented through NDWI-based change indicators, capturing both the magnitude of spectral variation and the spatial extent of water expansion:
 
 \begin{lstlisting}
 mean_ndwi_before(emilia, -0.5065).
@@ -381,7 +378,9 @@ water_increase_pct(emilia, 22.73).
 newly_flooded_area_pct(emilia, 22.90).
 \end{lstlisting}
 
-Wildfire events are represented through vegetation-loss and burn-related indicators:
+These beliefs allow the WaterAgent to reason about the presence and severity of flooding by combining spectral change with areal expansion signals.
+
+Wildfire events are represented through vegetation-loss and burn-related indicators derived from NDVI and NBR:
 
 \begin{lstlisting}
 mean_ndvi_before(evros, 0.4516).
@@ -392,11 +391,13 @@ vegetation_loss_pct(evros, 21.06).
 burned_area_pct(evros, 13.85).
 \end{lstlisting}
 
+These beliefs enable the ForestAgent to infer fire severity by jointly considering vegetation degradation and burn intensity patterns.
+
+In both cases, EO indicator beliefs serve as the primary evidence layer, bridging the gap between low-level satellite measurements and high-level symbolic interpretation.
+
 \subsubsection{Context Beliefs}
 
-The belief base also contains contextual information used during fusion. In particular, each event is associated with a population exposure class derived from WorldPop data~\cite{worldpop2025}.
-
-These contextual beliefs are not hazard claims by themselves. They are used by the coordinator to combine hazard evidence with exposure and derive the final integrated concern profile.
+The belief base also includes contextual information that is used during the fusion stage of the reasoning process. In particular, each event is associated with a population exposure class derived from WorldPop data~\cite{worldpop2025}.
 
 \begin{lstlisting}
 population_exposure_class(sindh, high).
@@ -404,25 +405,29 @@ population_exposure_class(emilia, medium).
 population_exposure_class(evros, low).
 \end{lstlisting}
 
-This additional symbolic context matters because the system does not stop at hazard detection. It also reasons about how strong the case is, how much confidence should be attached to it, and how severe the situation becomes once hazard evidence is combined with exposure.
+These contextual beliefs do not represent hazard evidence on their own. Instead, they are used by the CoordinatorAgent to combine hazard assessments with exposure information in order to derive higher-level interpretations, such as concern level and overall case profile.
+
+This additional symbolic context is essential because the system does not stop at detecting the presence of a hazard. It also evaluates how impactful the situation may be by integrating hazard severity with population exposure, and it adjusts the final interpretation accordingly in terms of concern and confidence.
 
 \subsubsection{Optional User-Input Beliefs}
 
-The current architecture also supports an optional user-provided assessment entered through the UI. This information does not drive the hazard reasoning itself.
+The architecture also supports an optional user-provided assessment, entered through the UI layer. This information does not influence the internal hazard reasoning process.
 
-Instead, it is represented as a separate symbolic input that the coordinator compares against the inferred result after reasoning has finished.
+Instead, it is represented as a separate symbolic belief that is incorporated only after the reasoning stage, allowing the CoordinatorAgent to compare the user expectation with the inferred result.
 
 \begin{lstlisting}
 user_assessment(ahr_valley, severe).
 \end{lstlisting}
 
-This preserves the distinction between evidence-driven inference and user expectation. The hazard agents still infer the case only from EO and contextual beliefs, while the optional user assessment becomes part of the final explanation only as a comparison signal.
+This design preserves a clear separation between evidence-driven inference and external input. Hazard-specialised agents derive their conclusions exclusively from EO indicators and contextual beliefs, while the optional user assessment is included in the final explanation solely as a comparison signal. This enables the system to highlight agreement or disagreement between user expectations and the computed assessment without compromising the integrity of the reasoning process.
 
 \subsection{Hazard-Specific Symbolic Reasoning}
 
-Two specialized agents perform hazard interpretation: \texttt{forest\_agent} for wildfire cases and \texttt{water\_agent} for flood cases.
+Hazard interpretation is performed by two specialised agents: the \texttt{forest\_agent} for wildfire cases and the \texttt{water\_agent} for flood cases.
 
-Both agents follow the same general pattern. They start from raw EO indicator beliefs, derive intermediate evidence predicates, select a severity path, assign a confidence label, derive an explicit conclusion status, and finally generate caveats. In the current version, they also support a second-pass clarification stage that can be triggered by the coordinator for uncertain or caveat-heavy cases.
+Despite operating on different EO indicators, both agents follow a common reasoning pattern. Starting from raw EO indicator beliefs, they derive intermediate evidence predicates, determine a support level, select a severity classification path, assign a confidence level, and produce an explicit conclusion status. This process is complemented by the generation of caveats, which qualify the interpretation when the available evidence is limited, ambiguous, or affected by temporal constraints.
+
+In the current implementation, both agents also support a second-pass clarification stage. This stage can be triggered by the CoordinatorAgent when the initial assessment is uncertain or associated with significant caveats. During clarification, the agent provides additional symbolic information, such as primary limitations, strongest supporting evidence, and potential alternative interpretations, which are then incorporated into the final explanation.
 
 \subsubsection{Wildfire Reasoning in \texttt{forest\_agent}}
 
@@ -489,6 +494,25 @@ Instead, the agents first construct a symbolic judgment about how strongly the e
 The flood agent uses an analogous reasoning structure. It starts from \texttt{water\_increase\_pct/2}, \texttt{newly\_flooded\_area\_pct/2}, and \texttt{ndwi\_change/2}, and converts them into symbolic flood evidence.
 
 Figure~\ref{fig:water_agent_diagram} details the internal communication and reasoning flow of the \texttt{water\_agent}. Unlike the previous higher-level diagrams, this figure expands the internal symbolic stages explicitly, from indicator-level signals to evidence-pattern construction, support-level assignment, severity-path selection, caveat derivation, and clarification handling.
+
+\begin{lstlisting}
+water_expansion_signal(E) :-
+    water_increase_pct(E, WaterIncrease) &
+    WaterIncrease >= 8.
+
+flood_extent_signal(E) :-
+    newly_flooded_area_pct(E, NewlyFlooded) &
+    NewlyFlooded >= 8.
+
+ndwi_shift_signal(E) :-
+    ndwi_change(E, NdwiChange) &
+    NdwiChange >= 0.08.
+
+coherent_flood_evidence(E) :-
+    water_expansion_signal(E) &
+    flood_extent_signal(E) &
+    ndwi_shift_signal(E).
+\end{lstlisting}
 
 \begin{figure}[H]
     \centering
