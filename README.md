@@ -91,6 +91,43 @@ cd EO2Explain
 python3 scripts/run_project.py --clean
 ```
 
+## Run The UI Only
+
+To launch the local web UI without running the full repository pipeline first:
+
+```bash
+cd EO2Explain
+python3 scripts/run_ui.py
+```
+
+By default, the UI starts on:
+
+- `http://127.0.0.1:8000`
+
+The UI lets you upload a single flood or wildfire event, then runs the EO, MAS, transformation, ontology, and report-generation steps for that uploaded case inside a per-job workspace under `ui/jobs/`.
+
+Optional flags:
+
+```bash
+cd EO2Explain
+python3 scripts/run_ui.py --host 0.0.0.0 --port 8000 --debug
+```
+
+- `--host`: bind address, default `127.0.0.1`
+- `--port`: bind port, default `8000`
+- `--debug`: enable Flask debug mode
+
+Running the UI still requires the same runtime stack used by the interactive pipeline:
+
+- Python `3.10+`
+- Java JDK `17+`
+- Python packages `flask`, `markupsafe`, and `owlready2`
+- EO packages such as `numpy`, `rasterio`, `matplotlib`, `pyproj`, and `shapely` if you want the uploaded-event EO processing step to run successfully
+
+Generated UI job artifacts are written under:
+
+- `ui/jobs/`
+
 ## Run The MAS Only
 
 ```bash
