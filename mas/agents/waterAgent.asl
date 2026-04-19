@@ -95,7 +95,7 @@ weak_surface_water_trace(E) :-
 // thresholds because they are only used to detect coastal false positives.
 // They were introduced after observing that some coastal wildfire scenes can
 // produce small NDWI changes without a real flood footprint.
-// [MODIFIED] Coastal baseline filtering is restricted to NDWI-only noise.
+// Coastal baseline filtering is restricted to NDWI-only noise.
 coastal_area(E) :-
     water_area_before_pct(E, BeforeWaterArea) &
     BeforeWaterArea >= 3.
@@ -298,7 +298,7 @@ flood_caveat_profile(E, mixed_flood_signal, weak_water_signal, [weak_water_signa
 flood_caveat_profile(E, inconclusive_water_signal, coastal_baseline_water, [coastal_baseline_water, no_flood_expansion]) :-
     coastal_ndwi_without_expansion(E).
 
-// [MODIFIED] Generic insufficient flood cases now carry an explicit limitation.
+// Generic insufficient flood cases now carry an explicit limitation.
 flood_caveat_profile(E, inconclusive_water_signal, insufficient_flood_pattern, [insufficient_flood_pattern]) :-
     flood_support_level(E, insufficient) &
     not coastal_ndwi_without_expansion(E).

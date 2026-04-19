@@ -30,8 +30,8 @@ nlp/ontology/eo2explain_populated.rdf
 
 outputs/ui_jobs/
 
-# Optional: transformed data
 *.json
 
-# Optional: generated reports
 *.txt
+
+docs/report

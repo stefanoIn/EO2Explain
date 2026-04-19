@@ -247,31 +247,39 @@ fire_confidence(E, low) :-
     fire_support_level(E, insufficient).
 
 // Caveats explain why a valid interpretation may still need a qualified reading.
+
+// Mixed evidence + uncertain timeline
 fire_caveat_profile(E, _, burn_signal_weak, [burn_signal_weak, timeline_uncertain]) :-
     mixed_fire_evidence(E) &
     timeline_confidence(E, mixed_confirmed_and_approximate).
 
+// Mixed evidence only
 fire_caveat_profile(E, _, burn_signal_weak, [burn_signal_weak]) :-
     mixed_fire_evidence(E) &
     not timeline_confidence(E, mixed_confirmed_and_approximate).
 
+// Late observation
 fire_caveat_profile(E, _, late_observation, [late_observation, possible_underestimation]) :-
     late_observation_flag(E, true) &
     possible_underestimation(E, true) &
     not mixed_fire_evidence(E).
 
+// Timeline uncertain
 fire_caveat_profile(E, _, timeline_uncertain, [timeline_uncertain]) :-
     timeline_confidence(E, mixed_confirmed_and_approximate) &
     not mixed_fire_evidence(E) &
     not late_observation_flag(E, true).
 
+// Coarse timeline
 fire_caveat_profile(E, _, coarse_timeline, [coarse_timeline]) :-
     timeline_confidence(E, approximate) &
     not late_observation_flag(E, true).
 
+// NDVI-only weak case
 fire_caveat_profile(E, ndvi_only_fire_signal, limited_multisignal_support, [limited_multisignal_support]) :-
     weak_fire_evidence(E).
 
+// Vegetation-loss-only weak case
 fire_caveat_profile(E, vegetation_loss_only_fire_signal, limited_multisignal_support, [limited_multisignal_support]) :-
     vegetation_damage_signal(E) &
     not ndvi_damage_signal(E) &

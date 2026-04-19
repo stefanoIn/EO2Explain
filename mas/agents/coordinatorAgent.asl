@@ -183,7 +183,7 @@ clarification_required(medium, weak_water_signal).
 clarification_required(medium, residual_observation_window).
 clarification_required(medium, limited_multisignal_support).
 
-// These tables keep the fusion logic readable and easy to tune against the reference set.
+// These tables are to keep the fusion logic readable and easy to tune against the reference set.
 critical_concern(severe, high).
 high_concern(severe, medium).
 high_concern(severe, low).
